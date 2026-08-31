@@ -15,9 +15,16 @@ export const Route = createFileRoute("/_authenticated/admin/")({
   component: AdminPontos,
 });
 
+const PRESETS = [
+  { value: "all", label: "Tudo" },
+  { value: "doacao", label: "Pontos de doação" },
+  { value: "apoio", label: "Redes de apoio" },
+] as const;
+
 function AdminPontos() {
   const queryClient = useQueryClient();
   const [city, setCity] = useState("");
+  const [preset, setPreset] = useState<"all" | "doacao" | "apoio">("all");
   const runImport = useServerFn(importGooglePoints);
 
   const points = useQuery({
@@ -34,7 +41,7 @@ function AdminPontos() {
   });
 
   const importer = useMutation({
-    mutationFn: () => runImport({ data: { city: city.trim() } }),
+    mutationFn: () => runImport({ data: { city: city.trim(), preset } }),
     onSuccess: (result) => {
       toast.success(
         `${result.created} ponto(s) importado(s) — ${result.skipped} já existiam.`,
