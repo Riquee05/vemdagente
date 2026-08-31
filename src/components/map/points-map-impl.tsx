@@ -81,7 +81,11 @@ export default function PointsMapImpl({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Recenter center={center} zoom={zoom} />
+      {fitBounds && points.length > 1 ? (
+        <FitBounds points={points} />
+      ) : (
+        <Recenter center={center} zoom={zoom} />
+      )}
       {onPick ? <ClickPicker onPick={onPick} /> : null}
       {points.map((point) => (
         <Marker
