@@ -1,11 +1,21 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
+import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  adminStepUpStatus,
+  endAdminStepUp,
+  requestAdminCode,
+  verifyAdminCode,
+} from "@/lib/admin-2fa.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -48,15 +58,103 @@ export function useIsAdmin() {
   });
 }
 
+/** Etapa extra: código de 6 dígitos enviado ao e-mail da conta administrativa. */
+function StepUpForm({ email, onDone }: { email: string | null; onDone: () => void }) {
+  const send = useServerFn(requestAdminCode);
+  const verify = useServerFn(verifyAdminCode);
+  const [code, setCode] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const sendCode = useMutation({
+    mutationFn: () => send(),
+    onSuccess: () => {
+      setSent(true);
+      toast.success("Código enviado para o seu e-mail.");
+    },
+    onError: (e: Error) => toast.error(e.message || "Não foi possível enviar o código."),
+  });
+
+  const verifyCode = useMutation({
+    mutationFn: () => verify({ data: { code } }),
+    onSuccess: () => {
+      toast.success("Painel liberado por 2 horas.");
+      onDone();
+    },
+    onError: (e: Error) => toast.error(e.message || "Código incorreto."),
+  });
+
+  return (
+    <div className="card-ink mt-8 max-w-lg p-6">
+      <span className="inline-flex size-10 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
+        <ShieldCheck className="size-5" aria-hidden="true" />
+      </span>
+      <h2 className="mt-4 font-display text-xl">Verificação em duas etapas</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Por segurança, o painel só abre com um código enviado para{" "}
+        <strong className="text-foreground">{email ?? "o e-mail da sua conta"}</strong>. O código
+        vale por poucos minutos e libera o painel por 2 horas.
+      </p>
+
+      {!sent ? (
+        <Button
+          className="mt-5"
+          onClick={() => sendCode.mutate()}
+          disabled={sendCode.isPending}
+        >
+          {sendCode.isPending ? "Enviando..." : "Enviar código por e-mail"}
+        </Button>
+      ) : (
+        <form
+          className="mt-5 space-y-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            verifyCode.mutate();
+          }}
+        >
+          <Input
+            value={code}
+            onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            placeholder="000000"
+            aria-label="Código de 6 dígitos"
+            className="max-w-40 text-center font-display text-xl tracking-[0.4em]"
+          />
+          <div className="flex flex-wrap gap-2">
+            <Button type="submit" disabled={code.length !== 6 || verifyCode.isPending}>
+              {verifyCode.isPending ? "Verificando..." : "Liberar painel"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => sendCode.mutate()}
+              disabled={sendCode.isPending}
+            >
+              Reenviar código
+            </Button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
 
 function AdminLayout() {
   const queryClient = useQueryClient();
-  const adminQuery = useIsAdmin();
-  const isAdmin = adminQuery.data?.isAdmin === true;
+  const fetchStatus = useServerFn(adminStepUpStatus);
+  const endStepUp = useServerFn(endAdminStepUp);
+
+  const status = useQuery({
+    queryKey: ["admin-step-up"],
+    queryFn: () => fetchStatus(),
+  });
+
+  const isAdmin = status.data?.isAdmin === true;
+  const verified = status.data?.verified === true;
 
   const counters = useQuery({
     queryKey: ["admin-counters"],
-    enabled: isAdmin,
+    enabled: isAdmin && verified,
     queryFn: async () => {
       const [curation, volunteers, team] = await Promise.all([
         supabase
@@ -80,50 +178,50 @@ function AdminLayout() {
     },
   });
 
-  const claim = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase.rpc("claim_first_admin");
-      if (error) throw error;
-      return data;
+  const lock = useMutation({
+    mutationFn: () => endStepUp(),
+    onSuccess: () => {
+      toast.success("Painel bloqueado.");
+      queryClient.invalidateQueries({ queryKey: ["admin-step-up"] });
     },
-    onSuccess: (ok) => {
-      if (ok) {
-        toast.success("Você agora é administrador.");
-        queryClient.invalidateQueries({ queryKey: ["is-admin"] });
-      } else {
-        toast.error("Já existe um administrador nesta plataforma.");
-      }
-    },
-    onError: () => toast.error("Não foi possível assumir a administração."),
   });
 
   return (
     <PageShell>
       <section className="mx-auto w-full max-w-6xl px-4 py-12">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">Administração</p>
-        <h1 className="mt-2 text-3xl font-semibold">Painel do DoaAqui</h1>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <h1 className="font-display text-3xl">Painel do DoaAqui</h1>
+          {status.data?.isOwner && (
+            <span className="border-2 border-foreground bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary-foreground">
+              Dono
+            </span>
+          )}
+        </div>
 
-        {adminQuery.isLoading && <Skeleton className="mt-8 h-40 w-full" />}
+        {status.isLoading && <Skeleton className="mt-8 h-40 w-full" />}
 
-        {adminQuery.isSuccess && !adminQuery.data.isAdmin && (
-          <div className="mt-8 rounded-xl border border-border bg-surface p-6">
-            <h2 className="text-lg font-semibold">Acesso restrito</h2>
+        {status.isSuccess && !isAdmin && (
+          <div className="card-ink mt-8 max-w-lg p-6">
+            <h2 className="font-display text-xl">Acesso restrito</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Esta área é só para administradores. Se você é a pessoa responsável pela plataforma e
-              ainda não há nenhum administrador, assuma a administração abaixo.
+              Esta área é exclusiva da equipe autorizada do DoaAqui. O acesso é concedido apenas
+              pelo dono da plataforma — não é possível liberá-lo por conta própria.
             </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Depois disso você verá as abas de Pontos, Usuários e Categorias — e poderá importar
-              novos pontos reais do Google Maps informando a cidade na aba Pontos.
-            </p>
-            <Button className="mt-4" onClick={() => claim.mutate()} disabled={claim.isPending}>
-              {claim.isPending ? "Verificando..." : "Assumir administração"}
+            <Button asChild variant="outline" className="mt-4">
+              <Link to="/">Voltar ao início</Link>
             </Button>
-
           </div>
         )}
 
-        {adminQuery.isSuccess && adminQuery.data.isAdmin && (
+        {status.isSuccess && isAdmin && !verified && (
+          <StepUpForm
+            email={status.data.email}
+            onDone={() => queryClient.invalidateQueries({ queryKey: ["admin-step-up"] })}
+          />
+        )}
+
+        {status.isSuccess && isAdmin && verified && (
           <>
             <nav
               className="mt-6 flex flex-wrap gap-2 border-b-2 border-foreground pb-4"
@@ -145,6 +243,14 @@ function AdminLayout() {
                   </Link>
                 );
               })}
+              <button
+                type="button"
+                onClick={() => lock.mutate()}
+                disabled={lock.isPending}
+                className="ml-auto inline-flex items-center gap-2 border-2 border-border px-4 py-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:bg-secondary"
+              >
+                Bloquear painel
+              </button>
             </nav>
             <div className="mt-8">
               <Outlet />

@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertStepUp } from "@/lib/admin-2fa.functions";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -29,6 +30,12 @@ async function assertAdmin(supabase: any) {
   if (data !== true) throw new Error("Acesso restrito a administradores.");
 }
 
+/** Só o dono da plataforma pode conceder ou revogar acesso administrativo. */
+async function assertOwner(supabase: any, userId: string) {
+  const { data } = await supabase.rpc("is_owner", { _user_id: userId });
+  if (data !== true) throw new Error("Apenas o dono da plataforma pode alterar acessos.");
+}
+
 
 export type AdminUserRow = {
   id: string;
@@ -37,7 +44,9 @@ export type AdminUserRow = {
   default_city: string | null;
   created_at: string;
   is_admin: boolean;
+  is_owner: boolean;
 };
+
 
 export const listPlatformUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -50,13 +59,22 @@ export const listPlatformUsers = createServerFn({ method: "GET" })
         .select("id, full_name, role, default_city, created_at")
         .order("created_at", { ascending: false })
         .limit(300),
-      context.supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
+      context.supabase.from("user_roles").select("user_id, role"),
     ]);
 
     if (error) throw new Error("Não foi possível carregar os usuários.");
 
-    const adminIds = new Set((roles ?? []).map((r) => r.user_id));
-    return (profiles ?? []).map((p) => ({ ...p, is_admin: adminIds.has(p.id) }));
+    const adminIds = new Set(
+      (roles ?? []).filter((r) => r.role === "admin").map((r) => r.user_id),
+    );
+    const ownerIds = new Set(
+      (roles ?? []).filter((r) => (r.role as string) === "owner").map((r) => r.user_id),
+    );
+    return (profiles ?? []).map((p) => ({
+      ...p,
+      is_admin: adminIds.has(p.id) || ownerIds.has(p.id),
+      is_owner: ownerIds.has(p.id),
+    }));
   });
 
 const roleSchema = z.object({
@@ -69,6 +87,8 @@ export const setProfileRole = createServerFn({ method: "POST" })
   .inputValidator((data) => roleSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase);
+    await assertStepUp(context.userId);
+
 
     const { error } = await context.supabase
       .from("profiles")
@@ -87,16 +107,25 @@ const adminAccessSchema = z.object({
   grant: z.boolean(),
 });
 
-/** Concede ou revoga acesso administrativo. Só administradores podem chamar. */
+/** Concede ou revoga acesso administrativo. Só o dono da plataforma pode chamar. */
 export const setAdminAccess = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => adminAccessSchema.parse(data))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase);
+    await assertOwner(context.supabase, context.userId);
+    await assertStepUp(context.userId);
 
     if (!data.grant && data.user_id === context.userId) {
       throw new Error("Você não pode remover seu próprio acesso administrativo.");
     }
+
+    const { data: targetIsOwner } = await context.supabase.rpc("is_owner", {
+      _user_id: data.user_id,
+    });
+    if (targetIsOwner === true) {
+      throw new Error("O acesso do dono da plataforma não pode ser alterado.");
+    }
+
 
     if (data.grant) {
       const { error } = await context.supabase
