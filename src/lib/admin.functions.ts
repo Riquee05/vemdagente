@@ -59,7 +59,7 @@ const QUERY_GROUPS: { kind: "doacao" | "apoio"; queries: string[]; cats: string[
       "casa de apoio a crianças carentes",
       "abrigo de idosos filantrópico",
     ],
-    cats: ["apoio", "dinheiro"],
+    cats: ["apoio", "doacao-financeira"],
   },
 ];
 
