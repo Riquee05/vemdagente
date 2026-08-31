@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DoarRouteImport } from './routes/doar'
+import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const DoarRoute = DoarRouteImport.update({
   path: '/doar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PedirAjudaRoute = PedirAjudaRouteImport.update({
+  id: '/pedir-ajuda',
+  path: '/pedir-ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/doar': typeof DoarRoute
+  '/pedir-ajuda': typeof PedirAjudaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/doar': typeof DoarRoute
+  '/pedir-ajuda': typeof PedirAjudaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/doar': typeof DoarRoute
+  '/pedir-ajuda': typeof PedirAjudaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/doar'
+  fullPaths: '/' | '/doar' | '/pedir-ajuda'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/doar'
-  id: '__root__' | '/' | '/doar'
+  to: '/' | '/doar' | '/pedir-ajuda'
+  id: '__root__' | '/' | '/doar' | '/pedir-ajuda'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DoarRoute: typeof DoarRoute
+  PedirAjudaRoute: typeof PedirAjudaRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DoarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pedir-ajuda': {
+      id: '/pedir-ajuda'
+      path: '/pedir-ajuda'
+      fullPath: '/pedir-ajuda'
+      preLoaderRoute: typeof PedirAjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DoarRoute: DoarRoute,
+  PedirAjudaRoute: PedirAjudaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
