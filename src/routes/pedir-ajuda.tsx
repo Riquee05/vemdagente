@@ -169,11 +169,13 @@ function PedirAjudaPage() {
                 <SelectValue placeholder="Escolha uma opção" />
               </SelectTrigger>
               <SelectContent>
-                {(categories.data ?? []).map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.label}
-                  </SelectItem>
-                ))}
+                {(categories.data ?? [])
+                  .filter((category) => category.kind !== "money")
+                  .map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
