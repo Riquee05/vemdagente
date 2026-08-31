@@ -3,7 +3,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import heroImage from "@/assets/hero-doaaqui.jpg";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const Route = createFileRoute("/")({
   head: () => ({
