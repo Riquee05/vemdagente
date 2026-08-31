@@ -25,7 +25,9 @@ import { Route as PontosPointIdRouteImport } from './routes/pontos.$pointId'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_authenticated/admin.categorias'
 import { Route as AuthenticatedAdminCuradoriaRouteImport } from './routes/_authenticated/admin.curadoria'
+import { Route as AuthenticatedAdminTimeRouteImport } from './routes/_authenticated/admin.time'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
+import { Route as AuthenticatedAdminVisaoGeralRouteImport } from './routes/_authenticated/admin.visao-geral'
 import { Route as AuthenticatedAdminVoluntariosRouteImport } from './routes/_authenticated/admin.voluntarios'
 
 const IndexRoute = IndexRouteImport.update({
@@ -110,10 +112,21 @@ const AuthenticatedAdminCuradoriaRoute =
     path: '/curadoria',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminTimeRoute = AuthenticatedAdminTimeRouteImport.update({
+  id: '/time',
+  path: '/time',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminUsuariosRoute =
   AuthenticatedAdminUsuariosRouteImport.update({
     id: '/usuarios',
     path: '/usuarios',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminVisaoGeralRoute =
+  AuthenticatedAdminVisaoGeralRouteImport.update({
+    id: '/visao-geral',
+    path: '/visao-geral',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminVoluntariosRoute =
@@ -138,7 +151,9 @@ export interface FileRoutesByFullPath {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
+  '/admin/time': typeof AuthenticatedAdminTimeRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/admin/visao-geral': typeof AuthenticatedAdminVisaoGeralRoute
   '/admin/voluntarios': typeof AuthenticatedAdminVoluntariosRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
@@ -156,7 +171,9 @@ export interface FileRoutesByTo {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
+  '/admin/time': typeof AuthenticatedAdminTimeRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/admin/visao-geral': typeof AuthenticatedAdminVisaoGeralRoute
   '/admin/voluntarios': typeof AuthenticatedAdminVoluntariosRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
@@ -177,7 +194,9 @@ export interface FileRoutesById {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/_authenticated/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
+  '/_authenticated/admin/time': typeof AuthenticatedAdminTimeRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/_authenticated/admin/visao-geral': typeof AuthenticatedAdminVisaoGeralRoute
   '/_authenticated/admin/voluntarios': typeof AuthenticatedAdminVoluntariosRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
@@ -198,7 +217,9 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/admin/categorias'
     | '/admin/curadoria'
+    | '/admin/time'
     | '/admin/usuarios'
+    | '/admin/visao-geral'
     | '/admin/voluntarios'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -216,7 +237,9 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/admin/categorias'
     | '/admin/curadoria'
+    | '/admin/time'
     | '/admin/usuarios'
+    | '/admin/visao-geral'
     | '/admin/voluntarios'
     | '/admin'
   id:
@@ -236,7 +259,9 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/_authenticated/admin/categorias'
     | '/_authenticated/admin/curadoria'
+    | '/_authenticated/admin/time'
     | '/_authenticated/admin/usuarios'
+    | '/_authenticated/admin/visao-geral'
     | '/_authenticated/admin/voluntarios'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
@@ -367,11 +392,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCuradoriaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/time': {
+      id: '/_authenticated/admin/time'
+      path: '/time'
+      fullPath: '/admin/time'
+      preLoaderRoute: typeof AuthenticatedAdminTimeRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/usuarios': {
       id: '/_authenticated/admin/usuarios'
       path: '/usuarios'
       fullPath: '/admin/usuarios'
       preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/visao-geral': {
+      id: '/_authenticated/admin/visao-geral'
+      path: '/visao-geral'
+      fullPath: '/admin/visao-geral'
+      preLoaderRoute: typeof AuthenticatedAdminVisaoGeralRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/voluntarios': {
@@ -387,7 +426,9 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminCategoriasRoute: typeof AuthenticatedAdminCategoriasRoute
   AuthenticatedAdminCuradoriaRoute: typeof AuthenticatedAdminCuradoriaRoute
+  AuthenticatedAdminTimeRoute: typeof AuthenticatedAdminTimeRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
+  AuthenticatedAdminVisaoGeralRoute: typeof AuthenticatedAdminVisaoGeralRoute
   AuthenticatedAdminVoluntariosRoute: typeof AuthenticatedAdminVoluntariosRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -395,7 +436,9 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminCategoriasRoute: AuthenticatedAdminCategoriasRoute,
   AuthenticatedAdminCuradoriaRoute: AuthenticatedAdminCuradoriaRoute,
+  AuthenticatedAdminTimeRoute: AuthenticatedAdminTimeRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
+  AuthenticatedAdminVisaoGeralRoute: AuthenticatedAdminVisaoGeralRoute,
   AuthenticatedAdminVoluntariosRoute: AuthenticatedAdminVoluntariosRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }

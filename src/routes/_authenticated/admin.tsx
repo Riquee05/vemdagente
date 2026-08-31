@@ -26,11 +26,13 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 const tabs = [
-  { to: "/admin", label: "Pontos", exact: true },
-  { to: "/admin/curadoria", label: "Curadoria", exact: false },
-  { to: "/admin/usuarios", label: "Usuários", exact: false },
-  { to: "/admin/categorias", label: "Categorias", exact: false },
-  { to: "/admin/voluntarios", label: "Voluntários", exact: false },
+  { to: "/admin/visao-geral", label: "Visão geral", exact: false, counter: null },
+  { to: "/admin", label: "Pontos", exact: true, counter: null },
+  { to: "/admin/curadoria", label: "Curadoria", exact: false, counter: "curation" },
+  { to: "/admin/voluntarios", label: "Voluntários", exact: false, counter: "volunteers" },
+  { to: "/admin/time", label: "Time", exact: false, counter: "team" },
+  { to: "/admin/usuarios", label: "Usuários", exact: false, counter: null },
+  { to: "/admin/categorias", label: "Categorias", exact: false, counter: null },
 ] as const;
 
 export function useIsAdmin() {
@@ -52,6 +54,33 @@ export function useIsAdmin() {
 function AdminLayout() {
   const queryClient = useQueryClient();
   const adminQuery = useIsAdmin();
+  const isAdmin = adminQuery.data?.isAdmin === true;
+
+  const counters = useQuery({
+    queryKey: ["admin-counters"],
+    enabled: isAdmin,
+    queryFn: async () => {
+      const [curation, volunteers, team] = await Promise.all([
+        supabase
+          .from("collection_points")
+          .select("id", { count: "exact", head: true })
+          .eq("curation_status", "pending"),
+        supabase
+          .from("volunteer_applications")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
+        supabase
+          .from("team_members")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "active"),
+      ]);
+      return {
+        curation: curation.count ?? 0,
+        volunteers: volunteers.count ?? 0,
+        team: team.count ?? 0,
+      } as Record<string, number>;
+    },
+  });
 
   const claim = useMutation({
     mutationFn: async () => {
@@ -98,17 +127,26 @@ function AdminLayout() {
 
         {adminQuery.isSuccess && adminQuery.data.isAdmin && (
           <>
-            <nav className="mt-6 flex flex-wrap gap-2" aria-label="Seções da administração">
-              {tabs.map((tab) => (
-                <Link
-                  key={tab.to}
-                  to={tab.to}
-                  activeOptions={{ exact: tab.exact }}
-                  className="rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary data-[status=active]:border-primary data-[status=active]:bg-primary data-[status=active]:text-primary-foreground"
-                >
-                  {tab.label}
-                </Link>
-              ))}
+            <nav
+              className="mt-6 flex flex-wrap gap-2 border-b-2 border-foreground pb-4"
+              aria-label="Seções da administração"
+            >
+              {tabs.map((tab) => {
+                const count = tab.counter ? counters.data?.[tab.counter] : undefined;
+                return (
+                  <Link
+                    key={tab.to}
+                    to={tab.to}
+                    activeOptions={{ exact: tab.exact }}
+                    className="inline-flex items-center gap-2 border-2 border-border px-4 py-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:bg-secondary data-[status=active]:border-foreground data-[status=active]:bg-foreground data-[status=active]:text-background"
+                  >
+                    {tab.label}
+                    {typeof count === "number" && count > 0 && (
+                      <span className="border border-current px-1.5 text-[10px] font-bold">{count}</span>
+                    )}
+                  </Link>
+                );
+              })}
             </nav>
             <div className="mt-8">
               <Outlet />
