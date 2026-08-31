@@ -19,13 +19,13 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b-2 border-foreground bg-background/92 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+          <span className="flex size-9 -rotate-3 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
             <HeartHandshake className="size-5" aria-hidden="true" />
           </span>
-          <span className="font-display text-lg font-semibold tracking-tight">DoaAqui</span>
+          <span className="font-display text-lg tracking-tight">DoaAqui</span>
         </Link>
 
         <nav aria-label="Navegação principal" className="hidden items-center gap-1 md:flex">
@@ -33,7 +33,7 @@ export function SiteHeader() {
             <Link
               key={item.to}
               to={item.to}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground data-[status=active]:text-foreground"
+              className="px-3 py-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide transition-colors hover:text-primary data-[status=active]:text-foreground"
             >
               {item.label}
             </Link>
