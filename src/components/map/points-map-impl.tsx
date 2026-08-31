@@ -73,7 +73,7 @@ export default function PointsMapImpl({
           key={point.id}
           position={[point.lat, point.lng]}
           icon={pinIcon(selectedId === point.id)}
-          eventHandlers={onSelect ? { click: () => onSelect(point.id) } : undefined}
+          {...(onSelect ? { eventHandlers: { click: () => onSelect(point.id) } } : {})}
         >
           <Popup>
             <strong>{point.name}</strong>
