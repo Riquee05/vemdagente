@@ -47,9 +47,9 @@ export async function searchNearbyPoints(params: {
   const { data, error } = await supabase.rpc("search_nearby_points", {
     p_lat: params.lat,
     p_lng: params.lng,
-    p_category_id: params.categoryId ?? undefined,
     p_radius_km: params.radiusKm ?? 15,
     p_limit: 60,
+    ...(params.categoryId ? { p_category_id: params.categoryId } : {}),
   });
   if (error) throw error;
   return (data ?? []) as NearbyPoint[];
