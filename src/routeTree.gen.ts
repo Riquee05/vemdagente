@@ -23,6 +23,7 @@ import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authentic
 import { Route as PontosPointIdRouteImport } from './routes/pontos.$pointId'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_authenticated/admin.categorias'
+import { Route as AuthenticatedAdminCuradoriaRouteImport } from './routes/_authenticated/admin.curadoria'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 
 const IndexRoute = IndexRouteImport.update({
@@ -96,6 +97,12 @@ const AuthenticatedAdminCategoriasRoute =
     path: '/categorias',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminCuradoriaRoute =
+  AuthenticatedAdminCuradoriaRouteImport.update({
+    id: '/curadoria',
+    path: '/curadoria',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminUsuariosRoute =
   AuthenticatedAdminUsuariosRouteImport.update({
     id: '/usuarios',
@@ -116,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
@@ -131,6 +139,7 @@ export interface FileRoutesByTo {
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
@@ -149,6 +158,7 @@ export interface FileRoutesById {
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/_authenticated/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/pontos/$pointId'
     | '/admin/categorias'
+    | '/admin/curadoria'
     | '/admin/usuarios'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/pontos/$pointId'
     | '/admin/categorias'
+    | '/admin/curadoria'
     | '/admin/usuarios'
     | '/admin'
   id:
@@ -199,6 +211,7 @@ export interface FileRouteTypes {
     | '/_authenticated/minha-conta'
     | '/pontos/$pointId'
     | '/_authenticated/admin/categorias'
+    | '/_authenticated/admin/curadoria'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
@@ -314,6 +327,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCategoriasRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/curadoria': {
+      id: '/_authenticated/admin/curadoria'
+      path: '/curadoria'
+      fullPath: '/admin/curadoria'
+      preLoaderRoute: typeof AuthenticatedAdminCuradoriaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/usuarios': {
       id: '/_authenticated/admin/usuarios'
       path: '/usuarios'
@@ -326,12 +346,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminCategoriasRoute: typeof AuthenticatedAdminCategoriasRoute
+  AuthenticatedAdminCuradoriaRoute: typeof AuthenticatedAdminCuradoriaRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminCategoriasRoute: AuthenticatedAdminCategoriasRoute,
+  AuthenticatedAdminCuradoriaRoute: AuthenticatedAdminCuradoriaRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
