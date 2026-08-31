@@ -107,16 +107,25 @@ const adminAccessSchema = z.object({
   grant: z.boolean(),
 });
 
-/** Concede ou revoga acesso administrativo. Só administradores podem chamar. */
+/** Concede ou revoga acesso administrativo. Só o dono da plataforma pode chamar. */
 export const setAdminAccess = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => adminAccessSchema.parse(data))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase);
+    await assertOwner(context.supabase, context.userId);
+    await assertStepUp(context.userId);
 
     if (!data.grant && data.user_id === context.userId) {
       throw new Error("Você não pode remover seu próprio acesso administrativo.");
     }
+
+    const { data: targetIsOwner } = await context.supabase.rpc("is_owner", {
+      _user_id: data.user_id,
+    });
+    if (targetIsOwner === true) {
+      throw new Error("O acesso do dono da plataforma não pode ser alterado.");
+    }
+
 
     if (data.grant) {
       const { error } = await context.supabase
