@@ -22,6 +22,7 @@ export function PointsMap(props: {
   onSelect?: (id: string) => void;
   onPick?: (lat: number, lng: number) => void;
   selectedId?: string | null;
+  fitBounds?: boolean;
   className?: string;
 }) {
   const { className, ...rest } = props;
