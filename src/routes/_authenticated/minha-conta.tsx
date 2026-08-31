@@ -176,28 +176,21 @@ function MinhaContaPage() {
 
                 <div className="space-y-1.5">
                   <Label htmlFor="role">Como você usa o DoaAqui</Label>
-                  <Select
-                    value={role}
-                    onValueChange={(value) => setRole(value as Role)}
-                    disabled={role === "admin"}
-                  >
+                  <Select value={role} onValueChange={(value) => setRole(value as Role)}>
                     <SelectTrigger id="role">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="donor">{roleLabels.donor}</SelectItem>
                       <SelectItem value="person_in_need">{roleLabels.person_in_need}</SelectItem>
-                      {role === "admin" && (
-                        <SelectItem value="admin">{roleLabels.admin}</SelectItem>
-                      )}
                     </SelectContent>
                   </Select>
-                  {role === "admin" && (
-                    <p className="text-xs text-muted-foreground">
-                      O papel de administrador é definido pela curadoria do projeto.
-                    </p>
-                  )}
+                  <p className="text-xs text-muted-foreground">
+                    O acesso administrativo é concedido pela equipe do projeto e não pode ser
+                    escolhido aqui.
+                  </p>
                 </div>
+
 
                 <div className="flex flex-wrap gap-3">
                   <Button type="submit" disabled={save.isPending}>
