@@ -106,42 +106,51 @@ export const importGooglePoints = createServerFn({ method: "POST" })
     const browserKey = process.env["GOOGLE_MAPS_BROWSER_KEY"];
     if (!lovableKey || !connectionKey) throw new Error("Conexão do Google Maps indisponível.");
 
-    const queries = data.queries ?? DEFAULT_QUERIES;
+    const preset = data.preset ?? "all";
     const maxPerQuery = data.maxPerQuery ?? 10;
 
-    const found = new Map<string, GooglePlace>();
+    const groups = data.queries
+      ? [{ kind: "doacao" as const, queries: data.queries, cats: [] as string[] }]
+      : QUERY_GROUPS.filter((group) => preset === "all" || group.kind === preset);
 
-    for (const q of queries) {
-      const response = await fetch(`${GATEWAY_URL}/places/v1/places:searchText`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${lovableKey}`,
-          "X-Connection-Api-Key": connectionKey,
-          "Content-Type": "application/json",
-          "X-Goog-FieldMask":
-            "places.id,places.displayName,places.formattedAddress,places.location,places.nationalPhoneNumber,places.websiteUri,places.regularOpeningHours.weekdayDescriptions,places.photos,places.addressComponents",
-        },
-        body: JSON.stringify({
-          textQuery: `${q} em ${data.city}`,
-          languageCode: "pt-BR",
-          regionCode: "BR",
-          maxResultCount: maxPerQuery,
-        }),
-      });
+    const found = new Map<string, { place: GooglePlace; cats: Set<string> }>();
 
-      if (response.status === 403) {
-        const body = await response.text();
-        throw new Error(`Google Maps negou a requisição (403): ${body}`);
-      }
-      if (!response.ok) {
-        const body = await response.text();
-        throw new Error(`Falha na busca do Google Maps [${response.status}]: ${body}`);
-      }
+    for (const group of groups) {
+      for (const q of group.queries) {
+        const response = await fetch(`${GATEWAY_URL}/places/v1/places:searchText`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${lovableKey}`,
+            "X-Connection-Api-Key": connectionKey,
+            "Content-Type": "application/json",
+            "X-Goog-FieldMask":
+              "places.id,places.displayName,places.formattedAddress,places.location,places.nationalPhoneNumber,places.websiteUri,places.regularOpeningHours.weekdayDescriptions,places.photos,places.addressComponents,places.editorialSummary",
+          },
+          body: JSON.stringify({
+            textQuery: `${q} em ${data.city}`,
+            languageCode: "pt-BR",
+            regionCode: "BR",
+            maxResultCount: maxPerQuery,
+          }),
+        });
 
-      const payload = (await response.json()) as { places?: GooglePlace[] };
-      for (const place of payload.places ?? []) {
-        const placeName = place.displayName?.text ?? "";
-        if (place.id && place.location && isRelevant(placeName)) found.set(place.id, place);
+        if (response.status === 403) {
+          const body = await response.text();
+          throw new Error(`Google Maps negou a requisição (403): ${body}`);
+        }
+        if (!response.ok) {
+          const body = await response.text();
+          throw new Error(`Falha na busca do Google Maps [${response.status}]: ${body}`);
+        }
+
+        const payload = (await response.json()) as { places?: GooglePlace[] };
+        for (const place of payload.places ?? []) {
+          const placeName = place.displayName?.text ?? "";
+          if (!place.id || !place.location || !isRelevant(placeName)) continue;
+          const entry = found.get(place.id) ?? { place, cats: new Set<string>() };
+          group.cats.forEach((slug) => entry.cats.add(slug));
+          found.set(place.id, entry);
+        }
       }
     }
 
@@ -154,45 +163,61 @@ export const importGooglePoints = createServerFn({ method: "POST" })
       .in("google_place_id", ids.length ? ids : ["none"]);
     const known = new Set((existing ?? []).map((row) => row.google_place_id));
 
-    const rows = [...found.values()]
-      .filter((place) => !known.has(place.id))
-      .map((place) => {
-        const components = place.addressComponents ?? [];
-        const state =
-          components.find((c) => c.types.includes("administrative_area_level_1"))?.shortText ?? null;
-        const city =
-          components.find((c) => c.types.includes("administrative_area_level_2"))?.longText ??
-          data.city;
-        const photoName = place.photos?.[0]?.name;
-        return {
-          name: place.displayName?.text ?? "Ponto de coleta",
-          address: place.formattedAddress ?? null,
-          city,
-          state,
-          lat: place.location!.latitude,
-          lng: place.location!.longitude,
-          phone: place.nationalPhoneNumber ?? null,
-          website: place.websiteUri ?? null,
-          opening_hours: place.regularOpeningHours?.weekdayDescriptions?.join(" · ") ?? null,
-          photo_url:
-            photoName && browserKey
-              ? `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=900&key=${browserKey}`
-              : null,
-          google_place_id: place.id,
-          source: "google_maps",
-          curation_status: "verified",
-          is_active: true,
-        };
-      });
+    const pending = [...found.values()].filter((entry) => !known.has(entry.place.id));
+
+    const rows = pending.map(({ place }) => {
+      const components = place.addressComponents ?? [];
+      const state =
+        components.find((c) => (c.types ?? []).includes("administrative_area_level_1"))?.shortText ??
+        null;
+      const city =
+        components.find((c) => (c.types ?? []).includes("administrative_area_level_2"))?.longText ??
+        components.find((c) => (c.types ?? []).includes("locality"))?.longText ??
+        data.city;
+      const photoName = place.photos?.[0]?.name;
+      return {
+        name: place.displayName?.text ?? "Ponto de coleta",
+        description: place.editorialSummary?.text ?? null,
+        address: place.formattedAddress ?? null,
+        city,
+        state,
+        lat: place.location!.latitude,
+        lng: place.location!.longitude,
+        phone: place.nationalPhoneNumber ?? null,
+        website: place.websiteUri ?? null,
+        opening_hours: place.regularOpeningHours?.weekdayDescriptions?.join(" · ") ?? null,
+        photo_url:
+          photoName && browserKey
+            ? `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=900&key=${browserKey}`
+            : null,
+        google_place_id: place.id,
+        source: "google_maps",
+        curation_status: "verified",
+        is_active: true,
+      };
+    });
 
     let created = 0;
     if (rows.length) {
       const { data: inserted, error } = await supabaseAdmin
         .from("collection_points")
         .insert(rows)
-        .select("id");
+        .select("id, google_place_id");
       if (error) throw new Error(error.message);
       created = inserted?.length ?? 0;
+
+      // Vincula as categorias que cada grupo de busca indica.
+      const { data: categories } = await supabaseAdmin.from("item_categories").select("id, slug");
+      const bySlug = new Map((categories ?? []).map((c) => [c.slug, c.id]));
+      const links: { point_id: string; category_id: string }[] = [];
+      for (const row of inserted ?? []) {
+        const entry = found.get(row.google_place_id as string);
+        for (const slug of entry?.cats ?? []) {
+          const categoryId = bySlug.get(slug);
+          if (categoryId) links.push({ point_id: row.id, category_id: categoryId });
+        }
+      }
+      if (links.length) await supabaseAdmin.from("point_accepted_items").insert(links);
     }
 
     await supabaseAdmin.from("point_import_logs").insert({
