@@ -25,10 +25,32 @@ type GooglePlace = {
 
 const DEFAULT_QUERIES = [
   "ONG doação de roupas",
-  "ponto de coleta de doações",
+  "ponto de coleta de doações para pessoas carentes",
   "instituição de caridade",
   "banco de alimentos",
 ];
+
+/** Palavras que indicam logística/comércio, não doação — descartadas na importação. */
+const BLOCKED_TERMS = [
+  "shopee",
+  "correios",
+  "mercado livre",
+  "melhor envio",
+  "jadlog",
+  "loggi",
+  "amazon",
+  "sequoia",
+  "total express",
+  "reciclagem",
+  "ferro velho",
+  "sucata",
+];
+
+function isRelevant(name: string) {
+  const lower = name.toLowerCase();
+  return !BLOCKED_TERMS.some((term) => lower.includes(term));
+}
+
 
 /** Importa pontos reais do Google Maps (Places API New) — apenas administradores. */
 export const importGooglePoints = createServerFn({ method: "POST" })
