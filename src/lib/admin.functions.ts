@@ -103,7 +103,8 @@ export const importGooglePoints = createServerFn({ method: "POST" })
 
       const payload = (await response.json()) as { places?: GooglePlace[] };
       for (const place of payload.places ?? []) {
-        if (place.id && place.location) found.set(place.id, place);
+        const placeName = place.displayName?.text ?? "";
+        if (place.id && place.location && isRelevant(placeName)) found.set(place.id, place);
       }
     }
 
