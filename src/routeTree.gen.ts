@@ -17,6 +17,7 @@ import { Route as DoarRouteImport } from './routes/doar'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
+import { Route as VoluntariosRouteImport } from './routes/voluntarios'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCadastrarPontoRouteImport } from './routes/_authenticated/cadastrar-ponto'
 import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
@@ -25,6 +26,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_authenticated/admin.categorias'
 import { Route as AuthenticatedAdminCuradoriaRouteImport } from './routes/_authenticated/admin.curadoria'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
+import { Route as AuthenticatedAdminVoluntariosRouteImport } from './routes/_authenticated/admin.voluntarios'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -63,6 +65,11 @@ const PedirAjudaRoute = PedirAjudaRouteImport.update({
 const PontosRoute = PontosRouteImport.update({
   id: '/pontos',
   path: '/pontos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VoluntariosRoute = VoluntariosRouteImport.update({
+  id: '/voluntarios',
+  path: '/voluntarios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -109,6 +116,12 @@ const AuthenticatedAdminUsuariosRoute =
     path: '/usuarios',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminVoluntariosRoute =
+  AuthenticatedAdminVoluntariosRouteImport.update({
+    id: '/voluntarios',
+    path: '/voluntarios',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -118,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/voluntarios': typeof VoluntariosRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
@@ -125,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/admin/voluntarios': typeof AuthenticatedAdminVoluntariosRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -135,12 +150,14 @@ export interface FileRoutesByTo {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/voluntarios': typeof VoluntariosRoute
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/admin/voluntarios': typeof AuthenticatedAdminVoluntariosRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -153,6 +170,7 @@ export interface FileRoutesById {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/voluntarios': typeof VoluntariosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
@@ -160,6 +178,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/_authenticated/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/_authenticated/admin/voluntarios': typeof AuthenticatedAdminVoluntariosRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -172,6 +191,7 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/voluntarios'
     | '/admin'
     | '/cadastrar-ponto'
     | '/minha-conta'
@@ -179,6 +199,7 @@ export interface FileRouteTypes {
     | '/admin/categorias'
     | '/admin/curadoria'
     | '/admin/usuarios'
+    | '/admin/voluntarios'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -189,12 +210,14 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/voluntarios'
     | '/cadastrar-ponto'
     | '/minha-conta'
     | '/pontos/$pointId'
     | '/admin/categorias'
     | '/admin/curadoria'
     | '/admin/usuarios'
+    | '/admin/voluntarios'
     | '/admin'
   id:
     | '__root__'
@@ -206,6 +229,7 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/voluntarios'
     | '/_authenticated/admin'
     | '/_authenticated/cadastrar-ponto'
     | '/_authenticated/minha-conta'
@@ -213,6 +237,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/categorias'
     | '/_authenticated/admin/curadoria'
     | '/_authenticated/admin/usuarios'
+    | '/_authenticated/admin/voluntarios'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -225,6 +250,7 @@ export interface RootRouteChildren {
   EntrarRoute: typeof EntrarRoute
   PedirAjudaRoute: typeof PedirAjudaRoute
   PontosRoute: typeof PontosRouteWithChildren
+  VoluntariosRoute: typeof VoluntariosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -285,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PontosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/voluntarios': {
+      id: '/voluntarios'
+      path: '/voluntarios'
+      fullPath: '/voluntarios'
+      preLoaderRoute: typeof VoluntariosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -341,6 +374,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/voluntarios': {
+      id: '/_authenticated/admin/voluntarios'
+      path: '/voluntarios'
+      fullPath: '/admin/voluntarios'
+      preLoaderRoute: typeof AuthenticatedAdminVoluntariosRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
@@ -348,6 +388,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminCategoriasRoute: typeof AuthenticatedAdminCategoriasRoute
   AuthenticatedAdminCuradoriaRoute: typeof AuthenticatedAdminCuradoriaRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
+  AuthenticatedAdminVoluntariosRoute: typeof AuthenticatedAdminVoluntariosRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -355,6 +396,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminCategoriasRoute: AuthenticatedAdminCategoriasRoute,
   AuthenticatedAdminCuradoriaRoute: AuthenticatedAdminCuradoriaRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
+  AuthenticatedAdminVoluntariosRoute: AuthenticatedAdminVoluntariosRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
 }
 
@@ -396,6 +438,7 @@ const rootRouteChildren: RootRouteChildren = {
   EntrarRoute: EntrarRoute,
   PedirAjudaRoute: PedirAjudaRoute,
   PontosRoute: PontosRouteWithChildren,
+  VoluntariosRoute: VoluntariosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
