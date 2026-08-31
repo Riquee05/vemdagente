@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { geocodeAddress, getBrowserLocation } from "@/lib/geocode";
-import { fetchCategories, PHOTO_BUCKET } from "@/lib/points";
+import { fetchCategories, fetchCauses, PHOTO_BUCKET } from "@/lib/points";
 
 export const Route = createFileRoute("/_authenticated/cadastrar-ponto")({
   head: () => ({
@@ -40,6 +40,7 @@ const DEFAULT_CENTER: [number, number] = [-23.5505, -46.6333];
 function CadastrarPontoPage() {
   const navigate = useNavigate();
   const categories = useQuery({ queryKey: ["item-categories"], queryFn: fetchCategories });
+  const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
 
   const [form, setForm] = useState({
     name: "",
@@ -55,6 +56,7 @@ function CadastrarPontoPage() {
   });
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [accepted, setAccepted] = useState<string[]>([]);
+  const [selectedCauses, setSelectedCauses] = useState<string[]>([]);
   const [photo, setPhoto] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -64,6 +66,12 @@ function CadastrarPontoPage() {
 
   function toggleCategory(id: string) {
     setAccepted((previous) =>
+      previous.includes(id) ? previous.filter((item) => item !== id) : [...previous, id],
+    );
+  }
+
+  function toggleCause(id: string) {
+    setSelectedCauses((previous) =>
       previous.includes(id) ? previous.filter((item) => item !== id) : [...previous, id],
     );
   }
@@ -155,6 +163,16 @@ function CadastrarPontoPage() {
           })),
         );
         if (itemsError) throw itemsError;
+      }
+
+      if (selectedCauses.length) {
+        const { error: causesError } = await supabase.from("point_causes").insert(
+          selectedCauses.map((causeId) => ({
+            point_id: inserted.id,
+            cause_id: causeId,
+          })),
+        );
+        if (causesError) throw causesError;
       }
 
       toast.success("Ponto enviado! Ele aparece no mapa após a curadoria aprovar.");
@@ -262,6 +280,24 @@ function CadastrarPontoPage() {
                 Posição: {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
               </p>
             ) : null}
+          </div>
+
+          <div>
+            <Label>Causas que o local atende</Label>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Marque as causas apoiadas por este ponto (animais, idosos, saúde, reciclagem…).
+            </p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {(causes.data ?? []).map((cause) => (
+                <label key={cause.id} className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    checked={selectedCauses.includes(cause.id)}
+                    onCheckedChange={() => toggleCause(cause.id)}
+                  />
+                  {cause.label}
+                </label>
+              ))}
+            </div>
           </div>
 
           <div>

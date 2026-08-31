@@ -148,6 +148,19 @@ function PointDetailPage() {
                 className="h-72 w-full overflow-hidden rounded-xl border border-border"
               />
 
+              {data.causes.length ? (
+                <>
+                  <h2 className="mt-6 text-lg font-semibold">Causas atendidas</h2>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {data.causes.map((cause) => (
+                      <Badge key={cause.id} variant="outline">
+                        {cause.label}
+                      </Badge>
+                    ))}
+                  </div>
+                </>
+              ) : null}
+
               <h2 className="mt-6 text-lg font-semibold">Aceita</h2>
               <div className="mt-2 flex flex-wrap gap-2">
                 {data.accepted.length ? (

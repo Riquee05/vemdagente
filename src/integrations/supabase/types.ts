@@ -117,6 +117,30 @@ export type Database = {
           },
         ]
       }
+      causes: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       collection_points: {
         Row: {
           address: string | null
@@ -320,6 +344,45 @@ export type Database = {
           },
           {
             foreignKeyName: "point_accepted_items_point_id_fkey"
+            columns: ["point_id"]
+            isOneToOne: false
+            referencedRelation: "collection_points"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      point_causes: {
+        Row: {
+          cause_id: string
+          created_at: string
+          id: string
+          point_id: string
+          updated_at: string
+        }
+        Insert: {
+          cause_id: string
+          created_at?: string
+          id?: string
+          point_id: string
+          updated_at?: string
+        }
+        Update: {
+          cause_id?: string
+          created_at?: string
+          id?: string
+          point_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "point_causes_cause_id_fkey"
+            columns: ["cause_id"]
+            isOneToOne: false
+            referencedRelation: "causes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "point_causes_point_id_fkey"
             columns: ["point_id"]
             isOneToOne: false
             referencedRelation: "collection_points"
