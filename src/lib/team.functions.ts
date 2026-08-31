@@ -91,11 +91,11 @@ export const updateTeamMember = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase);
 
-    const patch: Record<string, string> = {};
-    if (data.role_title !== undefined) patch["role_title"] = data.role_title;
-    if (data.status !== undefined) patch["status"] = data.status;
-    if (data.notes !== undefined) patch["notes"] = data.notes;
-    if (data.phone !== undefined) patch["phone"] = data.phone;
+    const patch: Partial<{ role_title: string; status: string; notes: string; phone: string }> = {};
+    if (data.role_title !== undefined) patch.role_title = data.role_title;
+    if (data.status !== undefined) patch.status = data.status;
+    if (data.notes !== undefined) patch.notes = data.notes;
+    if (data.phone !== undefined) patch.phone = data.phone;
 
     const { error } = await context.supabase.from("team_members").update(patch).eq("id", data.id);
     if (error) {
