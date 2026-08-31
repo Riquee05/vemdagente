@@ -102,9 +102,11 @@ const shareButtons = [
   },
 ];
 
+type MensagemId = (typeof mensagens)[number]["id"];
+
 function ApoiarPage() {
   const [copiado, setCopiado] = useState(false);
-  const [mensagemAtiva, setMensagemAtiva] = useState(mensagens[0].id);
+  const [mensagemAtiva, setMensagemAtiva] = useState<MensagemId>(mensagens[0].id);
   const textoAtivo = mensagens.find((m) => m.id === mensagemAtiva)?.texto ?? mensagens[0].texto;
 
   const copiar = async (texto: string) => {
