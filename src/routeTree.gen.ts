@@ -17,9 +17,13 @@ import { Route as DoarRouteImport } from './routes/doar'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCadastrarPontoRouteImport } from './routes/_authenticated/cadastrar-ponto'
 import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
 import { Route as PontosPointIdRouteImport } from './routes/pontos.$pointId'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_authenticated/admin.categorias'
+import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -60,6 +64,11 @@ const PontosRoute = PontosRouteImport.update({
   path: '/pontos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCadastrarPontoRoute =
   AuthenticatedCadastrarPontoRouteImport.update({
     id: '/cadastrar-ponto',
@@ -76,6 +85,23 @@ const PontosPointIdRoute = PontosPointIdRouteImport.update({
   path: '/$pointId',
   getParentRoute: () => PontosRoute,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminCategoriasRoute =
+  AuthenticatedAdminCategoriasRouteImport.update({
+    id: '/categorias',
+    path: '/categorias',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminUsuariosRoute =
+  AuthenticatedAdminUsuariosRouteImport.update({
+    id: '/usuarios',
+    path: '/usuarios',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -85,9 +111,13 @@ export interface FileRoutesByFullPath {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
+  '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,6 +130,9 @@ export interface FileRoutesByTo {
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
+  '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -111,9 +144,13 @@ export interface FileRoutesById {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
+  '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -125,9 +162,13 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/admin'
     | '/cadastrar-ponto'
     | '/minha-conta'
     | '/pontos/$pointId'
+    | '/admin/categorias'
+    | '/admin/usuarios'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,6 +181,9 @@ export interface FileRouteTypes {
     | '/cadastrar-ponto'
     | '/minha-conta'
     | '/pontos/$pointId'
+    | '/admin/categorias'
+    | '/admin/usuarios'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -150,9 +194,13 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/_authenticated/admin'
     | '/_authenticated/cadastrar-ponto'
     | '/_authenticated/minha-conta'
     | '/pontos/$pointId'
+    | '/_authenticated/admin/categorias'
+    | '/_authenticated/admin/usuarios'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -224,6 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PontosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/cadastrar-ponto': {
       id: '/_authenticated/cadastrar-ponto'
       path: '/cadastrar-ponto'
@@ -245,15 +300,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PontosPointIdRouteImport
       parentRoute: typeof PontosRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/categorias': {
+      id: '/_authenticated/admin/categorias'
+      path: '/categorias'
+      fullPath: '/admin/categorias'
+      preLoaderRoute: typeof AuthenticatedAdminCategoriasRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/usuarios': {
+      id: '/_authenticated/admin/usuarios'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminCategoriasRoute: typeof AuthenticatedAdminCategoriasRoute
+  AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminCategoriasRoute: AuthenticatedAdminCategoriasRoute,
+  AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedCadastrarPontoRoute: typeof AuthenticatedCadastrarPontoRoute
   AuthenticatedMinhaContaRoute: typeof AuthenticatedMinhaContaRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedCadastrarPontoRoute: AuthenticatedCadastrarPontoRoute,
   AuthenticatedMinhaContaRoute: AuthenticatedMinhaContaRoute,
 }
