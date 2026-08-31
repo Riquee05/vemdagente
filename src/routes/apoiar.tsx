@@ -9,7 +9,6 @@ import {
   Mail,
   Share2,
   MapPin,
-  HeartHandshake,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -270,46 +269,6 @@ function ApoiarPage() {
                   <Link to="/cadastrar-ponto">Cadastrar ponto</Link>
                 </Button>
               </div>
-            </div>
-
-            <div className="card-ink -rotate-1 bg-secondary p-8 transition-transform hover:rotate-0 md:p-10">
-              <div className="flex items-center gap-3">
-                <span className="flex size-10 rotate-3 items-center justify-center border-2 border-foreground bg-background text-foreground">
-                  <HeartHandshake className="size-5" aria-hidden="true" />
-                </span>
-                <h2 className="text-3xl">Ser voluntário</h2>
-              </div>
-              <p className="mt-5 text-muted-foreground">
-                Quer ajudar a verificar pontos, revisar cadastros ou traduzir conteúdo? Deixe seu
-                e-mail. Entraremos em contato quando a estrutura de voluntários estiver no ar.
-              </p>
-              <form
-                className="mt-6 flex flex-col gap-3 sm:flex-row"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const email = (e.currentTarget.elements.namedItem("email") as HTMLInputElement)?.value;
-                  if (email) {
-                    window.location.href = `mailto:contato@doaaqui.org?subject=Quero ser voluntário no DoaAqui&body=E-mail: ${encodeURIComponent(email)}`;
-                  }
-                }}
-              >
-                <Input
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="seu@email.com"
-                  className="border-2 border-foreground bg-background"
-                />
-                <Button
-                  type="submit"
-                  className="card-ink-primary -rotate-1 font-display uppercase transition-transform hover:rotate-0"
-                >
-                  Quero ajudar
-                </Button>
-              </form>
-              <p className="mt-3 text-xs text-muted-foreground">
-                Enquanto não temos formulário próprio, usamos seu app de e-mail.
-              </p>
             </div>
           </div>
         </div>
