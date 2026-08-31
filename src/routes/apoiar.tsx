@@ -9,7 +9,6 @@ import {
   Mail,
   Share2,
   MapPin,
-  HeartHandshake,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
