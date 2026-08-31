@@ -46,7 +46,10 @@ function AdminPontos() {
   });
 
   const update = useMutation({
-    mutationFn: async (input: { id: string; patch: Record<string, unknown> }) => {
+    mutationFn: async (input: {
+      id: string;
+      patch: { curation_status?: string; is_active?: boolean };
+    }) => {
       const { error } = await supabase
         .from("collection_points")
         .update(input.patch)
