@@ -204,7 +204,47 @@ function MinhaContaPage() {
             )}
           </CardContent>
         </Card>
+
+        <Card className="mt-8 shadow-soft">
+          <CardHeader>
+            <CardTitle>Privacidade e seus dados (LGPD)</CardTitle>
+            <CardDescription>
+              Você pode baixar uma cópia dos seus dados ou excluir sua conta a qualquer momento.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap gap-3">
+              <Button type="button" variant="outline" onClick={() => downloadData.mutate()}>
+                {downloadData.isPending ? "Preparando..." : "Baixar meus dados"}
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={removeAccount.isPending}
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Excluir sua conta apaga seu perfil e seus pedidos de ajuda. Essa ação é definitiva. Continuar?",
+                    )
+                  ) {
+                    removeAccount.mutate();
+                  }
+                }}
+              >
+                {removeAccount.isPending ? "Excluindo..." : "Excluir minha conta"}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Saiba mais em{" "}
+              <Link to="/privacidade" className="font-semibold underline">
+                Privacidade e proteção de dados
+              </Link>
+              .
+            </p>
+          </CardContent>
+        </Card>
       </section>
+
     </PageShell>
   );
 }
