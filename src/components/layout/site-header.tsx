@@ -41,6 +41,11 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {!loading && user && (
+            <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
+              <Link to="/admin">Admin</Link>
+            </Button>
+          )}
           {!loading && (
             <Button asChild variant={user ? "outline" : "default"} size="sm" className="hidden md:inline-flex">
               <Link to={user ? "/minha-conta" : "/entrar"}>{user ? "Minha conta" : "Entrar"}</Link>

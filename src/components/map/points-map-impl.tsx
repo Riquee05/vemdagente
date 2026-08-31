@@ -16,7 +16,7 @@ function pinIcon(highlight: boolean) {
   return L.divIcon({
     className: "doaaqui-pin",
     html: `<span style="display:block;width:1.5rem;height:1.5rem;border-radius:9999px;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,.35);background:${
-      highlight ? "hsl(14 72% 52%)" : "hsl(178 58% 30%)"
+      highlight ? "hsl(32 88% 52%)" : "hsl(18 72% 48%)"
     }"></span>`,
     iconSize: [24, 24],
     iconAnchor: [12, 12],
