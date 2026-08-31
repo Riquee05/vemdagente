@@ -101,6 +101,7 @@ export async function fetchPoint(id: string): Promise<PointDetail | null> {
       `id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url,
        opening_hours, donation_method, curation_status,
        point_accepted_items ( item_categories ( id, slug, label, kind ) ),
+       point_causes ( causes ( id, slug, label ) ),
        point_needs ( id, urgency, note, is_active, item_categories ( id, slug, label, kind ) )`,
     )
     .eq("id", id)
@@ -117,6 +118,9 @@ export async function fetchPoint(id: string): Promise<PointDetail | null> {
     accepted: (raw['point_accepted_items'] ?? [])
       .map((r: any) => r.item_categories)
       .filter(Boolean) as ItemCategory[],
+    causes: (raw['point_causes'] ?? [])
+      .map((r: any) => r.causes)
+      .filter(Boolean) as Cause[],
     needs: (raw['point_needs'] ?? [])
       .filter((n: any) => n.is_active && n.item_categories)
       .map((n: any) => ({
