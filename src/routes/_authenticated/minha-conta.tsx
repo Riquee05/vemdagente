@@ -96,6 +96,36 @@ function MinhaContaPage() {
     onError: () => toast.error("Não conseguimos salvar agora. Tente de novo."),
   });
 
+  const runExport = useServerFn(exportMyData);
+  const runDelete = useServerFn(deleteMyAccount);
+
+  const downloadData = useMutation({
+    mutationFn: async () => {
+      const data = await runExport();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "doaaqui-meus-dados.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    },
+    onSuccess: () => toast.success("Download iniciado."),
+    onError: () => toast.error("Não conseguimos gerar seus dados agora."),
+  });
+
+  const removeAccount = useMutation({
+    mutationFn: () => runDelete({ data: undefined }),
+    onSuccess: async () => {
+      toast.success("Conta excluída. Seus dados pessoais foram apagados.");
+      await supabase.auth.signOut();
+      queryClient.clear();
+      navigate({ to: "/" });
+    },
+    onError: (e: Error) => toast.error(e.message || "Não conseguimos excluir a conta."),
+  });
+
+
   async function signOut() {
     await supabase.auth.signOut();
     queryClient.clear();
