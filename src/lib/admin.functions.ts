@@ -7,7 +7,8 @@ const GATEWAY_URL = "https://connector-gateway.lovable.dev/google_maps";
 
 const importSchema = z.object({
   city: z.string().trim().min(2).max(80),
-  queries: z.array(z.string().trim().min(2).max(80)).min(1).max(6).optional(),
+  preset: z.enum(["all", "doacao", "apoio"]).optional(),
+  queries: z.array(z.string().trim().min(2).max(80)).min(1).max(12).optional(),
   maxPerQuery: z.number().int().min(1).max(20).optional(),
 });
 
@@ -20,14 +21,46 @@ type GooglePlace = {
   websiteUri?: string;
   regularOpeningHours?: { weekdayDescriptions?: string[] };
   photos?: { name: string }[];
+  editorialSummary?: { text?: string };
   addressComponents?: { longText: string; shortText: string; types: string[] }[];
 };
 
-const DEFAULT_QUERIES = [
-  "ONG doação de roupas",
-  "ponto de coleta de doações para pessoas carentes",
-  "instituição de caridade",
-  "banco de alimentos",
+/** Grupos de busca: cada consulta já sabe quais categorias o local costuma aceitar. */
+const QUERY_GROUPS: { kind: "doacao" | "apoio"; queries: string[]; cats: string[] }[] = [
+  {
+    kind: "doacao",
+    queries: ["ONG doação de roupas", "bazar solidário beneficente"],
+    cats: ["roupas-adultas", "roupas-infantis"],
+  },
+  {
+    kind: "doacao",
+    queries: [
+      "banco de alimentos",
+      "ONG que distribui cestas básicas",
+      "sopão para pessoas em situação de rua",
+    ],
+    cats: ["alimentos"],
+  },
+  {
+    kind: "apoio",
+    queries: [
+      "casa de acolhimento",
+      "albergue para pessoas em situação de rua",
+      "centro de referência de assistência social CRAS",
+      "Cáritas Arquidiocesana",
+      "Exército de Salvação",
+    ],
+    cats: ["apoio", "alimentos", "roupas-adultas"],
+  },
+  {
+    kind: "apoio",
+    queries: [
+      "instituição de caridade",
+      "casa de apoio a crianças carentes",
+      "abrigo de idosos filantrópico",
+    ],
+    cats: ["apoio", "dinheiro"],
+  },
 ];
 
 /** Palavras que indicam logística/comércio, não doação — descartadas na importação. */
