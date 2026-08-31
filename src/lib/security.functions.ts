@@ -3,13 +3,11 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /** Registra uma ação sensível na trilha de auditoria (LGPD / rastreabilidade). */
 async function audit(
-  supabase: {
-    from: (t: "admin_audit_log") => {
-      insert: (v: Record<string, unknown>) => Promise<{ error: unknown }>;
-    };
-  },
+  supabase: any,
   actorId: string,
   action: string,
   entity: string,
@@ -26,10 +24,11 @@ async function audit(
   if (error) console.error("Falha ao registrar auditoria:", error);
 }
 
-async function assertAdmin(supabase: { rpc: (n: "is_admin") => Promise<{ data: unknown }> }) {
+async function assertAdmin(supabase: any) {
   const { data } = await supabase.rpc("is_admin");
   if (data !== true) throw new Error("Acesso restrito a administradores.");
 }
+
 
 export type AdminUserRow = {
   id: string;
