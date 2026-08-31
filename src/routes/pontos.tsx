@@ -9,7 +9,14 @@ import { PointCard } from "@/components/points/point-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { fetchVerifiedPoints } from "@/lib/points";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { fetchCauses, fetchPointIdsByCause, fetchVerifiedPoints } from "@/lib/points";
 
 export const Route = createFileRoute("/pontos")({
   head: () => ({
