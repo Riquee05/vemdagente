@@ -172,10 +172,10 @@ function PedirAjudaPage() {
                 {(categories.data ?? [])
                   .filter((category) => category.kind !== "money")
                   .map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.label}
-                  </SelectItem>
-                ))}
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
