@@ -33,6 +33,7 @@ const tabs = [
   { to: "/admin/time", label: "Time", exact: false, counter: "team" },
   { to: "/admin/usuarios", label: "Usuários", exact: false, counter: null },
   { to: "/admin/categorias", label: "Categorias", exact: false, counter: null },
+  { to: "/admin/seguranca", label: "Segurança", exact: false, counter: null },
 ] as const;
 
 export function useIsAdmin() {
@@ -41,15 +42,12 @@ export function useIsAdmin() {
     queryFn: async () => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) return { isAdmin: false, anyAdmin: true };
-      const { data } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", auth.user.id)
-        .maybeSingle();
-      return { isAdmin: data?.role === "admin", anyAdmin: true };
+      const { data } = await supabase.rpc("is_admin");
+      return { isAdmin: data === true, anyAdmin: true };
     },
   });
 }
+
 
 function AdminLayout() {
   const queryClient = useQueryClient();

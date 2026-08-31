@@ -25,6 +25,7 @@ import { Route as PontosPointIdRouteImport } from './routes/pontos.$pointId'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_authenticated/admin.categorias'
 import { Route as AuthenticatedAdminCuradoriaRouteImport } from './routes/_authenticated/admin.curadoria'
+import { Route as AuthenticatedAdminSegurancaRouteImport } from './routes/_authenticated/admin.seguranca'
 import { Route as AuthenticatedAdminTimeRouteImport } from './routes/_authenticated/admin.time'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 import { Route as AuthenticatedAdminVisaoGeralRouteImport } from './routes/_authenticated/admin.visao-geral'
@@ -112,6 +113,12 @@ const AuthenticatedAdminCuradoriaRoute =
     path: '/curadoria',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminSegurancaRoute =
+  AuthenticatedAdminSegurancaRouteImport.update({
+    id: '/seguranca',
+    path: '/seguranca',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminTimeRoute = AuthenticatedAdminTimeRouteImport.update({
   id: '/time',
   path: '/time',
@@ -151,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
+  '/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
   '/admin/time': typeof AuthenticatedAdminTimeRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/visao-geral': typeof AuthenticatedAdminVisaoGeralRoute
@@ -171,6 +179,7 @@ export interface FileRoutesByTo {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
+  '/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
   '/admin/time': typeof AuthenticatedAdminTimeRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/visao-geral': typeof AuthenticatedAdminVisaoGeralRoute
@@ -194,6 +203,7 @@ export interface FileRoutesById {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/_authenticated/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
+  '/_authenticated/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
   '/_authenticated/admin/time': typeof AuthenticatedAdminTimeRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/admin/visao-geral': typeof AuthenticatedAdminVisaoGeralRoute
@@ -217,6 +227,7 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/admin/categorias'
     | '/admin/curadoria'
+    | '/admin/seguranca'
     | '/admin/time'
     | '/admin/usuarios'
     | '/admin/visao-geral'
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/admin/categorias'
     | '/admin/curadoria'
+    | '/admin/seguranca'
     | '/admin/time'
     | '/admin/usuarios'
     | '/admin/visao-geral'
@@ -259,6 +271,7 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/_authenticated/admin/categorias'
     | '/_authenticated/admin/curadoria'
+    | '/_authenticated/admin/seguranca'
     | '/_authenticated/admin/time'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/admin/visao-geral'
@@ -392,6 +405,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCuradoriaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/seguranca': {
+      id: '/_authenticated/admin/seguranca'
+      path: '/seguranca'
+      fullPath: '/admin/seguranca'
+      preLoaderRoute: typeof AuthenticatedAdminSegurancaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/time': {
       id: '/_authenticated/admin/time'
       path: '/time'
@@ -426,6 +446,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminCategoriasRoute: typeof AuthenticatedAdminCategoriasRoute
   AuthenticatedAdminCuradoriaRoute: typeof AuthenticatedAdminCuradoriaRoute
+  AuthenticatedAdminSegurancaRoute: typeof AuthenticatedAdminSegurancaRoute
   AuthenticatedAdminTimeRoute: typeof AuthenticatedAdminTimeRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminVisaoGeralRoute: typeof AuthenticatedAdminVisaoGeralRoute
@@ -436,6 +457,7 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminCategoriasRoute: AuthenticatedAdminCategoriasRoute,
   AuthenticatedAdminCuradoriaRoute: AuthenticatedAdminCuradoriaRoute,
+  AuthenticatedAdminSegurancaRoute: AuthenticatedAdminSegurancaRoute,
   AuthenticatedAdminTimeRoute: AuthenticatedAdminTimeRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedAdminVisaoGeralRoute: AuthenticatedAdminVisaoGeralRoute,
