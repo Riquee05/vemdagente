@@ -47,7 +47,7 @@ export async function searchNearbyPoints(params: {
   const { data, error } = await supabase.rpc("search_nearby_points", {
     p_lat: params.lat,
     p_lng: params.lng,
-    p_category_id: params.categoryId ?? null,
+    p_category_id: params.categoryId ?? undefined,
     p_radius_km: params.radiusKm ?? 15,
     p_limit: 60,
   });
@@ -99,11 +99,11 @@ export async function fetchPoint(id: string): Promise<PointDetail | null> {
   return {
     ...(raw as NearbyPoint),
     distance_km: null,
-    curation_status: raw.curation_status,
-    accepted: (raw.point_accepted_items ?? [])
+    curation_status: raw['curation_status'],
+    accepted: (raw['point_accepted_items'] ?? [])
       .map((r: any) => r.item_categories)
       .filter(Boolean) as ItemCategory[],
-    needs: (raw.point_needs ?? [])
+    needs: (raw['point_needs'] ?? [])
       .filter((n: any) => n.is_active && n.item_categories)
       .map((n: any) => ({
         id: n.id,
