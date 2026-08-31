@@ -18,6 +18,7 @@ import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
 import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
+import { Route as PontosPointIdRouteImport } from './routes/pontos.$pointId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -63,6 +64,11 @@ const AuthenticatedMinhaContaRoute = AuthenticatedMinhaContaRouteImport.update({
   path: '/minha-conta',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const PontosPointIdRoute = PontosPointIdRouteImport.update({
+  id: '/$pointId',
+  path: '/$pointId',
+  getParentRoute: () => PontosRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -71,8 +77,9 @@ export interface FileRoutesByFullPath {
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
-  '/pontos': typeof PontosRoute
+  '/pontos': typeof PontosRouteWithChildren
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
+  '/pontos/$pointId': typeof PontosPointIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -81,8 +88,9 @@ export interface FileRoutesByTo {
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
-  '/pontos': typeof PontosRoute
+  '/pontos': typeof PontosRouteWithChildren
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
+  '/pontos/$pointId': typeof PontosPointIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,8 +101,9 @@ export interface FileRoutesById {
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
-  '/pontos': typeof PontosRoute
+  '/pontos': typeof PontosRouteWithChildren
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
+  '/pontos/$pointId': typeof PontosPointIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/pedir-ajuda'
     | '/pontos'
     | '/minha-conta'
+    | '/pontos/$pointId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/pedir-ajuda'
     | '/pontos'
     | '/minha-conta'
+    | '/pontos/$pointId'
   id:
     | '__root__'
     | '/'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/pedir-ajuda'
     | '/pontos'
     | '/_authenticated/minha-conta'
+    | '/pontos/$pointId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -138,7 +150,7 @@ export interface RootRouteChildren {
   DoarRoute: typeof DoarRoute
   EntrarRoute: typeof EntrarRoute
   PedirAjudaRoute: typeof PedirAjudaRoute
-  PontosRoute: typeof PontosRoute
+  PontosRoute: typeof PontosRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -206,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMinhaContaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/pontos/$pointId': {
+      id: '/pontos/$pointId'
+      path: '/$pointId'
+      fullPath: '/pontos/$pointId'
+      preLoaderRoute: typeof PontosPointIdRouteImport
+      parentRoute: typeof PontosRoute
+    }
   }
 }
 
@@ -220,6 +239,17 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface PontosRouteChildren {
+  PontosPointIdRoute: typeof PontosPointIdRoute
+}
+
+const PontosRouteChildren: PontosRouteChildren = {
+  PontosPointIdRoute: PontosPointIdRoute,
+}
+
+const PontosRouteWithChildren =
+  PontosRoute._addFileChildren(PontosRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -228,7 +258,7 @@ const rootRouteChildren: RootRouteChildren = {
   DoarRoute: DoarRoute,
   EntrarRoute: EntrarRoute,
   PedirAjudaRoute: PedirAjudaRoute,
-  PontosRoute: PontosRoute,
+  PontosRoute: PontosRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
