@@ -17,6 +17,7 @@ import { Route as DoarRouteImport } from './routes/doar'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
+import { Route as AuthenticatedCadastrarPontoRouteImport } from './routes/_authenticated/cadastrar-ponto'
 import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
 import { Route as PontosPointIdRouteImport } from './routes/pontos.$pointId'
 
@@ -59,6 +60,12 @@ const PontosRoute = PontosRouteImport.update({
   path: '/pontos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCadastrarPontoRoute =
+  AuthenticatedCadastrarPontoRouteImport.update({
+    id: '/cadastrar-ponto',
+    path: '/cadastrar-ponto',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMinhaContaRoute = AuthenticatedMinhaContaRouteImport.update({
   id: '/minha-conta',
   path: '/minha-conta',
@@ -78,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
 }
@@ -89,6 +97,7 @@ export interface FileRoutesByTo {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
 }
@@ -102,6 +111,7 @@ export interface FileRoutesById {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/_authenticated/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
 }
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/cadastrar-ponto'
     | '/minha-conta'
     | '/pontos/$pointId'
   fileRoutesByTo: FileRoutesByTo
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/cadastrar-ponto'
     | '/minha-conta'
     | '/pontos/$pointId'
   id:
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/_authenticated/cadastrar-ponto'
     | '/_authenticated/minha-conta'
     | '/pontos/$pointId'
   fileRoutesById: FileRoutesById
@@ -211,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PontosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/cadastrar-ponto': {
+      id: '/_authenticated/cadastrar-ponto'
+      path: '/cadastrar-ponto'
+      fullPath: '/cadastrar-ponto'
+      preLoaderRoute: typeof AuthenticatedCadastrarPontoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/minha-conta': {
       id: '/_authenticated/minha-conta'
       path: '/minha-conta'
@@ -229,10 +249,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCadastrarPontoRoute: typeof AuthenticatedCadastrarPontoRoute
   AuthenticatedMinhaContaRoute: typeof AuthenticatedMinhaContaRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCadastrarPontoRoute: AuthenticatedCadastrarPontoRoute,
   AuthenticatedMinhaContaRoute: AuthenticatedMinhaContaRoute,
 }
 
