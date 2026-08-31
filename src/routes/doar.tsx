@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { PageShell } from "@/components/layout/page-shell";
+import { MoneyNotice } from "@/components/money-notice";
 import { PointSearch } from "@/components/points/point-search";
 import { Button } from "@/components/ui/button";
 
@@ -49,6 +50,7 @@ function DoarPage() {
             <Link to="/cadastrar-ponto">Cadastrar um ponto</Link>
           </Button>
         </div>
+        <MoneyNotice className="mt-10" />
       </section>
     </PageShell>
   );
