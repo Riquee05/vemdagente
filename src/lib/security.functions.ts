@@ -59,13 +59,22 @@ export const listPlatformUsers = createServerFn({ method: "GET" })
         .select("id, full_name, role, default_city, created_at")
         .order("created_at", { ascending: false })
         .limit(300),
-      context.supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
+      context.supabase.from("user_roles").select("user_id, role"),
     ]);
 
     if (error) throw new Error("Não foi possível carregar os usuários.");
 
-    const adminIds = new Set((roles ?? []).map((r) => r.user_id));
-    return (profiles ?? []).map((p) => ({ ...p, is_admin: adminIds.has(p.id) }));
+    const adminIds = new Set(
+      (roles ?? []).filter((r) => r.role === "admin").map((r) => r.user_id),
+    );
+    const ownerIds = new Set(
+      (roles ?? []).filter((r) => (r.role as string) === "owner").map((r) => r.user_id),
+    );
+    return (profiles ?? []).map((p) => ({
+      ...p,
+      is_admin: adminIds.has(p.id) || ownerIds.has(p.id),
+      is_owner: ownerIds.has(p.id),
+    }));
   });
 
 const roleSchema = z.object({
@@ -78,6 +87,8 @@ export const setProfileRole = createServerFn({ method: "POST" })
   .inputValidator((data) => roleSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase);
+    await assertStepUp(context.userId);
+
 
     const { error } = await context.supabase
       .from("profiles")
