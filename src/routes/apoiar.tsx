@@ -202,7 +202,7 @@ function ApoiarPage() {
                 )}
               </Button>
 
-              {navigator.share && (
+              {typeof navigator.share === "function" && (
                 <Button
                   variant="outline"
                   onClick={compartilharNativo}
