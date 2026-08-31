@@ -112,7 +112,10 @@ export const requestAdminCode = createServerFn({ method: "POST" })
       throw new Error("Muitas tentativas. Aguarde alguns minutos e tente novamente.");
     }
     if (state?.last_sent_at && Date.now() - new Date(state.last_sent_at).getTime() < 45_000) {
-      throw new Error("Aguarde alguns segundos antes de pedir um novo código.");
+      const wait = Math.ceil(
+        (45_000 - (Date.now() - new Date(state.last_sent_at).getTime())) / 1000,
+      );
+      throw new Error(`Já enviamos um código. Verifique o e-mail ou aguarde ${wait}s para reenviar.`);
     }
 
     const client = await otpClient();
@@ -122,8 +125,15 @@ export const requestAdminCode = createServerFn({ method: "POST" })
     });
     if (error) {
       console.error("Falha ao enviar código do painel:", error);
+      const status = (error as { status?: number }).status;
+      if (status === 429) {
+        throw new Error(
+          "Já enviamos um código há poucos segundos. Verifique seu e-mail (inclusive o spam) ou aguarde um minuto para reenviar.",
+        );
+      }
       throw new Error("Não foi possível enviar o código agora. Tente de novo em instantes.");
     }
+
 
     await db.from("admin_otp_attempts").upsert(
       {
