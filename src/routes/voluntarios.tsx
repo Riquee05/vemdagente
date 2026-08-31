@@ -274,7 +274,7 @@ function VoluntariosPage() {
             <div className="mt-8">
               <Button
                 type="submit"
-                disabled={loading || selecaoAreas.size === 0}
+                disabled={loading}
                 className="card-ink-primary -rotate-1 font-display uppercase transition-transform hover:rotate-0"
               >
                 {loading ? (
