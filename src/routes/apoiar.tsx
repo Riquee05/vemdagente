@@ -57,7 +57,7 @@ const mensagens = [
     label: "Para quem precisa",
     texto: `Se você ou alguém perto precisa de ajuda, o DoaAqui lista pontos de coleta, ONGs e redes de apoio verificadas no Brasil. Busque por cidade ou categoria: ${siteUrl}`,
   },
-];
+] as const;
 
 const shareButtons = [
   {
