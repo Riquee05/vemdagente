@@ -44,6 +44,10 @@ const BLOCKED_TERMS = [
   "reciclagem",
   "ferro velho",
   "sucata",
+  "ecoponto",
+  "entulho",
+  "prefeitura",
+  "santa retirada",
 ];
 
 function isRelevant(name: string) {
