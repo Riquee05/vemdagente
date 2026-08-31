@@ -83,9 +83,14 @@ function AdminLayout() {
               Esta área é só para administradores. Se você é a pessoa responsável pela plataforma e
               ainda não há nenhum administrador, assuma a administração abaixo.
             </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Depois disso você verá as abas de Pontos, Usuários e Categorias — e poderá importar
+              novos pontos reais do Google Maps informando a cidade na aba Pontos.
+            </p>
             <Button className="mt-4" onClick={() => claim.mutate()} disabled={claim.isPending}>
               {claim.isPending ? "Verificando..." : "Assumir administração"}
             </Button>
+
           </div>
         )}
 
