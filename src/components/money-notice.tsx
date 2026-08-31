@@ -1,9 +1,7 @@
 /** Aviso legal: o DoaAqui não recebe nem administra doações em dinheiro. */
 export function MoneyNotice({ className = "" }: { className?: string }) {
   return (
-    <aside
-      className={`rounded-md border-2 border-foreground/80 bg-surface p-4 text-sm shadow-[4px_4px_0_0_hsl(var(--foreground))] ${className}`}
-    >
+    <aside className={`card-ink bg-surface p-4 text-sm ${className}`}>
       <p className="font-semibold">Doação em dinheiro é feita direto com a instituição</p>
       <p className="mt-2 text-muted-foreground">
         Somos uma plataforma independente que conecta pessoas dispostas a ajudar instituições e
