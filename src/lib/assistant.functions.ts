@@ -178,9 +178,16 @@ async function geocode(query: string) {
 export const askAssistant = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => askSchema.parse(data))
   .handler(async ({ data }): Promise<AssistantAnswer> => {
+    const supabaseUrl = process.env["SUPABASE_URL"];
+    const supabasePublishableKey = process.env["SUPABASE_PUBLISHABLE_KEY"];
+
+    if (!supabaseUrl || !supabasePublishableKey) {
+      throw new Error("O assistente está temporariamente indisponível. Tente novamente em instantes.");
+    }
+
     const supabase = createClient(
-      process.env["VITE_SUPABASE_URL"]!,
-      process.env["VITE_SUPABASE_PUBLISHABLE_KEY"]!,
+      supabaseUrl,
+      supabasePublishableKey,
       { auth: { persistSession: false } },
     );
 
