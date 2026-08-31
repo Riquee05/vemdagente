@@ -54,7 +54,13 @@ export function SiteFooter() {
                 Apoiar o DoaAqui
               </Link>
             </li>
+            <li>
+              <Link to="/privacidade" className="hover:text-foreground">
+                Privacidade e LGPD
+              </Link>
+            </li>
           </ul>
+
           <p className="mt-4 text-xs text-muted-foreground">
             Projeto independente e sem fins de lucro. Não intermediamos doações: indicamos pontos
             reais e curados.
