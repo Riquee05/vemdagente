@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -10,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/integrations/supabase/client";
+import { listPlatformUsers, setAdminAccess, setProfileRole } from "@/lib/security.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/usuarios")({
   component: AdminUsuarios,
@@ -19,43 +21,46 @@ export const Route = createFileRoute("/_authenticated/admin/usuarios")({
 const roles = [
   { value: "donor", label: "Doador" },
   { value: "person_in_need", label: "Necessitado" },
-  { value: "admin", label: "Administrador" },
-];
+] as const;
 
 function AdminUsuarios() {
   const queryClient = useQueryClient();
+  const fetchUsers = useServerFn(listPlatformUsers);
+  const updateRole = useServerFn(setProfileRole);
+  const updateAdmin = useServerFn(setAdminAccess);
 
   const users = useQuery({
     queryKey: ["admin-users"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, role, default_city, created_at")
-        .order("created_at", { ascending: false })
-        .limit(300);
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () => fetchUsers(),
   });
 
   const setRole = useMutation({
-    mutationFn: async (input: { id: string; role: string }) => {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ role: input.role })
-        .eq("id", input.id);
-      if (error) throw error;
-    },
+    mutationFn: (input: { user_id: string; role: "donor" | "person_in_need" }) =>
+      updateRole({ data: input }),
     onSuccess: () => {
-      toast.success("Papel atualizado.");
+      toast.success("Perfil atualizado.");
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
     },
-    onError: () => toast.error("Não conseguimos atualizar o papel."),
+    onError: (e: Error) => toast.error(e.message || "Não conseguimos atualizar o perfil."),
+  });
+
+  const setAdmin = useMutation({
+    mutationFn: (input: { user_id: string; grant: boolean }) => updateAdmin({ data: input }),
+    onSuccess: () => {
+      toast.success("Acesso administrativo atualizado.");
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      queryClient.invalidateQueries({ queryKey: ["is-admin"] });
+    },
+    onError: (e: Error) => toast.error(e.message || "Não conseguimos alterar o acesso."),
   });
 
   return (
     <div>
       <h2 className="text-lg font-semibold">Usuários</h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        O acesso à Administração é controlado aqui e registrado na trilha de auditoria. Ninguém
+        consegue se tornar administrador por conta própria.
+      </p>
       {users.isLoading && <Skeleton className="mt-4 h-40 w-full" />}
       {users.isSuccess && users.data.length === 0 && (
         <p className="mt-4 text-sm text-muted-foreground">Nenhum usuário cadastrado ainda.</p>
@@ -67,24 +72,46 @@ function AdminUsuarios() {
             className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-4"
           >
             <div className="min-w-0">
-              <p className="truncate font-medium">{user.full_name ?? "Sem nome"}</p>
+              <p className="truncate font-medium">
+                {user.full_name ?? "Sem nome"}
+                {user.is_admin && (
+                  <span className="ml-2 border border-current px-1.5 text-[10px] font-bold uppercase">
+                    admin
+                  </span>
+                )}
+              </p>
               <p className="truncate text-xs text-muted-foreground">
                 {user.default_city ?? "sem cidade"} ·{" "}
                 {new Date(user.created_at).toLocaleDateString("pt-BR")}
               </p>
             </div>
-            <Select value={user.role} onValueChange={(role) => setRole.mutate({ id: user.id, role })}>
-              <SelectTrigger className="w-52">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {roles.map((role) => (
-                  <SelectItem key={role.value} value={role.value}>
-                    {role.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Select
+                value={user.role === "person_in_need" ? "person_in_need" : "donor"}
+                onValueChange={(role) =>
+                  setRole.mutate({ user_id: user.id, role: role as "donor" | "person_in_need" })
+                }
+              >
+                <SelectTrigger className="w-44">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {roles.map((role) => (
+                    <SelectItem key={role.value} value={role.value}>
+                      {role.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                variant={user.is_admin ? "outline" : "default"}
+                size="sm"
+                disabled={setAdmin.isPending}
+                onClick={() => setAdmin.mutate({ user_id: user.id, grant: !user.is_admin })}
+              >
+                {user.is_admin ? "Revogar admin" : "Tornar admin"}
+              </Button>
+            </div>
           </li>
         ))}
       </ul>
