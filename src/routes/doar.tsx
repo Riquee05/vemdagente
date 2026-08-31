@@ -1,6 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { ComingSoon } from "@/components/layout/page-shell";
+import { PageShell } from "@/components/layout/page-shell";
+import { PointSearch } from "@/components/points/point-search";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/doar")({
   head: () => ({
@@ -9,7 +11,7 @@ export const Route = createFileRoute("/doar")({
       {
         name: "description",
         content:
-          "Informe sua localização e o que quer doar: o DoaAqui mostra pontos de coleta e ONGs próximas que aceitam e precisam do item.",
+          "Informe sua localização e o que quer doar: o DoaAqui mostra no mapa os pontos de coleta e ONGs próximas que aceitam e precisam do item.",
       },
       { property: "og:title", content: "Quero doar — encontre pontos de coleta | DoaAqui" },
       {
@@ -25,10 +27,29 @@ export const Route = createFileRoute("/doar")({
 
 function DoarPage() {
   return (
-    <ComingSoon
-      phase="Fase 2 — Construção"
-      title="Quero doar"
-      description="Aqui você vai informar sua localização, escolher o que quer doar e ver a lista e o mapa dos pontos próximos que aceitam e estão precisando daquele item."
-    />
+    <PageShell>
+      <section className="mx-auto w-full max-w-5xl px-4 py-12">
+        <p className="text-xs font-semibold uppercase tracking-widest text-accent">Quero doar</p>
+        <h1 className="mt-3 text-4xl font-semibold">Encontre onde doar perto de você</h1>
+        <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+          Escolha o que você tem para doar e onde está. Mostramos apenas pontos verificados, com
+          endereço, contato e o que cada um está precisando agora. Buscar não exige conta.
+        </p>
+
+        <div className="mt-10">
+          <PointSearch kindHint="donate" />
+        </div>
+
+        <div className="mt-12 rounded-xl border border-border bg-surface p-6">
+          <h2 className="text-lg font-semibold">Conhece um ponto que não está aqui?</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Cadastre o local com foto e localização. Nossa curadoria revisa antes de publicar.
+          </p>
+          <Button asChild className="mt-4">
+            <Link to="/cadastrar-ponto">Cadastrar um ponto</Link>
+          </Button>
+        </div>
+      </section>
+    </PageShell>
   );
 }

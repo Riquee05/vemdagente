@@ -104,9 +104,12 @@ export type Database = {
           name: string
           opening_hours: string | null
           phone: string | null
+          photo_url: string | null
           source: string
           state: string | null
+          submitted_by: string | null
           updated_at: string
+          website: string | null
           whatsapp: string | null
         }
         Insert: {
@@ -125,9 +128,12 @@ export type Database = {
           name: string
           opening_hours?: string | null
           phone?: string | null
+          photo_url?: string | null
           source?: string
           state?: string | null
+          submitted_by?: string | null
           updated_at?: string
+          website?: string | null
           whatsapp?: string | null
         }
         Update: {
@@ -146,15 +152,25 @@ export type Database = {
           name?: string
           opening_hours?: string | null
           phone?: string | null
+          photo_url?: string | null
           source?: string
           state?: string | null
+          submitted_by?: string | null
           updated_at?: string
+          website?: string | null
           whatsapp?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "collection_points_claimed_by_fkey"
             columns: ["claimed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_points_submitted_by_fkey"
+            columns: ["submitted_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -442,6 +458,32 @@ export type Database = {
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
+      search_nearby_points: {
+        Args: {
+          p_category_id?: string
+          p_lat: number
+          p_limit?: number
+          p_lng: number
+          p_radius_km?: number
+        }
+        Returns: {
+          address: string
+          city: string
+          description: string
+          distance_km: number
+          donation_method: string
+          id: string
+          lat: number
+          lng: number
+          name: string
+          opening_hours: string
+          phone: string
+          photo_url: string
+          state: string
+          website: string
+          whatsapp: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

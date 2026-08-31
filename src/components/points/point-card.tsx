@@ -1,0 +1,65 @@
+import { Link } from "@tanstack/react-router";
+
+import { PointPhoto } from "@/components/points/point-photo";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { formatDistance, type NearbyPoint } from "@/lib/points";
+
+export function PointCard({
+  point,
+  onHighlight,
+  active,
+}: {
+  point: NearbyPoint;
+  onHighlight?: (id: string) => void;
+  active?: boolean;
+}) {
+  const distance = formatDistance(point.distance_km);
+
+  return (
+    <article
+      onMouseEnter={onHighlight ? () => onHighlight(point.id) : undefined}
+      className={`flex gap-4 rounded-xl border bg-card p-4 transition-colors ${
+        active ? "border-accent" : "border-border"
+      }`}
+    >
+      <PointPhoto
+        path={point.photo_url}
+        alt={`Foto de ${point.name}`}
+        className="h-20 w-20 shrink-0 rounded-lg"
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="truncate text-base font-semibold">{point.name}</h3>
+          {distance ? <Badge variant="secondary">{distance}</Badge> : null}
+        </div>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {point.address ? `${point.address} — ` : ""}
+          {point.city}
+          {point.state ? `/${point.state}` : ""}
+        </p>
+        {point.opening_hours ? (
+          <p className="mt-1 text-xs text-muted-foreground">Horários: {point.opening_hours}</p>
+        ) : null}
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button asChild size="sm" variant="outline">
+            <Link to="/pontos/$pointId" params={{ pointId: point.id }}>
+              Ver detalhes
+            </Link>
+          </Button>
+          {point.whatsapp ? (
+            <Button asChild size="sm" variant="ghost">
+              <a
+                href={`https://wa.me/${point.whatsapp.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                WhatsApp
+              </a>
+            </Button>
+          ) : null}
+        </div>
+      </div>
+    </article>
+  );
+}
