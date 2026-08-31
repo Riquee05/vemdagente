@@ -110,7 +110,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
         </div>
       </form>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <div>
           <Label>{kindHint === "donate" ? "O que você quer doar" : "Que ajuda você precisa"}</Label>
           <Select value={categoryId} onValueChange={setCategoryId}>
@@ -122,6 +122,22 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
               {(categories.data ?? []).map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>Causa</Label>
+          <Select value={causeId} onValueChange={setCauseId}>
+            <SelectTrigger className="mt-2">
+              <SelectValue placeholder="Todas as causas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as causas</SelectItem>
+              {(causes.data ?? []).map((cause) => (
+                <SelectItem key={cause.id} value={cause.id}>
+                  {cause.label}
                 </SelectItem>
               ))}
             </SelectContent>
