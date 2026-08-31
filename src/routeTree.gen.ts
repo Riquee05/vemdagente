@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApoiarRouteImport } from './routes/apoiar'
 import { Route as AssistenteRouteImport } from './routes/assistente'
 import { Route as DoarRouteImport } from './routes/doar'
+import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
 
@@ -36,6 +37,11 @@ const DoarRoute = DoarRouteImport.update({
   path: '/doar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EntrarRoute = EntrarRouteImport.update({
+  id: '/entrar',
+  path: '/entrar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PedirAjudaRoute = PedirAjudaRouteImport.update({
   id: '/pedir-ajuda',
   path: '/pedir-ajuda',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
   '/doar': typeof DoarRoute
+  '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
   '/doar': typeof DoarRoute
+  '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRoute
 }
@@ -69,21 +77,36 @@ export interface FileRoutesById {
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
   '/doar': typeof DoarRoute
+  '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/apoiar' | '/assistente' | '/doar' | '/pedir-ajuda' | '/pontos'
+    | '/'
+    | '/apoiar'
+    | '/assistente'
+    | '/doar'
+    | '/entrar'
+    | '/pedir-ajuda'
+    | '/pontos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/apoiar' | '/assistente' | '/doar' | '/pedir-ajuda' | '/pontos'
+  to:
+    | '/'
+    | '/apoiar'
+    | '/assistente'
+    | '/doar'
+    | '/entrar'
+    | '/pedir-ajuda'
+    | '/pontos'
   id:
     | '__root__'
     | '/'
     | '/apoiar'
     | '/assistente'
     | '/doar'
+    | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
   fileRoutesById: FileRoutesById
@@ -93,6 +116,7 @@ export interface RootRouteChildren {
   ApoiarRoute: typeof ApoiarRoute
   AssistenteRoute: typeof AssistenteRoute
   DoarRoute: typeof DoarRoute
+  EntrarRoute: typeof EntrarRoute
   PedirAjudaRoute: typeof PedirAjudaRoute
   PontosRoute: typeof PontosRoute
 }
@@ -127,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DoarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/entrar': {
+      id: '/entrar'
+      path: '/entrar'
+      fullPath: '/entrar'
+      preLoaderRoute: typeof EntrarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pedir-ajuda': {
       id: '/pedir-ajuda'
       path: '/pedir-ajuda'
@@ -149,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApoiarRoute: ApoiarRoute,
   AssistenteRoute: AssistenteRoute,
   DoarRoute: DoarRoute,
+  EntrarRoute: EntrarRoute,
   PedirAjudaRoute: PedirAjudaRoute,
   PontosRoute: PontosRoute,
 }
