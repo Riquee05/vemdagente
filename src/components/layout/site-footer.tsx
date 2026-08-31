@@ -62,8 +62,9 @@ export function SiteFooter() {
           </ul>
 
           <p className="mt-4 text-xs text-muted-foreground">
-            Projeto independente e sem fins de lucro. Não intermediamos doações: indicamos pontos
-            reais e curados.
+            Plataforma independente que conecta pessoas a instituições e projetos sociais. As
+            doações em dinheiro são feitas pelos canais oficiais de cada instituição — o DoaAqui
+            não recebe, administra ou intermedia valores.
           </p>
         </nav>
       </div>
