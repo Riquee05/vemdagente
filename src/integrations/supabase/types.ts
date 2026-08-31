@@ -408,6 +408,65 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members: {
+        Row: {
+          application_id: string | null
+          areas: string[]
+          city: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          joined_at: string
+          notes: string | null
+          phone: string | null
+          role_title: string
+          state: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          application_id?: string | null
+          areas?: string[]
+          city?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          joined_at?: string
+          notes?: string | null
+          phone?: string | null
+          role_title?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string | null
+          areas?: string[]
+          city?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          joined_at?: string
+          notes?: string | null
+          phone?: string | null
+          role_title?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "volunteer_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       voluntary_donations: {
         Row: {
           amount: number | null
@@ -505,6 +564,54 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      volunteer_stage_events: {
+        Row: {
+          application_id: string
+          changed_by: string | null
+          created_at: string
+          from_status: string | null
+          id: string
+          note: string | null
+          to_status: string
+          updated_at: string
+        }
+        Insert: {
+          application_id: string
+          changed_by?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          to_status: string
+          updated_at?: string
+        }
+        Update: {
+          application_id?: string
+          changed_by?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          note?: string | null
+          to_status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "volunteer_stage_events_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "volunteer_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "volunteer_stage_events_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
