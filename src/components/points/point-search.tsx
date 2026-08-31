@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { geocodeAddress, getBrowserLocation } from "@/lib/geocode";
-import { fetchCategories, searchNearbyPoints } from "@/lib/points";
+import { fetchCategories, fetchCauses, fetchPointIdsByCause, searchNearbyPoints } from "@/lib/points";
 
 const DEFAULT_CENTER: [number, number] = [-23.5505, -46.6333];
 const RADIUS_OPTIONS = [5, 10, 20, 50];
@@ -25,11 +25,19 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   const [query, setQuery] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [categoryId, setCategoryId] = useState<string>("all");
+  const [causeId, setCauseId] = useState<string>("all");
   const [radiusKm, setRadiusKm] = useState(10);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
 
   const categories = useQuery({ queryKey: ["item-categories"], queryFn: fetchCategories });
+  const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
+
+  const causePointIds = useQuery({
+    queryKey: ["cause-point-ids", causeId],
+    queryFn: () => fetchPointIdsByCause(causeId),
+    enabled: causeId !== "all",
+  });
 
   const results = useQuery({
     queryKey: ["nearby-points", coords?.lat, coords?.lng, categoryId, radiusKm],
@@ -42,6 +50,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
       }),
     enabled: coords != null,
   });
+
 
   async function useMyLocation() {
     setLocating(true);
