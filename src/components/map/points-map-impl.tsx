@@ -32,6 +32,19 @@ function Recenter({ center, zoom }: { center: [number, number]; zoom: number }) 
   return null;
 }
 
+function FitBounds({ points }: { points: MapPoint[] }) {
+  const map = useMap();
+  const key = points.map((point) => point.id).join(",");
+  useEffect(() => {
+    if (points.length < 2) return;
+    map.fitBounds(
+      L.latLngBounds(points.map((point) => [point.lat, point.lng] as [number, number])),
+      { padding: [32, 32] },
+    );
+  }, [map, key]);
+  return null;
+}
+
 function ClickPicker({ onPick }: { onPick: (lat: number, lng: number) => void }) {
   useMapEvents({
     click: (event) => onPick(event.latlng.lat, event.latlng.lng),
