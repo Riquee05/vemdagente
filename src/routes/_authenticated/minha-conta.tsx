@@ -39,10 +39,10 @@ export const Route = createFileRoute("/_authenticated/minha-conta")({
 const roleLabels = {
   donor: "Quero doar (Doador)",
   person_in_need: "Preciso de ajuda (Necessitado)",
-  admin: "Administrador",
 } as const;
 
 type Role = keyof typeof roleLabels;
+
 
 function MinhaContaPage() {
   const navigate = useNavigate();
