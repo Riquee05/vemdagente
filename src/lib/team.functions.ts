@@ -24,7 +24,7 @@ const memberSchema = z.object({
   notes: z.string().trim().max(2000).optional(),
 });
 
-async function assertAdmin(supabase: { rpc: (fn: "is_admin") => Promise<{ data: boolean | null }> }) {
+async function assertAdmin(supabase: any) {
   const { data } = await supabase.rpc("is_admin");
   if (!data) throw new Error("Acesso restrito a administradores.");
 }
@@ -91,8 +91,13 @@ export const updateTeamMember = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.supabase);
 
-    const { id, ...patch } = data;
-    const { error } = await context.supabase.from("team_members").update(patch).eq("id", id);
+    const patch: Record<string, string> = {};
+    if (data.role_title !== undefined) patch["role_title"] = data.role_title;
+    if (data.status !== undefined) patch["status"] = data.status;
+    if (data.notes !== undefined) patch["notes"] = data.notes;
+    if (data.phone !== undefined) patch["phone"] = data.phone;
+
+    const { error } = await context.supabase.from("team_members").update(patch).eq("id", data.id);
     if (error) {
       console.error("Erro ao atualizar colaborador:", error);
       throw new Error("Não foi possível atualizar a pessoa do time.");
