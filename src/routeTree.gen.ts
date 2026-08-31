@@ -17,6 +17,7 @@ import { Route as DoarRouteImport } from './routes/doar'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as VoluntariosRouteImport } from './routes/voluntarios'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCadastrarPontoRouteImport } from './routes/_authenticated/cadastrar-ponto'
@@ -25,6 +26,7 @@ import { Route as PontosPointIdRouteImport } from './routes/pontos.$pointId'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_authenticated/admin.categorias'
 import { Route as AuthenticatedAdminCuradoriaRouteImport } from './routes/_authenticated/admin.curadoria'
+import { Route as AuthenticatedAdminSegurancaRouteImport } from './routes/_authenticated/admin.seguranca'
 import { Route as AuthenticatedAdminTimeRouteImport } from './routes/_authenticated/admin.time'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 import { Route as AuthenticatedAdminVisaoGeralRouteImport } from './routes/_authenticated/admin.visao-geral'
@@ -67,6 +69,11 @@ const PedirAjudaRoute = PedirAjudaRouteImport.update({
 const PontosRoute = PontosRouteImport.update({
   id: '/pontos',
   path: '/pontos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VoluntariosRoute = VoluntariosRouteImport.update({
@@ -112,6 +119,12 @@ const AuthenticatedAdminCuradoriaRoute =
     path: '/curadoria',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminSegurancaRoute =
+  AuthenticatedAdminSegurancaRouteImport.update({
+    id: '/seguranca',
+    path: '/seguranca',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminTimeRoute = AuthenticatedAdminTimeRouteImport.update({
   id: '/time',
   path: '/time',
@@ -144,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/privacidade': typeof PrivacidadeRoute
   '/voluntarios': typeof VoluntariosRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
@@ -151,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
+  '/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
   '/admin/time': typeof AuthenticatedAdminTimeRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/visao-geral': typeof AuthenticatedAdminVisaoGeralRoute
@@ -165,12 +180,14 @@ export interface FileRoutesByTo {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/privacidade': typeof PrivacidadeRoute
   '/voluntarios': typeof VoluntariosRoute
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
+  '/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
   '/admin/time': typeof AuthenticatedAdminTimeRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/admin/visao-geral': typeof AuthenticatedAdminVisaoGeralRoute
@@ -187,6 +204,7 @@ export interface FileRoutesById {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/privacidade': typeof PrivacidadeRoute
   '/voluntarios': typeof VoluntariosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
@@ -194,6 +212,7 @@ export interface FileRoutesById {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/_authenticated/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
+  '/_authenticated/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
   '/_authenticated/admin/time': typeof AuthenticatedAdminTimeRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/admin/visao-geral': typeof AuthenticatedAdminVisaoGeralRoute
@@ -210,6 +229,7 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/privacidade'
     | '/voluntarios'
     | '/admin'
     | '/cadastrar-ponto'
@@ -217,6 +237,7 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/admin/categorias'
     | '/admin/curadoria'
+    | '/admin/seguranca'
     | '/admin/time'
     | '/admin/usuarios'
     | '/admin/visao-geral'
@@ -231,12 +252,14 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/privacidade'
     | '/voluntarios'
     | '/cadastrar-ponto'
     | '/minha-conta'
     | '/pontos/$pointId'
     | '/admin/categorias'
     | '/admin/curadoria'
+    | '/admin/seguranca'
     | '/admin/time'
     | '/admin/usuarios'
     | '/admin/visao-geral'
@@ -252,6 +275,7 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/privacidade'
     | '/voluntarios'
     | '/_authenticated/admin'
     | '/_authenticated/cadastrar-ponto'
@@ -259,6 +283,7 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/_authenticated/admin/categorias'
     | '/_authenticated/admin/curadoria'
+    | '/_authenticated/admin/seguranca'
     | '/_authenticated/admin/time'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/admin/visao-geral'
@@ -275,6 +300,7 @@ export interface RootRouteChildren {
   EntrarRoute: typeof EntrarRoute
   PedirAjudaRoute: typeof PedirAjudaRoute
   PontosRoute: typeof PontosRouteWithChildren
+  PrivacidadeRoute: typeof PrivacidadeRoute
   VoluntariosRoute: typeof VoluntariosRoute
 }
 
@@ -336,6 +362,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PontosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/voluntarios': {
       id: '/voluntarios'
       path: '/voluntarios'
@@ -392,6 +425,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCuradoriaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/seguranca': {
+      id: '/_authenticated/admin/seguranca'
+      path: '/seguranca'
+      fullPath: '/admin/seguranca'
+      preLoaderRoute: typeof AuthenticatedAdminSegurancaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/time': {
       id: '/_authenticated/admin/time'
       path: '/time'
@@ -426,6 +466,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminCategoriasRoute: typeof AuthenticatedAdminCategoriasRoute
   AuthenticatedAdminCuradoriaRoute: typeof AuthenticatedAdminCuradoriaRoute
+  AuthenticatedAdminSegurancaRoute: typeof AuthenticatedAdminSegurancaRoute
   AuthenticatedAdminTimeRoute: typeof AuthenticatedAdminTimeRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
   AuthenticatedAdminVisaoGeralRoute: typeof AuthenticatedAdminVisaoGeralRoute
@@ -436,6 +477,7 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminCategoriasRoute: AuthenticatedAdminCategoriasRoute,
   AuthenticatedAdminCuradoriaRoute: AuthenticatedAdminCuradoriaRoute,
+  AuthenticatedAdminSegurancaRoute: AuthenticatedAdminSegurancaRoute,
   AuthenticatedAdminTimeRoute: AuthenticatedAdminTimeRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
   AuthenticatedAdminVisaoGeralRoute: AuthenticatedAdminVisaoGeralRoute,
@@ -481,6 +523,7 @@ const rootRouteChildren: RootRouteChildren = {
   EntrarRoute: EntrarRoute,
   PedirAjudaRoute: PedirAjudaRoute,
   PontosRoute: PontosRouteWithChildren,
+  PrivacidadeRoute: PrivacidadeRoute,
   VoluntariosRoute: VoluntariosRoute,
 }
 export const routeTree = rootRouteImport

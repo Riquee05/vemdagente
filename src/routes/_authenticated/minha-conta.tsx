@@ -1,4 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+
+import { deleteMyAccount, exportMyData } from "@/lib/security.functions";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -39,10 +43,10 @@ export const Route = createFileRoute("/_authenticated/minha-conta")({
 const roleLabels = {
   donor: "Quero doar (Doador)",
   person_in_need: "Preciso de ajuda (Necessitado)",
-  admin: "Administrador",
 } as const;
 
 type Role = keyof typeof roleLabels;
+
 
 function MinhaContaPage() {
   const navigate = useNavigate();
@@ -91,6 +95,36 @@ function MinhaContaPage() {
     },
     onError: () => toast.error("Não conseguimos salvar agora. Tente de novo."),
   });
+
+  const runExport = useServerFn(exportMyData);
+  const runDelete = useServerFn(deleteMyAccount);
+
+  const downloadData = useMutation({
+    mutationFn: async () => {
+      const data = await runExport();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "doaaqui-meus-dados.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    },
+    onSuccess: () => toast.success("Download iniciado."),
+    onError: () => toast.error("Não conseguimos gerar seus dados agora."),
+  });
+
+  const removeAccount = useMutation({
+    mutationFn: () => runDelete({ data: undefined }),
+    onSuccess: async () => {
+      toast.success("Conta excluída. Seus dados pessoais foram apagados.");
+      await supabase.auth.signOut();
+      queryClient.clear();
+      navigate({ to: "/" });
+    },
+    onError: (e: Error) => toast.error(e.message || "Não conseguimos excluir a conta."),
+  });
+
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -176,28 +210,21 @@ function MinhaContaPage() {
 
                 <div className="space-y-1.5">
                   <Label htmlFor="role">Como você usa o DoaAqui</Label>
-                  <Select
-                    value={role}
-                    onValueChange={(value) => setRole(value as Role)}
-                    disabled={role === "admin"}
-                  >
+                  <Select value={role} onValueChange={(value) => setRole(value as Role)}>
                     <SelectTrigger id="role">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="donor">{roleLabels.donor}</SelectItem>
                       <SelectItem value="person_in_need">{roleLabels.person_in_need}</SelectItem>
-                      {role === "admin" && (
-                        <SelectItem value="admin">{roleLabels.admin}</SelectItem>
-                      )}
                     </SelectContent>
                   </Select>
-                  {role === "admin" && (
-                    <p className="text-xs text-muted-foreground">
-                      O papel de administrador é definido pela curadoria do projeto.
-                    </p>
-                  )}
+                  <p className="text-xs text-muted-foreground">
+                    O acesso administrativo é concedido pela equipe do projeto e não pode ser
+                    escolhido aqui.
+                  </p>
                 </div>
+
 
                 <div className="flex flex-wrap gap-3">
                   <Button type="submit" disabled={save.isPending}>
@@ -211,7 +238,47 @@ function MinhaContaPage() {
             )}
           </CardContent>
         </Card>
+
+        <Card className="mt-8 shadow-soft">
+          <CardHeader>
+            <CardTitle>Privacidade e seus dados (LGPD)</CardTitle>
+            <CardDescription>
+              Você pode baixar uma cópia dos seus dados ou excluir sua conta a qualquer momento.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-wrap gap-3">
+              <Button type="button" variant="outline" onClick={() => downloadData.mutate()}>
+                {downloadData.isPending ? "Preparando..." : "Baixar meus dados"}
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={removeAccount.isPending}
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Excluir sua conta apaga seu perfil e seus pedidos de ajuda. Essa ação é definitiva. Continuar?",
+                    )
+                  ) {
+                    removeAccount.mutate();
+                  }
+                }}
+              >
+                {removeAccount.isPending ? "Excluindo..." : "Excluir minha conta"}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Saiba mais em{" "}
+              <Link to="/privacidade" className="font-semibold underline">
+                Privacidade e proteção de dados
+              </Link>
+              .
+            </p>
+          </CardContent>
+        </Card>
       </section>
+
     </PageShell>
   );
 }

@@ -1,0 +1,87 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+
+import { PageShell } from "@/components/layout/page-shell";
+
+export const Route = createFileRoute("/privacidade")({
+  head: () => ({
+    meta: [
+      { title: "Privacidade e proteção de dados | DoaAqui" },
+      {
+        name: "description",
+        content:
+          "Como o DoaAqui trata dados pessoais conforme a LGPD: quais dados coletamos, por quê, com quem compartilhamos e como exercer seus direitos.",
+      },
+      { property: "og:title", content: "Privacidade e proteção de dados | DoaAqui" },
+      {
+        property: "og:description",
+        content: "Nossa política de privacidade, base legal, segurança e direitos do titular.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: PrivacidadePage,
+});
+
+const sections = [
+  {
+    title: "Quais dados coletamos",
+    body: "Nome, e-mail, cidade e, se você quiser, telefone. Em pedidos de ajuda, a categoria e a localização aproximada. Em candidaturas de voluntariado, os dados que você informa no formulário. Não pedimos documentos, dados bancários nem informações de saúde.",
+  },
+  {
+    title: "Para que usamos",
+    body: "Apenas para conectar quem doa a quem precisa: mostrar pontos próximos, encaminhar pedidos de ajuda e avaliar candidaturas de voluntariado. Não vendemos dados e não usamos para publicidade.",
+  },
+  {
+    title: "Base legal (LGPD)",
+    body: "Consentimento ao criar conta ou enviar um formulário, e execução do serviço que você solicitou. Você pode retirar o consentimento a qualquer momento excluindo sua conta.",
+  },
+  {
+    title: "Quem pode ver seus dados",
+    body: "Somente você e a equipe administrativa autorizada. As regras do banco de dados liberam cada registro exclusivamente ao titular e a administradores verificados no servidor; visitantes não têm acesso a dados pessoais.",
+  },
+  {
+    title: "Segurança",
+    body: "Sessões autenticadas com token, verificação de permissão no servidor em toda ação sensível, acesso administrativo isolado em tabela própria (ninguém se promove sozinho), trilha de auditoria imutável das concessões de acesso e chaves de serviço nunca expostas ao navegador.",
+  },
+  {
+    title: "Seus direitos",
+    body: "Acessar, corrigir, portar e excluir seus dados. Em Minha conta você baixa uma cópia completa em JSON e pode excluir a conta com todos os dados pessoais associados.",
+  },
+  {
+    title: "Retenção",
+    body: "Mantemos os dados enquanto sua conta existir. Ao excluir a conta, o perfil e os pedidos de ajuda são apagados. Registros de auditoria guardam apenas identificadores técnicos, sem conteúdo pessoal.",
+  },
+];
+
+function PrivacidadePage() {
+  return (
+    <PageShell>
+      <section className="mx-auto w-full max-w-3xl px-4 py-14">
+        <p className="text-xs font-semibold uppercase tracking-widest text-accent">LGPD</p>
+        <h1 className="mt-2 text-3xl font-semibold">Privacidade e proteção de dados</h1>
+        <p className="mt-3 text-muted-foreground">
+          Transparência é parte do cuidado. Aqui está, em português claro, o que fazemos com os
+          dados de quem usa o DoaAqui.
+        </p>
+
+        <div className="mt-10 space-y-6">
+          {sections.map((s) => (
+            <article key={s.title} className="card-ink bg-card p-5">
+              <h2 className="text-lg font-semibold">{s.title}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{s.body}</p>
+            </article>
+          ))}
+        </div>
+
+        <p className="mt-10 text-sm text-muted-foreground">
+          Para exercer seus direitos, acesse{" "}
+          <Link to="/minha-conta" className="marker-underline font-semibold">
+            Minha conta
+          </Link>
+          .
+        </p>
+      </section>
+    </PageShell>
+  );
+}
