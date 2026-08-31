@@ -82,7 +82,8 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     }
   }
 
-  const points = results.data ?? [];
+  const allowedIds = causeId === "all" ? null : new Set(causePointIds.data ?? []);
+  const points = (results.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
   const center: [number, number] = coords ? [coords.lat, coords.lng] : DEFAULT_CENTER;
 
   return (
