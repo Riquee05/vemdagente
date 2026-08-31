@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { adminStepUpStatus } from "@/lib/admin-2fa.functions";
 import { listPlatformUsers, setAdminAccess, setProfileRole } from "@/lib/security.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/usuarios")({
@@ -26,13 +27,18 @@ const roles = [
 function AdminUsuarios() {
   const queryClient = useQueryClient();
   const fetchUsers = useServerFn(listPlatformUsers);
+  const fetchStatus = useServerFn(adminStepUpStatus);
   const updateRole = useServerFn(setProfileRole);
   const updateAdmin = useServerFn(setAdminAccess);
+
+  const status = useQuery({ queryKey: ["admin-step-up"], queryFn: () => fetchStatus() });
+  const isOwner = status.data?.isOwner === true;
 
   const users = useQuery({
     queryKey: ["admin-users"],
     queryFn: () => fetchUsers(),
   });
+
 
   const setRole = useMutation({
     mutationFn: (input: { user_id: string; role: "donor" | "person_in_need" }) =>
