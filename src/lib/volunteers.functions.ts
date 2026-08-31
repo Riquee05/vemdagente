@@ -120,9 +120,18 @@ export const updateVolunteerApplicationStatus = createServerFn({ method: "POST" 
     const { data: isAdmin } = await context.supabase.rpc("is_admin");
     if (!isAdmin) throw new Error("Acesso restrito a administradores.");
 
+    const { data: current } = await context.supabase
+      .from("volunteer_applications")
+      .select("status")
+      .eq("id", data.id)
+      .maybeSingle();
+
+    const patch: { status: VolunteerStage; admin_notes?: string | null } = { status: data.status };
+    if (data.admin_notes !== undefined) patch.admin_notes = data.admin_notes || null;
+
     const { error } = await context.supabase
       .from("volunteer_applications")
-      .update({ status: data.status, admin_notes: data.admin_notes ?? null })
+      .update(patch)
       .eq("id", data.id);
 
     if (error) {
@@ -130,7 +139,33 @@ export const updateVolunteerApplicationStatus = createServerFn({ method: "POST" 
       throw new Error("Não foi possível atualizar a inscrição.");
     }
 
+    if (current?.status !== data.status) {
+      await context.supabase.from("volunteer_stage_events").insert({
+        application_id: data.id,
+        from_status: current?.status ?? null,
+        to_status: data.status,
+        changed_by: context.userId,
+      });
+    }
+
     return { ok: true };
+  });
+
+export const listVolunteerStageEvents = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ application_id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("is_admin");
+    if (!isAdmin) throw new Error("Acesso restrito a administradores.");
+
+    const { data: rows, error } = await context.supabase
+      .from("volunteer_stage_events")
+      .select("id, from_status, to_status, created_at")
+      .eq("application_id", data.application_id)
+      .order("created_at", { ascending: false });
+
+    if (error) throw new Error("Não foi possível carregar o histórico.");
+    return rows ?? [];
   });
 
 export { areaOptions };
