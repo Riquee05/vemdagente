@@ -17,6 +17,7 @@ import { Route as DoarRouteImport } from './routes/doar'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as VoluntariosRouteImport } from './routes/voluntarios'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCadastrarPontoRouteImport } from './routes/_authenticated/cadastrar-ponto'
@@ -68,6 +69,11 @@ const PedirAjudaRoute = PedirAjudaRouteImport.update({
 const PontosRoute = PontosRouteImport.update({
   id: '/pontos',
   path: '/pontos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VoluntariosRoute = VoluntariosRouteImport.update({
@@ -151,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/privacidade': typeof PrivacidadeRoute
   '/voluntarios': typeof VoluntariosRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
@@ -173,6 +180,7 @@ export interface FileRoutesByTo {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/privacidade': typeof PrivacidadeRoute
   '/voluntarios': typeof VoluntariosRoute
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
@@ -196,6 +204,7 @@ export interface FileRoutesById {
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
+  '/privacidade': typeof PrivacidadeRoute
   '/voluntarios': typeof VoluntariosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/privacidade'
     | '/voluntarios'
     | '/admin'
     | '/cadastrar-ponto'
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/privacidade'
     | '/voluntarios'
     | '/cadastrar-ponto'
     | '/minha-conta'
@@ -264,6 +275,7 @@ export interface FileRouteTypes {
     | '/entrar'
     | '/pedir-ajuda'
     | '/pontos'
+    | '/privacidade'
     | '/voluntarios'
     | '/_authenticated/admin'
     | '/_authenticated/cadastrar-ponto'
@@ -288,6 +300,7 @@ export interface RootRouteChildren {
   EntrarRoute: typeof EntrarRoute
   PedirAjudaRoute: typeof PedirAjudaRoute
   PontosRoute: typeof PontosRouteWithChildren
+  PrivacidadeRoute: typeof PrivacidadeRoute
   VoluntariosRoute: typeof VoluntariosRoute
 }
 
@@ -347,6 +360,13 @@ declare module '@tanstack/react-router' {
       path: '/pontos'
       fullPath: '/pontos'
       preLoaderRoute: typeof PontosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/voluntarios': {
@@ -503,6 +523,7 @@ const rootRouteChildren: RootRouteChildren = {
   EntrarRoute: EntrarRoute,
   PedirAjudaRoute: PedirAjudaRoute,
   PontosRoute: PontosRouteWithChildren,
+  PrivacidadeRoute: PrivacidadeRoute,
   VoluntariosRoute: VoluntariosRoute,
 }
 export const routeTree = rootRouteImport
