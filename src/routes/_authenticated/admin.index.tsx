@@ -85,10 +85,11 @@ function AdminPontos() {
   return (
     <div className="space-y-8">
       <div className="rounded-xl border border-border bg-surface p-6">
-        <h2 className="text-lg font-semibold">Importar pontos reais do Google Maps</h2>
+        <h2 className="text-lg font-semibold">Catalogar redes de apoio e pontos de doação</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Busca ONGs, pontos de coleta, instituições de caridade e bancos de alimentos da cidade
-          informada, com endereço, telefone, horários e foto.
+          Busca ONGs, bazares solidários, bancos de alimentos, casas de acolhimento, albergues, CRAS
+          e instituições de caridade da cidade informada — com endereço, telefone, horários, foto e
+          as categorias que cada local costuma receber.
         </p>
         <form
           className="mt-4 flex flex-wrap items-end gap-3"
@@ -111,6 +112,21 @@ function AdminPontos() {
               maxLength={80}
               className="w-64"
             />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="import-preset">Tipo de rede</Label>
+            <select
+              id="import-preset"
+              value={preset}
+              onChange={(event) => setPreset(event.target.value as typeof preset)}
+              className="h-10 rounded-md border-2 border-border bg-background px-3 text-sm"
+            >
+              {PRESETS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
           <Button type="submit" disabled={importer.isPending}>
             {importer.isPending ? "Importando..." : "Importar"}
