@@ -30,9 +30,20 @@ const submitSchema = z.object({
   heard_from: z.string().trim().max(255).optional(),
 });
 
+export const volunteerStages = ["pending", "contacted", "interview", "approved", "declined"] as const;
+export type VolunteerStage = (typeof volunteerStages)[number];
+
+export const volunteerStageLabels: Record<VolunteerStage, string> = {
+  pending: "Novo",
+  contacted: "Em contato",
+  interview: "Entrevista",
+  approved: "Aprovado",
+  declined: "Recusado",
+};
+
 const statusSchema = z.object({
   id: z.string().uuid(),
-  status: z.enum(["pending", "contacted", "approved", "declined"]),
+  status: z.enum(volunteerStages),
   admin_notes: z.string().max(2000).optional(),
 });
 
