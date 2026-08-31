@@ -152,8 +152,13 @@
   h4 {
     font-family: var(--font-display);
     font-weight: 400;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
+  }
+
+  h1,
+  h2 {
     text-transform: uppercase;
+    letter-spacing: -0.03em;
   }
 }
 
