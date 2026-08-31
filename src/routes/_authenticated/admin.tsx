@@ -26,11 +26,13 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 const tabs = [
-  { to: "/admin", label: "Pontos", exact: true },
-  { to: "/admin/curadoria", label: "Curadoria", exact: false },
-  { to: "/admin/usuarios", label: "Usuários", exact: false },
-  { to: "/admin/categorias", label: "Categorias", exact: false },
-  { to: "/admin/voluntarios", label: "Voluntários", exact: false },
+  { to: "/admin/visao-geral", label: "Visão geral", exact: false, counter: null },
+  { to: "/admin", label: "Pontos", exact: true, counter: null },
+  { to: "/admin/curadoria", label: "Curadoria", exact: false, counter: "curation" },
+  { to: "/admin/voluntarios", label: "Voluntários", exact: false, counter: "volunteers" },
+  { to: "/admin/time", label: "Time", exact: false, counter: "team" },
+  { to: "/admin/usuarios", label: "Usuários", exact: false, counter: null },
+  { to: "/admin/categorias", label: "Categorias", exact: false, counter: null },
 ] as const;
 
 export function useIsAdmin() {
