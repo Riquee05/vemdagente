@@ -1,0 +1,146 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+const GATEWAY_URL = "https://connector-gateway.lovable.dev/google_maps";
+
+const importSchema = z.object({
+  city: z.string().trim().min(2).max(80),
+  queries: z.array(z.string().trim().min(2).max(80)).min(1).max(6).optional(),
+  maxPerQuery: z.number().int().min(1).max(20).optional(),
+});
+
+type GooglePlace = {
+  id: string;
+  displayName?: { text?: string };
+  formattedAddress?: string;
+  location?: { latitude: number; longitude: number };
+  nationalPhoneNumber?: string;
+  websiteUri?: string;
+  regularOpeningHours?: { weekdayDescriptions?: string[] };
+  photos?: { name: string }[];
+  addressComponents?: { longText: string; shortText: string; types: string[] }[];
+};
+
+const DEFAULT_QUERIES = [
+  "ONG doação de roupas",
+  "ponto de coleta de doações",
+  "instituição de caridade",
+  "banco de alimentos",
+];
+
+/** Importa pontos reais do Google Maps (Places API New) — apenas administradores. */
+export const importGooglePoints = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => importSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: profile } = await context.supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (profile?.role !== "admin") throw new Error("Forbidden");
+
+    const lovableKey = process.env["LOVABLE_API_KEY"];
+    const connectionKey = process.env["GOOGLE_MAPS_API_KEY"];
+    const browserKey = process.env["GOOGLE_MAPS_BROWSER_KEY"];
+    if (!lovableKey || !connectionKey) throw new Error("Conexão do Google Maps indisponível.");
+
+    const queries = data.queries ?? DEFAULT_QUERIES;
+    const maxPerQuery = data.maxPerQuery ?? 10;
+
+    const found = new Map<string, GooglePlace>();
+
+    for (const q of queries) {
+      const response = await fetch(`${GATEWAY_URL}/places/v1/places:searchText`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "X-Connection-Api-Key": connectionKey,
+          "Content-Type": "application/json",
+          "X-Goog-FieldMask":
+            "places.id,places.displayName,places.formattedAddress,places.location,places.nationalPhoneNumber,places.websiteUri,places.regularOpeningHours.weekdayDescriptions,places.photos,places.addressComponents",
+        },
+        body: JSON.stringify({
+          textQuery: `${q} em ${data.city}`,
+          languageCode: "pt-BR",
+          regionCode: "BR",
+          maxResultCount: maxPerQuery,
+        }),
+      });
+
+      if (response.status === 403) {
+        const body = await response.text();
+        throw new Error(`Google Maps negou a requisição (403): ${body}`);
+      }
+      if (!response.ok) {
+        const body = await response.text();
+        throw new Error(`Falha na busca do Google Maps [${response.status}]: ${body}`);
+      }
+
+      const payload = (await response.json()) as { places?: GooglePlace[] };
+      for (const place of payload.places ?? []) {
+        if (place.id && place.location) found.set(place.id, place);
+      }
+    }
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const ids = [...found.keys()];
+    const { data: existing } = await supabaseAdmin
+      .from("collection_points")
+      .select("google_place_id")
+      .in("google_place_id", ids.length ? ids : ["none"]);
+    const known = new Set((existing ?? []).map((row) => row.google_place_id));
+
+    const rows = [...found.values()]
+      .filter((place) => !known.has(place.id))
+      .map((place) => {
+        const components = place.addressComponents ?? [];
+        const state =
+          components.find((c) => c.types.includes("administrative_area_level_1"))?.shortText ?? null;
+        const city =
+          components.find((c) => c.types.includes("administrative_area_level_2"))?.longText ??
+          data.city;
+        const photoName = place.photos?.[0]?.name;
+        return {
+          name: place.displayName?.text ?? "Ponto de coleta",
+          address: place.formattedAddress ?? null,
+          city,
+          state,
+          lat: place.location!.latitude,
+          lng: place.location!.longitude,
+          phone: place.nationalPhoneNumber ?? null,
+          website: place.websiteUri ?? null,
+          opening_hours: place.regularOpeningHours?.weekdayDescriptions?.join(" · ") ?? null,
+          photo_url:
+            photoName && browserKey
+              ? `https://places.googleapis.com/v1/${photoName}/media?maxWidthPx=900&key=${browserKey}`
+              : null,
+          google_place_id: place.id,
+          source: "google_maps",
+          curation_status: "verified",
+          is_active: true,
+        };
+      });
+
+    let created = 0;
+    if (rows.length) {
+      const { data: inserted, error } = await supabaseAdmin
+        .from("collection_points")
+        .insert(rows)
+        .select("id");
+      if (error) throw new Error(error.message);
+      created = inserted?.length ?? 0;
+    }
+
+    await supabaseAdmin.from("point_import_logs").insert({
+      query_city: data.city,
+      points_found: found.size,
+      points_created: created,
+      run_by: "admin",
+    });
+
+    return { found: found.size, created, skipped: found.size - rows.length };
+  });
