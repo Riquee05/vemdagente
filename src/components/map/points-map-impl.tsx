@@ -59,6 +59,7 @@ export default function PointsMapImpl({
   onSelect,
   onPick,
   selectedId,
+  fitBounds = false,
 }: {
   center: [number, number];
   zoom?: number;
@@ -66,6 +67,7 @@ export default function PointsMapImpl({
   onSelect?: (id: string) => void;
   onPick?: (lat: number, lng: number) => void;
   selectedId?: string | null;
+  fitBounds?: boolean;
 }) {
   return (
     <MapContainer
