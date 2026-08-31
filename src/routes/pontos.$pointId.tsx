@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 
 import { PageShell } from "@/components/layout/page-shell";
+import { MoneyNotice } from "@/components/money-notice";
 import { PointsMap } from "@/components/map/points-map";
 import { PointPhoto } from "@/components/points/point-photo";
 import { Badge } from "@/components/ui/badge";
@@ -201,6 +202,7 @@ function PointDetailPage() {
             </div>
           </div>
         )}
+        <MoneyNotice className="mt-10" />
       </section>
     </PageShell>
   );

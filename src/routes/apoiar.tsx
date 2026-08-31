@@ -13,6 +13,7 @@ import {
 import { useEffect, useState } from "react";
 
 import { PageShell } from "@/components/layout/page-shell";
+import { MoneyNotice } from "@/components/money-notice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -272,6 +273,7 @@ function ApoiarPage() {
             </div>
           </div>
         </div>
+        <MoneyNotice className="mt-10" />
       </section>
     </PageShell>
   );

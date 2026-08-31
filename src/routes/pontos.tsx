@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { PageShell } from "@/components/layout/page-shell";
 import { PointsMap } from "@/components/map/points-map";
+import { MoneyNotice } from "@/components/money-notice";
 import { PointCard } from "@/components/points/point-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,6 +91,7 @@ function PontosPage() {
           <PointsMap
             center={center}
             zoom={first ? 12 : 4}
+            fitBounds
             selectedId={selectedId}
             onSelect={setSelectedId}
             points={list.map((point) => ({
@@ -101,6 +103,8 @@ function PontosPage() {
             }))}
           />
         </div>
+
+        <MoneyNotice className="mt-8" />
 
         <div className="mt-8 space-y-3">
           {points.isPending ? (
