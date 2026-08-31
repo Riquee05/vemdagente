@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertStepUp } from "@/lib/admin-2fa.functions";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -29,6 +30,12 @@ async function assertAdmin(supabase: any) {
   if (data !== true) throw new Error("Acesso restrito a administradores.");
 }
 
+/** Só o dono da plataforma pode conceder ou revogar acesso administrativo. */
+async function assertOwner(supabase: any, userId: string) {
+  const { data } = await supabase.rpc("is_owner", { _user_id: userId });
+  if (data !== true) throw new Error("Apenas o dono da plataforma pode alterar acessos.");
+}
+
 
 export type AdminUserRow = {
   id: string;
@@ -37,7 +44,9 @@ export type AdminUserRow = {
   default_city: string | null;
   created_at: string;
   is_admin: boolean;
+  is_owner: boolean;
 };
+
 
 export const listPlatformUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
