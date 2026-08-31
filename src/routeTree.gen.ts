@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AssistenteRouteImport } from './routes/assistente'
 import { Route as DoarRouteImport } from './routes/doar'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
@@ -17,6 +18,11 @@ import { Route as PontosRouteImport } from './routes/pontos'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistenteRoute = AssistenteRouteImport.update({
+  id: '/assistente',
+  path: '/assistente',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DoarRoute = DoarRouteImport.update({
@@ -37,12 +43,14 @@ const PontosRoute = PontosRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/assistente': typeof AssistenteRoute
   '/doar': typeof DoarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/assistente': typeof AssistenteRoute
   '/doar': typeof DoarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/assistente': typeof AssistenteRoute
   '/doar': typeof DoarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/doar' | '/pedir-ajuda' | '/pontos'
+  fullPaths: '/' | '/assistente' | '/doar' | '/pedir-ajuda' | '/pontos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/doar' | '/pedir-ajuda' | '/pontos'
-  id: '__root__' | '/' | '/doar' | '/pedir-ajuda' | '/pontos'
+  to: '/' | '/assistente' | '/doar' | '/pedir-ajuda' | '/pontos'
+  id: '__root__' | '/' | '/assistente' | '/doar' | '/pedir-ajuda' | '/pontos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AssistenteRoute: typeof AssistenteRoute
   DoarRoute: typeof DoarRoute
   PedirAjudaRoute: typeof PedirAjudaRoute
   PontosRoute: typeof PontosRoute
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assistente': {
+      id: '/assistente'
+      path: '/assistente'
+      fullPath: '/assistente'
+      preLoaderRoute: typeof AssistenteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/doar': {
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AssistenteRoute: AssistenteRoute,
   DoarRoute: DoarRoute,
   PedirAjudaRoute: PedirAjudaRoute,
   PontosRoute: PontosRoute,
