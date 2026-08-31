@@ -200,7 +200,7 @@ function AssistentePage() {
                 name: point.name,
                 lat: point.lat,
                 lng: point.lng,
-                city: point.city,
+                subtitle: point.city,
               }))}
               selectedId={selectedId}
               onSelect={setSelectedId}
