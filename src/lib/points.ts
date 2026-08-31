@@ -78,7 +78,7 @@ export async function fetchVerifiedPoints(city?: string): Promise<NearbyPoint[]>
     .eq("is_active", true)
     .eq("curation_status", "verified")
     .order("name")
-    .limit(120);
+    .limit(1500);
 
   if (city && city.trim()) query = query.ilike("city", `%${city.trim()}%`);
 
