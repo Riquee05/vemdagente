@@ -64,8 +64,9 @@ function AdminUsuarios() {
     <div>
       <h2 className="text-lg font-semibold">Usuários</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        O acesso à Administração é controlado aqui e registrado na trilha de auditoria. Ninguém
-        consegue se tornar administrador por conta própria.
+        {isOwner
+          ? "Somente você, como dono da plataforma, pode conceder ou revogar acesso administrativo. Toda alteração fica na trilha de auditoria."
+          : "Apenas o dono da plataforma pode conceder ou revogar acesso administrativo."}
       </p>
       {users.isLoading && <Skeleton className="mt-4 h-40 w-full" />}
       {users.isSuccess && users.data.length === 0 && (
@@ -80,7 +81,12 @@ function AdminUsuarios() {
             <div className="min-w-0">
               <p className="truncate font-medium">
                 {user.full_name ?? "Sem nome"}
-                {user.is_admin && (
+                {user.is_owner && (
+                  <span className="ml-2 border-2 border-foreground bg-primary px-1.5 text-[10px] font-bold uppercase text-primary-foreground">
+                    dono
+                  </span>
+                )}
+                {user.is_admin && !user.is_owner && (
                   <span className="ml-2 border border-current px-1.5 text-[10px] font-bold uppercase">
                     admin
                   </span>
@@ -109,14 +115,17 @@ function AdminUsuarios() {
                   ))}
                 </SelectContent>
               </Select>
-              <Button
-                variant={user.is_admin ? "outline" : "default"}
-                size="sm"
-                disabled={setAdmin.isPending}
-                onClick={() => setAdmin.mutate({ user_id: user.id, grant: !user.is_admin })}
-              >
-                {user.is_admin ? "Revogar admin" : "Tornar admin"}
-              </Button>
+              {isOwner && !user.is_owner && (
+                <Button
+                  variant={user.is_admin ? "outline" : "default"}
+                  size="sm"
+                  disabled={setAdmin.isPending}
+                  onClick={() => setAdmin.mutate({ user_id: user.id, grant: !user.is_admin })}
+                >
+                  {user.is_admin ? "Revogar admin" : "Tornar admin"}
+                </Button>
+              )}
+
             </div>
           </li>
         ))}
