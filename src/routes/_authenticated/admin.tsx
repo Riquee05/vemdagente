@@ -71,7 +71,11 @@ function StepUpForm({ email, onDone }: { email: string | null; onDone: () => voi
       setSent(true);
       toast.success("Código enviado para o seu e-mail.");
     },
-    onError: (e: Error) => toast.error(e.message || "Não foi possível enviar o código."),
+    onError: (e: Error) => {
+      // Um código pode já ter sido enviado (limite de reenvio): mostramos o campo.
+      setSent(true);
+      toast.error(e.message || "Não foi possível enviar o código.");
+    },
   });
 
   const verifyCode = useMutation({
