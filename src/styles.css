@@ -12,8 +12,8 @@
  */
 
 @theme inline {
-  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo Black", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Hind", ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -64,7 +64,7 @@
 }
 
 :root {
-  --radius: 0.875rem;
+  --radius: 0.25rem;
 
   --background: oklch(0.977 0.017 68);
   --foreground: oklch(0.29 0.038 40);
@@ -151,7 +151,14 @@
   h3,
   h4 {
     font-family: var(--font-display);
+    font-weight: 400;
     letter-spacing: -0.02em;
+  }
+
+  h1,
+  h2 {
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
   }
 }
 
@@ -172,4 +179,26 @@
       transparent 60%
     ),
     radial-gradient(90% 80% at 95% 10%, oklch(0.782 0.13 78 / 0.18) 0%, transparent 55%);
+}
+
+/* Traços autorais: bloco com sombra sólida e leve desalinhamento. */
+@utility card-ink {
+  border: 2px solid var(--color-foreground);
+  box-shadow: 10px 10px 0 0 var(--color-foreground);
+  border-radius: 0;
+}
+
+@utility card-ink-primary {
+  border: 2px solid var(--color-foreground);
+  box-shadow: 10px 10px 0 0 var(--color-primary);
+  border-radius: 0;
+}
+
+@utility marker-underline {
+  background-image: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--color-accent) 65%, transparent) 0,
+    color-mix(in oklab, var(--color-accent) 65%, transparent) 0.35em,
+    transparent 0.35em
+  );
 }
