@@ -7,6 +7,19 @@ export type ItemCategory = {
   kind: string;
 };
 
+export type Cause = {
+  id: string;
+  slug: string;
+  label: string;
+};
+
+/** Causas atendidas pela plataforma (leitura pública). */
+export async function fetchCauses(): Promise<Cause[]> {
+  const { data, error } = await supabase.from("causes").select("id, slug, label").order("label");
+  if (error) throw error;
+  return data ?? [];
+}
+
 export type NearbyPoint = {
   id: string;
   name: string;
@@ -77,6 +90,7 @@ export async function fetchVerifiedPoints(city?: string): Promise<NearbyPoint[]>
 export type PointDetail = NearbyPoint & {
   curation_status: string;
   accepted: ItemCategory[];
+  causes: Cause[];
   needs: { id: string; urgency: string; note: string | null; category: ItemCategory }[];
 };
 
