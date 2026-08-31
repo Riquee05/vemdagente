@@ -452,6 +452,60 @@ export type Database = {
           },
         ]
       }
+      volunteer_applications: {
+        Row: {
+          admin_notes: string | null
+          areas: string[]
+          availability: string | null
+          city: string | null
+          created_at: string
+          email: string
+          experience: string | null
+          full_name: string
+          heard_from: string | null
+          id: string
+          motivation: string | null
+          phone: string | null
+          state: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          areas?: string[]
+          availability?: string | null
+          city?: string | null
+          created_at?: string
+          email: string
+          experience?: string | null
+          full_name: string
+          heard_from?: string | null
+          id?: string
+          motivation?: string | null
+          phone?: string | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          areas?: string[]
+          availability?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string
+          experience?: string | null
+          full_name?: string
+          heard_from?: string | null
+          id?: string
+          motivation?: string | null
+          phone?: string | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

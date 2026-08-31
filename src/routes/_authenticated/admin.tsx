@@ -30,6 +30,7 @@ const tabs = [
   { to: "/admin/curadoria", label: "Curadoria", exact: false },
   { to: "/admin/usuarios", label: "Usuários", exact: false },
   { to: "/admin/categorias", label: "Categorias", exact: false },
+  { to: "/admin/voluntarios", label: "Voluntários", exact: false },
 ] as const;
 
 export function useIsAdmin() {

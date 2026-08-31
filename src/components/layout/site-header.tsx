@@ -11,6 +11,7 @@ const navItems = [
   { to: "/pedir-ajuda", label: "Pedir Ajuda" },
   { to: "/pontos", label: "Pontos" },
   { to: "/assistente", label: "Assistente" },
+  { to: "/voluntarios", label: "Voluntários" },
   { to: "/apoiar", label: "Apoiar" },
 ] as const;
 

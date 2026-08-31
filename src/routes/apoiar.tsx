@@ -11,7 +11,7 @@ import {
   MapPin,
   HeartHandshake,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
@@ -39,25 +39,39 @@ export const Route = createFileRoute("/apoiar")({
   component: ApoiarPage,
 });
 
-const siteUrl = typeof window !== "undefined" ? window.location.origin : "https://doaaqui.org";
+function usePublicUrl() {
+  const [url, setUrl] = useState("https://doaaqui.org");
+  useEffect(() => {
+    setUrl(window.location.origin);
+  }, []);
+  return url;
+}
 
-const mensagens = [
-  {
-    id: "geral",
-    label: "Geral",
-    texto: `Conheci o DoaAqui: uma plataforma que conecta doadores a pontos de coleta, ONGs e redes de apoio reais no Brasil. Quem precisa acha ajuda perto de casa e quem doa sabe onde entregar. Acesse: ${siteUrl}`,
-  },
-  {
-    id: "doador",
-    label: "Para doadores",
-    texto: `Quer doar roupas, alimentos ou apoio e não sabe onde entregar? O DoaAqui mostra pontos verificados perto de você e o que cada um precisa agora. ${siteUrl}`,
-  },
-  {
-    id: "quem-precisa",
-    label: "Para quem precisa",
-    texto: `Se você ou alguém perto precisa de ajuda, o DoaAqui lista pontos de coleta, ONGs e redes de apoio verificadas no Brasil. Busque por cidade ou categoria: ${siteUrl}`,
-  },
-] as const;
+type Mensagem = {
+  id: "geral" | "doador" | "quem-precisa";
+  label: string;
+  texto: string;
+};
+
+function useMensagens(siteUrl: string): [Mensagem, Mensagem, Mensagem] {
+  return [
+    {
+      id: "geral",
+      label: "Geral",
+      texto: `Conheci o DoaAqui: uma plataforma que conecta doadores a pontos de coleta, ONGs e redes de apoio reais no Brasil. Quem precisa acha ajuda perto de casa e quem doa sabe onde entregar. Acesse: ${siteUrl}`,
+    },
+    {
+      id: "doador",
+      label: "Para doadores",
+      texto: `Quer doar roupas, alimentos ou apoio e não sabe onde entregar? O DoaAqui mostra pontos verificados perto de você e o que cada um precisa agora. ${siteUrl}`,
+    },
+    {
+      id: "quem-precisa",
+      label: "Para quem precisa",
+      texto: `Se você ou alguém perto precisa de ajuda, o DoaAqui lista pontos de coleta, ONGs e redes de apoio verificadas no Brasil. Busque por cidade ou categoria: ${siteUrl}`,
+    },
+  ];
+}
 
 const shareButtons = [
   {
@@ -65,7 +79,7 @@ const shareButtons = [
     label: "WhatsApp",
     icon: MessageCircle,
     color: "bg-[#25D366]",
-    makeUrl: (text: string) =>
+    makeUrl: (text: string, _siteUrl: string) =>
       `https://wa.me/?text=${encodeURIComponent(text)}`,
   },
   {
@@ -73,7 +87,7 @@ const shareButtons = [
     label: "Facebook",
     icon: Facebook,
     color: "bg-[#1877F3]",
-    makeUrl: (text: string) =>
+    makeUrl: (text: string, siteUrl: string) =>
       `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}&quote=${encodeURIComponent(text)}`,
   },
   {
@@ -81,7 +95,7 @@ const shareButtons = [
     label: "X / Twitter",
     icon: Twitter,
     color: "bg-foreground",
-    makeUrl: (text: string) =>
+    makeUrl: (text: string, _siteUrl: string) =>
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`,
   },
   {
@@ -89,7 +103,7 @@ const shareButtons = [
     label: "LinkedIn",
     icon: Linkedin,
     color: "bg-[#0A66C2]",
-    makeUrl: () =>
+    makeUrl: (_text: string, siteUrl: string) =>
       `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(siteUrl)}`,
   },
   {
@@ -97,14 +111,16 @@ const shareButtons = [
     label: "E-mail",
     icon: Mail,
     color: "bg-accent",
-    makeUrl: (text: string) =>
+    makeUrl: (text: string, _siteUrl: string) =>
       `mailto:?subject=${encodeURIComponent("Conheça o DoaAqui")}&body=${encodeURIComponent(text)}`,
   },
 ];
 
-type MensagemId = (typeof mensagens)[number]["id"];
+type MensagemId = ReturnType<typeof useMensagens>[number]["id"];
 
 function ApoiarPage() {
+  const siteUrl = usePublicUrl();
+  const mensagens = useMensagens(siteUrl);
   const [copiado, setCopiado] = useState(false);
   const [mensagemAtiva, setMensagemAtiva] = useState<MensagemId>(mensagens[0].id);
   const textoAtivo = mensagens.find((m) => m.id === mensagemAtiva)?.texto ?? mensagens[0].texto;
@@ -219,7 +235,7 @@ function ApoiarPage() {
                 return (
                   <a
                     key={btn.id}
-                    href={btn.makeUrl(textoAtivo)}
+                    href={btn.makeUrl(textoAtivo, siteUrl)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`flex flex-col items-center justify-center gap-2 border-2 border-foreground p-3 text-background transition-transform hover:-translate-y-1 ${btn.color}`}
