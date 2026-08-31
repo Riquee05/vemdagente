@@ -58,6 +58,12 @@ function VoluntariosPage() {
     setErro(null);
     setLoading(true);
 
+    if (selecaoAreas.size === 0) {
+      setErro("Selecione pelo menos uma área de interesse.");
+      setLoading(false);
+      return;
+    }
+
     const form = e.currentTarget;
     const formData = new FormData(form);
 
