@@ -70,7 +70,7 @@ function Index() {
   return (
     <PageShell>
       <section className="relative overflow-hidden">
-        <div className="mx-auto w-full max-w-6xl px-4 pt-16 pb-24 md:pt-20 md:pb-32">
+        <div className="mx-auto w-full max-w-6xl px-4 pt-14 pb-16 md:pt-16 md:pb-20">
           <div className="relative z-10">
             <p className="inline-block border-2 border-foreground bg-accent px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent-foreground">
               Doação sem intermediário
