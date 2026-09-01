@@ -140,8 +140,8 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
       await audit(context.userId, "admin_2fa_failed", { attempts });
       throw new Error(
         blocked
-          ? "Código incorreto. Acesso bloqueado por 15 minutos."
-          : "Código incorreto ou expirado.",
+          ? "Senha incorreta. Acesso ao painel bloqueado por 15 minutos."
+          : "Senha incorreta.",
       );
     }
 
