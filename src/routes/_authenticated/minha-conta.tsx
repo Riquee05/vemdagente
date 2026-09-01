@@ -241,6 +241,21 @@ function MinhaContaPage() {
 
         <Card className="mt-8 shadow-soft">
           <CardHeader>
+            <CardTitle>Senha de acesso</CardTitle>
+            <CardDescription>
+              Crie ou troque a senha da sua conta. Ela também é usada para liberar o painel de
+              administração.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SetPasswordForm />
+          </CardContent>
+        </Card>
+
+
+
+        <Card className="mt-8 shadow-soft">
+          <CardHeader>
             <CardTitle>Privacidade e seus dados (LGPD)</CardTitle>
             <CardDescription>
               Você pode baixar uma cópia dos seus dados ou excluir sua conta a qualquer momento.
