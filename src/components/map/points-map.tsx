@@ -29,7 +29,10 @@ export function PointsMap(props: {
   return (
     <div
       className={
-        className ?? "h-[420px] w-full overflow-hidden rounded-xl border border-border bg-surface"
+        // "isolate" cria um contexto de empilhamento próprio: as camadas internas
+        // do Leaflet (z-index alto) nunca sobrepõem filtros, menus ou cabeçalho.
+        "relative isolate " +
+        (className ?? "h-[420px] w-full overflow-hidden rounded-xl border border-border bg-surface")
       }
     >
       <ClientOnly fallback={<MapSkeleton />}>

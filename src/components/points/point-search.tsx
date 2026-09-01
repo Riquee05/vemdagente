@@ -88,7 +88,8 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={searchByAddress} className="grid gap-4 md:grid-cols-[1.4fr_auto]">
+      {/* z-10 garante que os filtros fiquem sempre acima do mapa */}
+      <form onSubmit={searchByAddress} className="relative z-10 grid gap-4 md:grid-cols-[1.4fr_auto]">
         <div>
           <Label htmlFor="local">Onde você está</Label>
           <div className="mt-2 flex gap-2">
