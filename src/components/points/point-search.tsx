@@ -100,8 +100,22 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     }
   }
 
-  const allowedIds = causeId === "all" ? null : new Set(causePointIds.data ?? []);
-  const points = (results.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
+  const allowedIds = causeIds.length === 0 ? null : new Set(causePointIds.data ?? []);
+  const byCause = (results.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
+
+  const neighborhoodOptions = Array.from(
+    new Set(
+      byCause
+        .map((point) => extractNeighborhood(point.address, point.city))
+        .filter((value): value is string => Boolean(value)),
+    ),
+  ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+  const points =
+    neighborhood === "all"
+      ? byCause
+      : byCause.filter((point) => extractNeighborhood(point.address, point.city) === neighborhood);
+
   const center: [number, number] = coords ? [coords.lat, coords.lng] : DEFAULT_CENTER;
 
   const activeNeeds = useQuery({
