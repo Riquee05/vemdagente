@@ -39,17 +39,23 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     enabled: causeId !== "all",
   });
 
+  // Sem localização informada, mostramos os pontos ao redor do centro padrão
+  // para que o mapa nunca apareça vazio.
+  const searchLat = coords?.lat ?? DEFAULT_CENTER[0];
+  const searchLng = coords?.lng ?? DEFAULT_CENTER[1];
+  const searchRadius = coords ? radiusKm : Math.max(radiusKm, 25);
+
   const results = useQuery({
-    queryKey: ["nearby-points", coords?.lat, coords?.lng, categoryId, radiusKm],
+    queryKey: ["nearby-points", searchLat, searchLng, categoryId, searchRadius],
     queryFn: () =>
       searchNearbyPoints({
-        lat: coords!.lat,
-        lng: coords!.lng,
+        lat: searchLat,
+        lng: searchLng,
         categoryId: categoryId === "all" ? null : categoryId,
-        radiusKm,
+        radiusKm: searchRadius,
       }),
-    enabled: coords != null,
   });
+
 
 
   async function useMyLocation() {
@@ -178,10 +184,12 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
       <div className="space-y-3">
         {!coords ? (
           <p className="text-sm text-muted-foreground">
-            Informe sua localização acima para ver os pontos mais próximos.
+            Mostrando pontos verificados na região de São Paulo. Informe sua localização acima para
+            ver os mais próximos de você.
           </p>
-        ) : results.isPending ? (
-          <p className="text-sm text-muted-foreground">Buscando pontos próximos…</p>
+        ) : null}
+        {results.isPending ? (
+          <p className="text-sm text-muted-foreground">Buscando pontos…</p>
         ) : results.isError ? (
           <p className="text-sm text-muted-foreground">
             Não foi possível buscar agora. Tente novamente.
@@ -200,6 +208,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
             />
           ))
         )}
+
       </div>
     </div>
   );
