@@ -124,8 +124,7 @@ export function PointNeedsEditor({
 
   const toggle = useMutation({
     mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
-      const { error } = await supabase.from("point_needs").update({ is_active }).eq("id", id);
-      if (error) throw error;
+      await patchNeed({ data: { needId: id, isActive: is_active } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["point-needs", pointId] });
@@ -137,8 +136,7 @@ export function PointNeedsEditor({
 
   const remove = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("point_needs").delete().eq("id", id);
-      if (error) throw error;
+      await removeNeed({ data: { needId: id } });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["point-needs", pointId] });
