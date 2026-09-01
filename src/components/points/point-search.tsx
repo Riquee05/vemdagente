@@ -206,6 +206,56 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
         </div>
       </div>
 
+      <div className="relative z-10 space-y-2">
+        <Label>Causas</Label>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setCauseIds([])}
+            className={`rounded-full border-2 border-foreground px-3 py-1 text-sm font-semibold transition ${
+              causeIds.length === 0
+                ? "bg-foreground text-background"
+                : "bg-background hover:bg-muted"
+            }`}
+          >
+            Todas
+          </button>
+          {(causes.data ?? []).map((cause) => {
+            const active = causeIds.includes(cause.id);
+            return (
+              <button
+                key={cause.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => toggleCause(cause.id)}
+                className={`rounded-full border-2 border-foreground px-3 py-1 text-sm font-semibold transition ${
+                  active ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"
+                }`}
+              >
+                {cause.label}
+              </button>
+            );
+          })}
+        </div>
+        {causeIds.length > 0 || neighborhood !== "all" ? (
+          <p className="text-xs text-muted-foreground">
+            {points.length} {points.length === 1 ? "instituição" : "instituições"} com os filtros
+            escolhidos.{" "}
+            <button
+              type="button"
+              className="underline"
+              onClick={() => {
+                setCauseIds([]);
+                setNeighborhood("all");
+              }}
+            >
+              Limpar filtros
+            </button>
+          </p>
+        ) : null}
+      </div>
+
+
       <PointsMap
         center={center}
         zoom={coords ? 13 : 11}
