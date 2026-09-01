@@ -98,6 +98,19 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   const points = (results.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
   const center: [number, number] = coords ? [coords.lat, coords.lng] : DEFAULT_CENTER;
 
+  const activeNeeds = useQuery({
+    queryKey: ["active-needs", points.map((p) => p.id).join(",")],
+    queryFn: () => fetchActiveNeedsByPointIds(points.map((p) => p.id)),
+    enabled: points.length > 0,
+  });
+
+  const needsByPoint = new Map<string, { urgency: string; category_label: string; note: string | null }[]>();
+  for (const need of activeNeeds.data ?? []) {
+    const list = needsByPoint.get(need.point_id) ?? [];
+    list.push(need);
+    needsByPoint.set(need.point_id, list);
+  }
+
   return (
     <div className="space-y-6">
       {/* z-10 garante que os filtros fiquem sempre acima do mapa */}
