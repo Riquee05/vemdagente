@@ -233,14 +233,17 @@ function AdminVoluntarios() {
                       </div>
 
                       {stage === "approved" && (
-                        <Button
-                          size="sm"
-                          className="mt-2 w-full"
-                          disabled={promover.isPending}
-                          onClick={() => promover.mutate(app.id)}
-                        >
-                          <UserPlus className="size-3.5" /> Adicionar ao time
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            className="mt-2 w-full"
+                            disabled={promover.isPending}
+                            onClick={() => promover.mutate(app.id)}
+                          >
+                            <UserPlus className="size-3.5" /> Adicionar ao time
+                          </Button>
+                          <AdminInvitePanel applicationId={app.id} email={app.email} />
+                        </>
                       )}
                     </div>
                   </li>
