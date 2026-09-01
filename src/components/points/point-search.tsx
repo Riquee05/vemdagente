@@ -16,10 +16,11 @@ import {
 } from "@/components/ui/select";
 import { geocodeAddress, getBrowserLocation } from "@/lib/geocode";
 import {
+  extractNeighborhood,
   fetchActiveNeedsByPointIds,
   fetchCategories,
   fetchCauses,
-  fetchPointIdsByCause,
+  fetchPointIdsByCauses,
   searchNearbyPoints,
 } from "@/lib/points";
 
@@ -31,7 +32,8 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   const [query, setQuery] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [categoryId, setCategoryId] = useState<string>("all");
-  const [causeId, setCauseId] = useState<string>("all");
+  const [causeIds, setCauseIds] = useState<string[]>([]);
+  const [neighborhood, setNeighborhood] = useState<string>("all");
   const [radiusKm, setRadiusKm] = useState(10);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
@@ -40,10 +42,14 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
 
   const causePointIds = useQuery({
-    queryKey: ["cause-point-ids", causeId],
-    queryFn: () => fetchPointIdsByCause(causeId),
-    enabled: causeId !== "all",
+    queryKey: ["cause-point-ids", [...causeIds].sort().join(",")],
+    queryFn: () => fetchPointIdsByCauses(causeIds),
+    enabled: causeIds.length > 0,
   });
+
+  function toggleCause(id: string) {
+    setCauseIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  }
 
   // Sem localização informada, mostramos os pontos ao redor do centro padrão
   // para que o mapa nunca apareça vazio.
