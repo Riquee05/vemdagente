@@ -37,6 +37,35 @@ function DoarPage() {
           endereço, contato e o que cada um está precisando agora. Buscar não exige conta.
         </p>
 
+        <ol className="mt-8 grid gap-4 sm:grid-cols-3">
+          {[
+            {
+              step: "01",
+              title: "Você diz o que tem",
+              text: "Escolha a categoria — roupas, alimentos, móveis — e, se quiser, a causa que quer apoiar.",
+            },
+            {
+              step: "02",
+              title: "A gente mostra quem precisa perto",
+              text: "Pontos de coleta e ONGs verificados pela nossa curadoria, no mapa e em lista, com endereço e horários.",
+            },
+            {
+              step: "03",
+              title: "Você entrega direto na instituição",
+              text: "Sem intermediário: chame no WhatsApp, ligue ou trace a rota e leve sua doação. Dinheiro só pelos canais oficiais da instituição.",
+            },
+          ].map((item, index) => (
+            <li
+              key={item.step}
+              className={`card-ink p-5 ${index === 1 ? "sm:translate-y-3" : ""}`}
+            >
+              <span className="font-display text-2xl text-accent">{item.step}</span>
+              <h2 className="mt-2 font-display text-base leading-tight">{item.title}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{item.text}</p>
+            </li>
+          ))}
+        </ol>
+
         <div className="mt-10">
           <PointSearch kindHint="donate" />
         </div>
