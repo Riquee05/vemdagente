@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Mail, MapPin, Phone, UserPlus } from "lucide-react";
 
+import { AdminInvitePanel } from "@/components/admin/admin-invite-panel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -233,14 +234,17 @@ function AdminVoluntarios() {
                       </div>
 
                       {stage === "approved" && (
-                        <Button
-                          size="sm"
-                          className="mt-2 w-full"
-                          disabled={promover.isPending}
-                          onClick={() => promover.mutate(app.id)}
-                        >
-                          <UserPlus className="size-3.5" /> Adicionar ao time
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            className="mt-2 w-full"
+                            disabled={promover.isPending}
+                            onClick={() => promover.mutate(app.id)}
+                          >
+                            <UserPlus className="size-3.5" /> Adicionar ao time
+                          </Button>
+                          <AdminInvitePanel applicationId={app.id} email={app.email} />
+                        </>
                       )}
                     </div>
                   </li>

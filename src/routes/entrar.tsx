@@ -239,6 +239,12 @@ function EntrarPage() {
                   >
                     Esqueci minha senha / quero definir uma
                   </button>
+                  <p className="text-xs text-muted-foreground">
+                    Recebeu um convite de administração?{" "}
+                    <Link to="/ativar-admin" className="underline underline-offset-4">
+                      Ativar acesso
+                    </Link>
+                  </p>
                 </form>
               </TabsContent>
 
