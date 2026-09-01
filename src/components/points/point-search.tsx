@@ -202,20 +202,49 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     <div className="space-y-6">
       {/* z-10 garante que os filtros fiquem sempre acima do mapa */}
       <form onSubmit={searchByAddress} className="relative z-10 grid gap-4 md:grid-cols-[1.4fr_auto]">
-        <div>
+        <div ref={suggestionsBox} className="relative">
           <Label htmlFor="local">Onde você está</Label>
           <div className="mt-2 flex gap-2">
             <Input
               id="local"
-              placeholder="Cidade, bairro ou endereço"
+              autoComplete="off"
+              placeholder="CEP, rua, bairro ou cidade"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setChosenLabel(null);
+              }}
+              onFocus={() => {
+                if (suggestions.length) setShowSuggestions(true);
+              }}
             />
             <Button type="submit" disabled={locating}>
               Buscar
             </Button>
           </div>
+          {showSuggestions && suggestions.length > 0 ? (
+            <ul className="absolute left-0 right-0 top-full z-30 mt-1 max-h-72 overflow-auto rounded-md border-2 border-foreground bg-background shadow-[4px_4px_0_0_hsl(var(--foreground))]">
+              {suggestions.map((suggestion) => (
+                <li key={suggestion.id}>
+                  <button
+                    type="button"
+                    onClick={() => pickSuggestion(suggestion)}
+                    className="block w-full px-3 py-2 text-left hover:bg-muted"
+                  >
+                    <span className="block text-sm font-semibold">{suggestion.title}</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {suggestion.subtitle || suggestion.city}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <p className="mt-2 text-xs text-muted-foreground">
+            Digite o CEP (ex.: 01310-100) ou o nome da rua e escolha a sugestão.
+          </p>
         </div>
+
         <div className="flex items-end">
           <Button type="button" variant="outline" onClick={useMyLocation} disabled={locating}>
             Usar minha localização
