@@ -1,4 +1,4 @@
-import { auth, defineMcp } from "@lovable.dev/mcp-js";
+import { auth, defineMcp, type McpDefinitionInput } from "@lovable.dev/mcp-js";
 
 import listCausesTool from "./tools/list-causes";
 import listPointsTool from "./tools/list-points";
