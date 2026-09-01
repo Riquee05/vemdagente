@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
+import { SetPasswordForm } from "@/components/account/set-password-form";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
