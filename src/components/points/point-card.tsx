@@ -47,6 +47,20 @@ export function PointCard({
               Ver detalhes
             </Link>
           </Button>
+          <Button asChild size="sm" variant="outline">
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lng}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Como chegar
+            </a>
+          </Button>
+          {point.phone ? (
+            <Button asChild size="sm" variant="ghost">
+              <a href={`tel:${point.phone.replace(/\D/g, "")}`}>Ligar</a>
+            </Button>
+          ) : null}
           {point.whatsapp ? (
             <Button asChild size="sm" variant="ghost">
               <a
@@ -59,6 +73,9 @@ export function PointCard({
             </Button>
           ) : null}
         </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Combine direto com o local e leve sua doação — o DoaAqui não intermedia a entrega.
+        </p>
       </div>
     </article>
   );

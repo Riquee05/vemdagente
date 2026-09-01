@@ -111,7 +111,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
         </div>
       </form>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="relative z-10 grid gap-4 sm:grid-cols-3">
         <div>
           <Label>{kindHint === "donate" ? "O que você quer doar" : "Que ajuda você precisa"}</Label>
           <Select value={categoryId} onValueChange={setCategoryId}>
