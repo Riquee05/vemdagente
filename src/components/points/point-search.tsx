@@ -174,16 +174,16 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
           </Select>
         </div>
         <div>
-          <Label>Causa</Label>
-          <Select value={causeId} onValueChange={setCauseId}>
+          <Label>Bairro</Label>
+          <Select value={neighborhood} onValueChange={setNeighborhood}>
             <SelectTrigger className="mt-2">
-              <SelectValue placeholder="Todas as causas" />
+              <SelectValue placeholder="Todos os bairros" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as causas</SelectItem>
-              {(causes.data ?? []).map((cause) => (
-                <SelectItem key={cause.id} value={cause.id}>
-                  {cause.label}
+            <SelectContent className="max-h-72">
+              <SelectItem value="all">Todos os bairros</SelectItem>
+              {neighborhoodOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
                 </SelectItem>
               ))}
             </SelectContent>
