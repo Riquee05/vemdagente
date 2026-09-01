@@ -16,11 +16,13 @@ import { Route as AssistenteRouteImport } from './routes/assistente'
 import { Route as AtivarAdminRouteImport } from './routes/ativar-admin'
 import { Route as DoarRouteImport } from './routes/doar'
 import { Route as EntrarRouteImport } from './routes/entrar'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
 import { Route as VoluntariosRouteImport } from './routes/voluntarios'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCadastrarPontoRouteImport } from './routes/_authenticated/cadastrar-ponto'
 import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
@@ -69,6 +71,11 @@ const EntrarRoute = EntrarRouteImport.update({
   path: '/entrar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PedirAjudaRoute = PedirAjudaRouteImport.update({
   id: '/pedir-ajuda',
   path: '/pedir-ajuda',
@@ -94,6 +101,12 @@ const VoluntariosRoute = VoluntariosRouteImport.update({
   path: '/voluntarios',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -175,11 +188,13 @@ export interface FileRoutesByFullPath {
   '/ativar-admin': typeof AtivarAdminRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
+  '/mcp': typeof McpRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/voluntarios': typeof VoluntariosRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
@@ -201,11 +216,13 @@ export interface FileRoutesByTo {
   '/ativar-admin': typeof AtivarAdminRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
+  '/mcp': typeof McpRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/voluntarios': typeof VoluntariosRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
@@ -228,11 +245,13 @@ export interface FileRoutesById {
   '/ativar-admin': typeof AtivarAdminRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
+  '/mcp': typeof McpRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/voluntarios': typeof VoluntariosRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
@@ -256,11 +275,13 @@ export interface FileRouteTypes {
     | '/ativar-admin'
     | '/doar'
     | '/entrar'
+    | '/mcp'
     | '/pedir-ajuda'
     | '/pontos'
     | '/privacidade'
     | '/redefinir-senha'
     | '/voluntarios'
+    | '/.well-known/oauth-protected-resource'
     | '/admin'
     | '/cadastrar-ponto'
     | '/minha-conta'
@@ -282,11 +303,13 @@ export interface FileRouteTypes {
     | '/ativar-admin'
     | '/doar'
     | '/entrar'
+    | '/mcp'
     | '/pedir-ajuda'
     | '/pontos'
     | '/privacidade'
     | '/redefinir-senha'
     | '/voluntarios'
+    | '/.well-known/oauth-protected-resource'
     | '/cadastrar-ponto'
     | '/minha-conta'
     | '/pontos/$pointId'
@@ -308,11 +331,13 @@ export interface FileRouteTypes {
     | '/ativar-admin'
     | '/doar'
     | '/entrar'
+    | '/mcp'
     | '/pedir-ajuda'
     | '/pontos'
     | '/privacidade'
     | '/redefinir-senha'
     | '/voluntarios'
+    | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
     | '/_authenticated/cadastrar-ponto'
     | '/_authenticated/minha-conta'
@@ -336,11 +361,13 @@ export interface RootRouteChildren {
   AtivarAdminRoute: typeof AtivarAdminRoute
   DoarRoute: typeof DoarRoute
   EntrarRoute: typeof EntrarRoute
+  McpRoute: typeof McpRoute
   PedirAjudaRoute: typeof PedirAjudaRoute
   PontosRoute: typeof PontosRouteWithChildren
   PrivacidadeRoute: typeof PrivacidadeRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   VoluntariosRoute: typeof VoluntariosRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -394,6 +421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EntrarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pedir-ajuda': {
       id: '/pedir-ajuda'
       path: '/pedir-ajuda'
@@ -427,6 +461,13 @@ declare module '@tanstack/react-router' {
       path: '/voluntarios'
       fullPath: '/voluntarios'
       preLoaderRoute: typeof VoluntariosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -584,11 +625,14 @@ const rootRouteChildren: RootRouteChildren = {
   AtivarAdminRoute: AtivarAdminRoute,
   DoarRoute: DoarRoute,
   EntrarRoute: EntrarRoute,
+  McpRoute: McpRoute,
   PedirAjudaRoute: PedirAjudaRoute,
   PontosRoute: PontosRouteWithChildren,
   PrivacidadeRoute: PrivacidadeRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
   VoluntariosRoute: VoluntariosRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
