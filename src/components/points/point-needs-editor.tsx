@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -14,8 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/integrations/supabase/client";
 import { fetchCategories, type ItemCategory } from "@/lib/points";
+import { addPointNeed, deletePointNeed, listPointNeeds, updatePointNeed } from "@/lib/points-needs.functions";
 
 export type PointNeed = {
   id: string;
