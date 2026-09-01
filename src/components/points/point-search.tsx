@@ -45,6 +45,53 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   const [radiusKm, setRadiusKm] = useState(10);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
+  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [chosenLabel, setChosenLabel] = useState<string | null>(null);
+  const suggestionsBox = useRef<HTMLDivElement>(null);
+
+  // Autocomplete com debounce: aceita rua, bairro, cidade ou CEP.
+  useEffect(() => {
+    const term = query.trim();
+    if (term.length < 3 || term === chosenLabel) {
+      setSuggestions([]);
+      return;
+    }
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const found = await suggestAddresses(term);
+        if (!cancelled) {
+          setSuggestions(found);
+          setShowSuggestions(true);
+        }
+      } catch {
+        if (!cancelled) setSuggestions([]);
+      }
+    }, 450);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [query, chosenLabel]);
+
+  useEffect(() => {
+    function onClickOutside(event: MouseEvent) {
+      if (!suggestionsBox.current?.contains(event.target as Node)) setShowSuggestions(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  function pickSuggestion(suggestion: AddressSuggestion) {
+    const label = [suggestion.title, suggestion.subtitle].filter(Boolean).join(" — ");
+    setQuery(label);
+    setChosenLabel(label);
+    setCoords({ lat: suggestion.lat, lng: suggestion.lng });
+    setSuggestions([]);
+    setShowSuggestions(false);
+  }
+
 
   const categories = useQuery({ queryKey: ["item-categories"], queryFn: fetchCategories });
   const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
