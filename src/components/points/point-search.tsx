@@ -104,6 +104,8 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     enabled: points.length > 0,
   });
 
+  console.log("debug activeNeeds", { pointsCount: points.length, enabled: points.length > 0, isPending: activeNeeds.isPending, dataLength: activeNeeds.data?.length, error: activeNeeds.error });
+
   const needsByPoint = new Map<string, { urgency: string; category_label: string; note: string | null }[]>();
   for (const need of activeNeeds.data ?? []) {
     const list = needsByPoint.get(need.point_id) ?? [];
