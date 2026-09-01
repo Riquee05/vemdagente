@@ -128,7 +128,12 @@ export async function geocodeAddress(query: string): Promise<GeocodeResult | nul
 
 
   const url = new URL("https://nominatim.openstreetmap.org/search");
-  url.searchParams.set("q", trimmed);
+  if (isCep(trimmed)) {
+    url.searchParams.set("postalcode", trimmed.replace(/\D/g, ""));
+  } else {
+    url.searchParams.set("q", trimmed);
+  }
+
   url.searchParams.set("format", "jsonv2");
   url.searchParams.set("addressdetails", "1");
   url.searchParams.set("limit", "1");
