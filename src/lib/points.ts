@@ -157,6 +157,41 @@ export async function fetchPointIdsByCause(causeId: string): Promise<string[]> {
   return (data ?? []).map((row) => row.point_id);
 }
 
+/** IDs dos pontos que atendem qualquer uma das causas informadas (união). */
+export async function fetchPointIdsByCauses(causeIds: string[]): Promise<string[]> {
+  if (causeIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from("point_causes")
+    .select("point_id")
+    .in("cause_id", causeIds)
+    .limit(5000);
+  if (error) throw error;
+  return Array.from(new Set((data ?? []).map((row) => row.point_id)));
+}
+
+/**
+ * Extrai o bairro de um endereço no formato brasileiro
+ * ("Rua X, 123 - Bairro, Cidade - UF, CEP").
+ */
+export function extractNeighborhood(address: string | null, city?: string | null): string | null {
+  if (!address) return null;
+  let head = address;
+  if (city) {
+    const idx = head.indexOf(`, ${city}`);
+    if (idx > 0) head = head.slice(0, idx);
+  } else {
+    head = head.split(",")[0] ?? head;
+  }
+  const parts = head
+    .split(" - ")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  if (parts.length < 2) return null;
+  const last = parts[parts.length - 1];
+  if (!last || /^\d/.test(last) || last.length < 3) return null;
+  return last;
+}
+
 /** Necessidades ativas de uma lista de pontos (leitura pública). */
 export async function fetchActiveNeedsByPointIds(
   pointIds: string[],

@@ -16,10 +16,11 @@ import {
 } from "@/components/ui/select";
 import { geocodeAddress, getBrowserLocation } from "@/lib/geocode";
 import {
+  extractNeighborhood,
   fetchActiveNeedsByPointIds,
   fetchCategories,
   fetchCauses,
-  fetchPointIdsByCause,
+  fetchPointIdsByCauses,
   searchNearbyPoints,
 } from "@/lib/points";
 
@@ -31,7 +32,8 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   const [query, setQuery] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [categoryId, setCategoryId] = useState<string>("all");
-  const [causeId, setCauseId] = useState<string>("all");
+  const [causeIds, setCauseIds] = useState<string[]>([]);
+  const [neighborhood, setNeighborhood] = useState<string>("all");
   const [radiusKm, setRadiusKm] = useState(10);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
@@ -40,10 +42,14 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
 
   const causePointIds = useQuery({
-    queryKey: ["cause-point-ids", causeId],
-    queryFn: () => fetchPointIdsByCause(causeId),
-    enabled: causeId !== "all",
+    queryKey: ["cause-point-ids", [...causeIds].sort().join(",")],
+    queryFn: () => fetchPointIdsByCauses(causeIds),
+    enabled: causeIds.length > 0,
   });
+
+  function toggleCause(id: string) {
+    setCauseIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  }
 
   // Sem localização informada, mostramos os pontos ao redor do centro padrão
   // para que o mapa nunca apareça vazio.
@@ -94,8 +100,22 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     }
   }
 
-  const allowedIds = causeId === "all" ? null : new Set(causePointIds.data ?? []);
-  const points = (results.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
+  const allowedIds = causeIds.length === 0 ? null : new Set(causePointIds.data ?? []);
+  const byCause = (results.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
+
+  const neighborhoodOptions = Array.from(
+    new Set(
+      byCause
+        .map((point) => extractNeighborhood(point.address, point.city))
+        .filter((value): value is string => Boolean(value)),
+    ),
+  ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+  const points =
+    neighborhood === "all"
+      ? byCause
+      : byCause.filter((point) => extractNeighborhood(point.address, point.city) === neighborhood);
+
   const center: [number, number] = coords ? [coords.lat, coords.lng] : DEFAULT_CENTER;
 
   const activeNeeds = useQuery({
@@ -154,16 +174,16 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
           </Select>
         </div>
         <div>
-          <Label>Causa</Label>
-          <Select value={causeId} onValueChange={setCauseId}>
+          <Label>Bairro</Label>
+          <Select value={neighborhood} onValueChange={setNeighborhood}>
             <SelectTrigger className="mt-2">
-              <SelectValue placeholder="Todas as causas" />
+              <SelectValue placeholder="Todos os bairros" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as causas</SelectItem>
-              {(causes.data ?? []).map((cause) => (
-                <SelectItem key={cause.id} value={cause.id}>
-                  {cause.label}
+            <SelectContent className="max-h-72">
+              <SelectItem value="all">Todos os bairros</SelectItem>
+              {neighborhoodOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -185,6 +205,56 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
           </Select>
         </div>
       </div>
+
+      <div className="relative z-10 space-y-2">
+        <Label>Causas</Label>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setCauseIds([])}
+            className={`rounded-full border-2 border-foreground px-3 py-1 text-sm font-semibold transition ${
+              causeIds.length === 0
+                ? "bg-foreground text-background"
+                : "bg-background hover:bg-muted"
+            }`}
+          >
+            Todas
+          </button>
+          {(causes.data ?? []).map((cause) => {
+            const active = causeIds.includes(cause.id);
+            return (
+              <button
+                key={cause.id}
+                type="button"
+                aria-pressed={active}
+                onClick={() => toggleCause(cause.id)}
+                className={`rounded-full border-2 border-foreground px-3 py-1 text-sm font-semibold transition ${
+                  active ? "bg-primary text-primary-foreground" : "bg-background hover:bg-muted"
+                }`}
+              >
+                {cause.label}
+              </button>
+            );
+          })}
+        </div>
+        {causeIds.length > 0 || neighborhood !== "all" ? (
+          <p className="text-xs text-muted-foreground">
+            {points.length} {points.length === 1 ? "instituição" : "instituições"} com os filtros
+            escolhidos.{" "}
+            <button
+              type="button"
+              className="underline"
+              onClick={() => {
+                setCauseIds([]);
+                setNeighborhood("all");
+              }}
+            >
+              Limpar filtros
+            </button>
+          </p>
+        ) : null}
+      </div>
+
 
       <PointsMap
         center={center}
