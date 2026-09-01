@@ -138,12 +138,15 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
         { onConflict: "user_id" },
       );
       await audit(context.userId, "admin_2fa_failed", { attempts });
-      throw new Error(
-        blocked
+      return {
+        ok: false as const,
+        expiresAt: null,
+        message: blocked
           ? "Senha incorreta. Acesso ao painel bloqueado por 15 minutos."
-          : "Senha incorreta. Se você entra pelo Google ou link mágico, defina uma senha em Entrar > Senha > \"Esqueci minha senha\".",
-      );
+          : "Senha incorreta. Se você entra pelo Google ou link mágico, defina uma senha aqui mesmo em \"Definir senha\".",
+      };
     }
+
 
     const expiresAt = new Date(Date.now() + STEP_UP_HOURS * 60 * 60_000).toISOString();
     await db.from("admin_step_up").upsert(
@@ -158,8 +161,9 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
       );
 
     await audit(context.userId, "admin_2fa_verified", { expires_at: expiresAt });
-    return { ok: true, expiresAt };
+    return { ok: true as const, expiresAt, message: null };
   });
+
 
 /** Encerra a liberação do painel (sair da área administrativa). */
 export const endAdminStepUp = createServerFn({ method: "POST" })
