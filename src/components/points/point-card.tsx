@@ -43,6 +43,20 @@ export function PointCard({
         {point.opening_hours ? (
           <p className="mt-1 text-xs text-muted-foreground">Horários: {point.opening_hours}</p>
         ) : null}
+        {needs.length > 0 && (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <span className="text-xs font-semibold text-amber-700">Precisa agora:</span>
+            {needs.slice(0, 3).map((need, index) => (
+              <Badge key={index} variant={need.urgency === "critical" || need.urgency === "high" ? "destructive" : "outline"} className="text-xs">
+                {need.category_label}
+                {need.urgency === "critical" ? " (crítico)" : need.urgency === "high" ? " (urgente)" : ""}
+              </Badge>
+            ))}
+            {needs.length > 3 && (
+              <span className="text-xs text-muted-foreground">+{needs.length - 3}</span>
+            )}
+          </div>
+        )}
         <div className="mt-3 flex flex-wrap gap-2">
           <Button asChild size="sm" variant="outline">
             <Link to="/pontos/$pointId" params={{ pointId: point.id }}>
