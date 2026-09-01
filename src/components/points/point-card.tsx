@@ -9,10 +9,12 @@ export function PointCard({
   point,
   onHighlight,
   active,
+  needs = [],
 }: {
   point: NearbyPoint;
   onHighlight?: (id: string) => void;
   active?: boolean;
+  needs?: { urgency: string; category_label: string; note: string | null }[];
 }) {
   const distance = formatDistance(point.distance_km);
 
