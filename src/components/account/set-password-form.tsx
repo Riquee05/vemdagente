@@ -51,7 +51,7 @@ export function SetPasswordForm({ onDone, submitLabel = "Salvar senha" }: Props)
     setPassword("");
     setConfirm("");
     setCurrentPassword("");
-    toast.success("Senha salva! Use ela para entrar e liberar o painel.");
+    toast.success("Senha salva! Use ela para entrar no DoaAqui.");
     onDone?.();
   }
 

@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/minha-conta")({
       {
         name: "description",
         content:
-          "Ajuste seu nome, sua cidade padrão e seu papel no DoaAqui: quem doa, quem precisa de ajuda ou quem administra.",
+          "Ajuste seu nome, sua cidade padrão e seu papel no DoaAqui: quem quer doar ou quem precisa de ajuda.",
       },
       { property: "og:title", content: "Minha conta | DoaAqui" },
       { property: "og:description", content: "Nome, cidade padrão e papel na plataforma." },
@@ -221,8 +221,8 @@ function MinhaContaPage() {
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
-                    O acesso administrativo é concedido pela equipe do projeto e não pode ser
-                    escolhido aqui.
+                    Sua conta é de uso pessoal: doar ou pedir ajuda. Funções da equipe do
+                    DoaAqui são tratadas em outro lugar e não se misturam com sua conta.
                   </p>
                 </div>
 
@@ -244,8 +244,8 @@ function MinhaContaPage() {
           <CardHeader>
             <CardTitle>Senha de acesso</CardTitle>
             <CardDescription>
-              Crie ou troque a senha da sua conta. Ela também é usada para liberar o painel de
-              administração.
+              Crie ou troque a senha que você usa para entrar no DoaAqui e acompanhar suas doações
+              ou seus pedidos de ajuda.
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -1,10 +1,12 @@
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { HeartHandshake, Menu } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { to: "/doar", label: "Doar" },
@@ -18,6 +20,16 @@ const navItems = [
 export function SiteHeader() {
   const { user, loading } = useAuth();
   const [open, setOpen] = useState(false);
+
+  // O atalho da administração só existe para quem realmente é da equipe.
+  const admin = useQuery({
+    queryKey: ["header-is-admin", user?.id ?? null],
+    enabled: Boolean(user),
+    queryFn: async () => {
+      const { data } = await supabase.rpc("is_admin");
+      return data === true;
+    },
+  });
 
   return (
     <header className="sticky top-0 z-40 border-b-2 border-foreground bg-background/92 backdrop-blur-md">
@@ -42,7 +54,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {!loading && user && (
+          {!loading && user && admin.data === true && (
             <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
               <Link to="/admin">Admin</Link>
             </Button>
