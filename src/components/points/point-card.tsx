@@ -10,11 +10,13 @@ export function PointCard({
   onHighlight,
   active,
   needs = [],
+  context = "donation",
 }: {
   point: NearbyPoint;
   onHighlight?: (id: string) => void;
   active?: boolean;
   needs?: { urgency: string; category_label: string; note: string | null }[];
+  context?: "donation" | "support";
 }) {
   const distance = formatDistance(point.distance_km);
 
@@ -89,7 +91,9 @@ export function PointCard({
           ) : null}
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          Combine direto com o local e leve sua doação — o DoaAqui não intermedia a entrega.
+          {context === "support"
+            ? "Entre em contato com o local para confirmar o atendimento e os documentos necessários."
+            : "Combine direto com o local e leve sua doação — o DoaAqui não intermedia a entrega."}
         </p>
       </div>
     </article>
