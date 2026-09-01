@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as ApoiarRouteImport } from './routes/apoiar'
 import { Route as AssistenteRouteImport } from './routes/assistente'
+import { Route as AtivarAdminRouteImport } from './routes/ativar-admin'
 import { Route as DoarRouteImport } from './routes/doar'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
@@ -50,6 +51,11 @@ const ApoiarRoute = ApoiarRouteImport.update({
 const AssistenteRoute = AssistenteRouteImport.update({
   id: '/assistente',
   path: '/assistente',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtivarAdminRoute = AtivarAdminRouteImport.update({
+  id: '/ativar-admin',
+  path: '/ativar-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DoarRoute = DoarRouteImport.update({
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
+  '/ativar-admin': typeof AtivarAdminRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
+  '/ativar-admin': typeof AtivarAdminRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
+  '/ativar-admin': typeof AtivarAdminRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
@@ -234,6 +243,7 @@ export interface FileRouteTypes {
     | '/'
     | '/apoiar'
     | '/assistente'
+    | '/ativar-admin'
     | '/doar'
     | '/entrar'
     | '/pedir-ajuda'
@@ -258,6 +268,7 @@ export interface FileRouteTypes {
     | '/'
     | '/apoiar'
     | '/assistente'
+    | '/ativar-admin'
     | '/doar'
     | '/entrar'
     | '/pedir-ajuda'
@@ -282,6 +293,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/apoiar'
     | '/assistente'
+    | '/ativar-admin'
     | '/doar'
     | '/entrar'
     | '/pedir-ajuda'
@@ -308,6 +320,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ApoiarRoute: typeof ApoiarRoute
   AssistenteRoute: typeof AssistenteRoute
+  AtivarAdminRoute: typeof AtivarAdminRoute
   DoarRoute: typeof DoarRoute
   EntrarRoute: typeof EntrarRoute
   PedirAjudaRoute: typeof PedirAjudaRoute
@@ -345,6 +358,13 @@ declare module '@tanstack/react-router' {
       path: '/assistente'
       fullPath: '/assistente'
       preLoaderRoute: typeof AssistenteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ativar-admin': {
+      id: '/ativar-admin'
+      path: '/ativar-admin'
+      fullPath: '/ativar-admin'
+      preLoaderRoute: typeof AtivarAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/doar': {
@@ -539,6 +559,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ApoiarRoute: ApoiarRoute,
   AssistenteRoute: AssistenteRoute,
+  AtivarAdminRoute: AtivarAdminRoute,
   DoarRoute: DoarRoute,
   EntrarRoute: EntrarRoute,
   PedirAjudaRoute: PedirAjudaRoute,
