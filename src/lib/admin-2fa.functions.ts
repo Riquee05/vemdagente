@@ -161,8 +161,9 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
       );
 
     await audit(context.userId, "admin_2fa_verified", { expires_at: expiresAt });
-    return { ok: true, expiresAt };
+    return { ok: true as const, expiresAt, message: null };
   });
+
 
 /** Encerra a liberação do painel (sair da área administrativa). */
 export const endAdminStepUp = createServerFn({ method: "POST" })
