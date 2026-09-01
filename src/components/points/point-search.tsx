@@ -199,10 +199,16 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
             Nenhum ponto verificado nesse raio. Tente aumentar a distância ou trocar a categoria.
           </p>
         ) : (
-
+          points.map((point) => (
+            <PointCard
+              key={point.id}
+              point={point}
+              active={selectedId === point.id}
+              onHighlight={setSelectedId}
             />
           ))
         )}
+
       </div>
     </div>
   );
