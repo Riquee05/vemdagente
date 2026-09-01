@@ -103,14 +103,38 @@ function StepUpForm({ email, onDone }: { email: string | null; onDone: () => voi
         <Button type="submit" disabled={password.length < 6 || confirm.isPending}>
           {confirm.isPending ? "Verificando..." : "Liberar painel"}
         </Button>
-        <p className="text-xs text-muted-foreground">
-          Ainda não tem senha (entra pelo Google ou link mágico)?{" "}
-          <Link to="/entrar" className="font-medium text-primary underline">
-            Defina uma em Entrar &gt; Senha &gt; "Esqueci minha senha"
-          </Link>
-          .
-        </p>
       </form>
+
+      <div className="mt-6 border-t-2 border-dashed border-foreground/20 pt-5">
+        {showSetPassword ? (
+          <div className="space-y-3">
+            <h3 className="font-display text-base">Definir senha da conta</h3>
+            <p className="text-xs text-muted-foreground">
+              Você já está logado, então pode criar a senha aqui mesmo — sem e-mail.
+            </p>
+            <SetPasswordForm submitLabel="Salvar e usar esta senha" />
+            <button
+              type="button"
+              className="text-xs text-muted-foreground underline"
+              onClick={() => setShowSetPassword(false)}
+            >
+              Cancelar
+            </button>
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Ainda não tem senha (entra pelo Google ou link mágico)?{" "}
+            <button
+              type="button"
+              className="font-medium text-primary underline"
+              onClick={() => setShowSetPassword(true)}
+            >
+              Defina uma agora
+            </button>
+            .
+          </p>
+        )}
+      </div>
     </div>
   );
 }
