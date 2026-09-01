@@ -112,7 +112,10 @@ export function PointNeedsEditor({
       setNewNote("");
       onChange?.();
     },
-    onError: () => toast.error("Não conseguimos salvar a necessidade. Tente de novo."),
+    onError: (error) => {
+      console.error("save need error:", error);
+      toast.error(error instanceof Error ? error.message : "Não conseguimos salvar a necessidade. Tente de novo.");
+    },
   });
 
   const toggle = useMutation({
