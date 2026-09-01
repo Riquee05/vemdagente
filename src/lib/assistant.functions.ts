@@ -40,58 +40,52 @@ export type AssistantAnswer = {
   categoryLabel: string | null;
 };
 
-/** Lê o texto final de uma chamada streaming da Responses API. */
-async function streamResponsesText(body: Record<string, unknown>): Promise<string> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
+type GeminiSchema = Record<string, unknown>;
+
+/** Chama o Gemini e devolve o texto final. */
+async function geminiText(args: {
+  instructions: string;
+  prompt: string;
+  jsonSchema?: GeminiSchema;
+}): Promise<string> {
+  const apiKey = process.env["GEMINI_API_KEY"];
   if (!apiKey) throw new Error("O assistente não está configurado (chave de IA ausente).");
 
-  const res = await fetch(GATEWAY_URL, {
+  const res = await fetch(GEMINI_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Lovable-API-Key": apiKey,
-      "X-Lovable-AIG-SDK": "fetch",
+      "x-goog-api-key": apiKey,
     },
-    body: JSON.stringify({ ...body, model: MODEL, stream: true }),
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: args.instructions }] },
+      contents: [{ role: "user", parts: [{ text: args.prompt }] }],
+      generationConfig: {
+        temperature: 0.4,
+        maxOutputTokens: 800,
+        ...(args.jsonSchema
+          ? { responseMimeType: "application/json", responseSchema: args.jsonSchema }
+          : {}),
+      },
+    }),
   });
 
-  if (!res.ok || !res.body) {
+  if (!res.ok) {
     const detail = await res.text().catch(() => "");
     if (res.status === 429) throw new Error("Muitas perguntas ao mesmo tempo. Tente de novo em alguns segundos.");
-    if (res.status === 402 || res.status === 403)
-      throw new Error("O assistente está temporariamente indisponível (limite de uso da IA).");
+    if (res.status === 401 || res.status === 403)
+      throw new Error("O assistente está temporariamente indisponível (chave do Gemini inválida ou sem permissão).");
     throw new Error(`Falha ao consultar o assistente (${res.status}). ${detail.slice(0, 200)}`);
   }
 
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let text = "";
-
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const chunks = buffer.split("\n\n");
-    buffer = chunks.pop() ?? "";
-    for (const chunk of chunks) {
-      for (const line of chunk.split("\n")) {
-        if (!line.startsWith("data:")) continue;
-        const payload = line.slice(5).trim();
-        if (!payload || payload === "[DONE]") continue;
-        try {
-          const event = JSON.parse(payload) as { type?: string; delta?: string };
-          if (event.type === "response.output_text.delta" && typeof event.delta === "string") {
-            text += event.delta;
-          }
-        } catch {
-          // ignora eventos parciais
-        }
-      }
-    }
-  }
-
-  return text.trim();
+  const json = (await res.json()) as {
+    candidates?: { content?: { parts?: { text?: string }[] } }[];
+  };
+  const parts = json.candidates?.[0]?.content?.parts ?? [];
+  return parts
+    .map((p) => p.text ?? "")
+    .join("")
+    .trim();
 }
 
 type Intent = {
