@@ -184,10 +184,12 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
       <div className="space-y-3">
         {!coords ? (
           <p className="text-sm text-muted-foreground">
-            Informe sua localização acima para ver os pontos mais próximos.
+            Mostrando pontos verificados na região de São Paulo. Informe sua localização acima para
+            ver os mais próximos de você.
           </p>
-        ) : results.isPending ? (
-          <p className="text-sm text-muted-foreground">Buscando pontos próximos…</p>
+        ) : null}
+        {results.isPending ? (
+          <p className="text-sm text-muted-foreground">Buscando pontos…</p>
         ) : results.isError ? (
           <p className="text-sm text-muted-foreground">
             Não foi possível buscar agora. Tente novamente.
@@ -197,12 +199,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
             Nenhum ponto verificado nesse raio. Tente aumentar a distância ou trocar a categoria.
           </p>
         ) : (
-          points.map((point) => (
-            <PointCard
-              key={point.id}
-              point={point}
-              active={selectedId === point.id}
-              onHighlight={setSelectedId}
+
             />
           ))
         )}
