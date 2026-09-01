@@ -17,13 +17,13 @@ import { fetchCategories, fetchCauses, PHOTO_BUCKET } from "@/lib/points";
 export const Route = createFileRoute("/_authenticated/cadastrar-ponto")({
   head: () => ({
     meta: [
-      { title: "Cadastrar ponto de coleta | DoaAqui" },
+      { title: "Cadastrar ponto de coleta | Vem da Gente" },
       {
         name: "description",
         content:
-          "Cadastre um ponto de coleta ou ONG real com foto, localização no mapa e os itens que o local aceita. A curadoria do DoaAqui revisa antes de publicar.",
+          "Cadastre um ponto de coleta ou ONG real com foto, localização no mapa e os itens que o local aceita. A curadoria do Vem da Gente revisa antes de publicar.",
       },
-      { property: "og:title", content: "Cadastrar ponto de coleta | DoaAqui" },
+      { property: "og:title", content: "Cadastrar ponto de coleta | Vem da Gente" },
       {
         property: "og:description",
         content: "Adicione um local de doação com foto e localização precisa.",

@@ -12,16 +12,16 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/redefinir-senha")({
   head: () => ({
     meta: [
-      { title: "Definir nova senha — DoaAqui" },
+      { title: "Definir nova senha — Vem da Gente" },
       {
         name: "description",
         content:
-          "Crie uma nova senha para sua conta do DoaAqui. Use o link enviado por e-mail para concluir.",
+          "Crie uma nova senha para sua conta do Vem da Gente. Use o link enviado por e-mail para concluir.",
       },
-      { property: "og:title", content: "Definir nova senha — DoaAqui" },
+      { property: "og:title", content: "Definir nova senha — Vem da Gente" },
       {
         property: "og:description",
-        content: "Crie uma nova senha para acessar sua conta do DoaAqui.",
+        content: "Crie uma nova senha para acessar sua conta do Vem da Gente.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

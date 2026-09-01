@@ -5,7 +5,7 @@ export function SiteFooter() {
     <footer className="mt-24 border-t border-border/70 bg-surface">
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-display text-lg font-semibold">DoaAqui</p>
+          <p className="font-display text-lg font-semibold">Vem da Gente</p>
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
             Conectamos quem quer doar com pontos de coleta e ONGs perto de você — e ajudamos quem
             precisa a encontrar apoio.
@@ -51,7 +51,7 @@ export function SiteFooter() {
           <ul className="mt-3 space-y-2 text-muted-foreground">
             <li>
               <Link to="/apoiar" className="hover:text-foreground">
-                Apoiar o DoaAqui
+                Apoiar o Vem da Gente
               </Link>
             </li>
             <li>
@@ -63,7 +63,7 @@ export function SiteFooter() {
 
           <p className="mt-4 text-xs text-muted-foreground">
             Plataforma independente que conecta pessoas a instituições e projetos sociais. As
-            doações em dinheiro são feitas pelos canais oficiais de cada instituição — o DoaAqui
+            doações em dinheiro são feitas pelos canais oficiais de cada instituição — o Vem da Gente
             não recebe, administra ou intermedia valores.
           </p>
         </nav>

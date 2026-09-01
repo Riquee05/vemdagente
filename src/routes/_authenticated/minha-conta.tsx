@@ -34,13 +34,13 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/_authenticated/minha-conta")({
   head: () => ({
     meta: [
-      { title: "Minha conta | DoaAqui" },
+      { title: "Minha conta | Vem da Gente" },
       {
         name: "description",
         content:
-          "Ajuste seu nome, sua cidade padrão e seu papel no DoaAqui: quem quer doar ou quem precisa de ajuda.",
+          "Ajuste seu nome, sua cidade padrão e seu papel no Vem da Gente: quem quer doar ou quem precisa de ajuda.",
       },
-      { property: "og:title", content: "Minha conta | DoaAqui" },
+      { property: "og:title", content: "Minha conta | Vem da Gente" },
       { property: "og:description", content: "Nome, cidade padrão e papel na plataforma." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -143,7 +143,7 @@ function MinhaContaPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "doaaqui-meus-dados.json";
+      a.download = "vemdagente-meus-dados.json";
       a.click();
       URL.revokeObjectURL(url);
     },
@@ -174,7 +174,7 @@ function MinhaContaPage() {
       <section className="mx-auto w-full max-w-2xl px-4 py-16">
         <h1 className="text-3xl font-semibold">Minha conta</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Seu nome, sua cidade padrão e como você usa o DoaAqui.
+          Seu nome, sua cidade padrão e como você usa o Vem da Gente.
         </p>
 
         <Card className="mt-8 shadow-soft">
@@ -246,7 +246,7 @@ function MinhaContaPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label htmlFor="role">Como você usa o DoaAqui</Label>
+                  <Label htmlFor="role">Como você usa o Vem da Gente</Label>
                   <Select value={role} onValueChange={(value) => setRole(value as Role)}>
                     <SelectTrigger id="role">
                       <SelectValue />
@@ -258,7 +258,7 @@ function MinhaContaPage() {
                   </Select>
                   <p className="text-xs text-muted-foreground">
                     Sua conta é de uso pessoal: doar ou pedir ajuda. Funções da equipe do
-                    DoaAqui são tratadas em outro lugar e não se misturam com sua conta.
+                    Vem da Gente são tratadas em outro lugar e não se misturam com sua conta.
                   </p>
                 </div>
 
@@ -351,7 +351,7 @@ function MinhaContaPage() {
           <CardHeader>
             <CardTitle>Senha de acesso</CardTitle>
             <CardDescription>
-              Crie ou troque a senha que você usa para entrar no DoaAqui e acompanhar suas doações
+              Crie ou troque a senha que você usa para entrar no Vem da Gente e acompanhar suas doações
               ou seus pedidos de ajuda.
             </CardDescription>
           </CardHeader>

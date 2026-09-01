@@ -12,13 +12,13 @@ import { fetchPoint } from "@/lib/points";
 export const Route = createFileRoute("/pontos/$pointId")({
   head: () => ({
     meta: [
-      { title: "Ponto de coleta — detalhes | DoaAqui" },
+      { title: "Ponto de coleta — detalhes | Vem da Gente" },
       {
         name: "description",
         content:
-          "Endereço, horários, contato, itens aceitos e necessidades atuais deste ponto de coleta verificado pelo DoaAqui.",
+          "Endereço, horários, contato, itens aceitos e necessidades atuais deste ponto de coleta verificado pelo Vem da Gente.",
       },
-      { property: "og:title", content: "Ponto de coleta — detalhes | DoaAqui" },
+      { property: "og:title", content: "Ponto de coleta — detalhes | Vem da Gente" },
       {
         property: "og:description",
         content: "Veja o que este ponto aceita e o que está precisando agora.",

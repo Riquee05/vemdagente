@@ -166,7 +166,7 @@ async function geocode(query: string) {
   url.searchParams.set("limit", "1");
   url.searchParams.set("countrycodes", "br");
   const res = await fetch(url.toString(), {
-    headers: { Accept: "application/json", "User-Agent": "DoaAqui/1.0 (assistente)" },
+    headers: { Accept: "application/json", "User-Agent": "Vem da Gente/1.0 (assistente)" },
   });
   if (!res.ok) return null;
   const list = (await res.json()) as { display_name: string; lat: string; lon: string }[];
@@ -249,7 +249,7 @@ export const askAssistant = createServerFn({ method: "POST" })
 
     const reply = await streamResponsesText({
       instructions:
-        "Você é o assistente do DoaAqui, uma plataforma brasileira que conecta quem quer doar a pontos de coleta, ONGs e redes de apoio reais. " +
+        "Você é o assistente do Vem da Gente, uma plataforma brasileira que conecta quem quer doar a pontos de coleta, ONGs e redes de apoio reais. " +
         "Fale português do Brasil, com tom acolhedor, direto e curto (máximo 120 palavras). " +
         "Use SOMENTE os pontos listados no contexto; nunca invente locais, telefones ou endereços. " +
         "Cite no máximo 3 pontos pelo nome, dizendo a distância quando houver. " +

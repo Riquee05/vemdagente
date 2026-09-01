@@ -79,13 +79,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "DoaAqui — doações que chegam a quem precisa" },
+      { title: "Vem da Gente — doações que chegam a quem precisa" },
       {
         name: "description",
         content:
           "Plataforma que conecta doadores a pontos de coleta e ONGs verificadas, e ajuda quem precisa a encontrar apoio perto de casa.",
       },
-      { property: "og:title", content: "DoaAqui — doações que chegam a quem precisa" },
+      { property: "og:title", content: "Vem da Gente — doações que chegam a quem precisa" },
       {
         property: "og:description",
         content: "Conexão direta entre quem quer doar e quem precisa de ajuda.",

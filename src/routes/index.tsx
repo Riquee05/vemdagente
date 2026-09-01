@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "DoaAqui — conecte doações a quem precisa de verdade" },
+      { title: "Vem da Gente — conecte doações a quem precisa de verdade" },
       {
         name: "description",
         content:
           "Encontre pontos de coleta e ONGs verificadas perto de você, veja o que cada um precisa agora e peça ajuda sem burocracia. Buscar não exige conta.",
       },
-      { property: "og:title", content: "DoaAqui — conecte doações a quem precisa de verdade" },
+      { property: "og:title", content: "Vem da Gente — conecte doações a quem precisa de verdade" },
       {
         property: "og:description",
         content:
@@ -80,7 +80,7 @@ function Index() {
               <span className="marker-underline">falta</span> em alguém.
             </h1>
             <p className="mt-8 max-w-lg text-lg leading-relaxed md:text-xl">
-              O DoaAqui reúne pontos de coleta e ONGs verificadas, mostra o que cada um precisa
+              O Vem da Gente reúne pontos de coleta e ONGs verificadas, mostra o que cada um precisa
               agora e leva a doação direto a quem a recebe.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-5">

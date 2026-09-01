@@ -94,7 +94,7 @@ export function PointCard({
         <p className="mt-2 text-xs text-muted-foreground">
           {context === "support"
             ? "Entre em contato com o local para confirmar o atendimento e os documentos necessários."
-            : "Combine direto com o local e leve sua doação — o DoaAqui não intermedia a entrega."}
+            : "Combine direto com o local e leve sua doação — o Vem da Gente não intermedia a entrega."}
         </p>
       </div>
     </article>

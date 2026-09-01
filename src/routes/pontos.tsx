@@ -21,13 +21,13 @@ import { fetchCauses, fetchPointIdsByCause, fetchVerifiedPoints } from "@/lib/po
 export const Route = createFileRoute("/pontos")({
   head: () => ({
     meta: [
-      { title: "Pontos de coleta e ONGs verificadas | DoaAqui" },
+      { title: "Pontos de coleta e ONGs verificadas | Vem da Gente" },
       {
         name: "description",
         content:
-          "Mapa e lista de pontos de coleta e ONGs verificadas pelo DoaAqui, com o que cada um aceita e o que está precisando agora.",
+          "Mapa e lista de pontos de coleta e ONGs verificadas pelo Vem da Gente, com o que cada um aceita e o que está precisando agora.",
       },
-      { property: "og:title", content: "Pontos de coleta e ONGs verificadas | DoaAqui" },
+      { property: "og:title", content: "Pontos de coleta e ONGs verificadas | Vem da Gente" },
       {
         property: "og:description",
         content: "Pontos curados, com endereço, horários e necessidades atuais.",
@@ -80,7 +80,7 @@ function PontosPage() {
         </p>
         <h1 className="mt-3 text-4xl font-semibold">Pontos de coleta e ONGs</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Todos os locais abaixo passaram pela curadoria do DoaAqui. Filtre por cidade, por causa ou
+          Todos os locais abaixo passaram pela curadoria do Vem da Gente. Filtre por cidade, por causa ou
           navegue pelo mapa.
         </p>
 

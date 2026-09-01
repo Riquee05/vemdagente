@@ -5,13 +5,13 @@ import { PageShell } from "@/components/layout/page-shell";
 export const Route = createFileRoute("/privacidade")({
   head: () => ({
     meta: [
-      { title: "Privacidade e proteção de dados | DoaAqui" },
+      { title: "Privacidade e proteção de dados | Vem da Gente" },
       {
         name: "description",
         content:
-          "Como o DoaAqui trata dados pessoais conforme a LGPD: quais dados coletamos, por quê, com quem compartilhamos e como exercer seus direitos.",
+          "Como o Vem da Gente trata dados pessoais conforme a LGPD: quais dados coletamos, por quê, com quem compartilhamos e como exercer seus direitos.",
       },
-      { property: "og:title", content: "Privacidade e proteção de dados | DoaAqui" },
+      { property: "og:title", content: "Privacidade e proteção de dados | Vem da Gente" },
       {
         property: "og:description",
         content: "Nossa política de privacidade, base legal, segurança e direitos do titular.",
@@ -62,7 +62,7 @@ function PrivacidadePage() {
         <h1 className="mt-2 text-3xl font-semibold">Privacidade e proteção de dados</h1>
         <p className="mt-3 text-muted-foreground">
           Transparência é parte do cuidado. Aqui está, em português claro, o que fazemos com os
-          dados de quem usa o DoaAqui.
+          dados de quem usa o Vem da Gente.
         </p>
 
         <div className="mt-10 space-y-6">
