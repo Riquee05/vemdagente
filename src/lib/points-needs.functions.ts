@@ -22,7 +22,7 @@ const removeNeedSchema = z.object({
 });
 
 async function audit(
-  supabase: Awaited<ReturnType<typeof requireSupabaseAuth>["context"]["supabase"]>,
+  supabase: any,
   userId: string,
   action: string,
   entityId: string,
@@ -71,9 +71,9 @@ export const updatePointNeed = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => updateNeedSchema.parse(input))
   .handler(async ({ data, context }) => {
     const patch: Record<string, unknown> = {};
-    if (data.urgency !== undefined) patch.urgency = data.urgency;
-    if (data.note !== undefined) patch.note = data.note;
-    if (data.isActive !== undefined) patch.is_active = data.isActive;
+    if (data.urgency !== undefined) patch["urgency"] = data.urgency;
+    if (data.note !== undefined) patch["note"] = data.note;
+    if (data.isActive !== undefined) patch["is_active"] = data.isActive;
 
     const { error } = await context.supabase.from("point_needs").update(patch).eq("id", data.needId);
     if (error) throw new Error(error.message);
