@@ -103,6 +103,13 @@ function StepUpForm({ email, onDone }: { email: string | null; onDone: () => voi
         <Button type="submit" disabled={password.length < 6 || confirm.isPending}>
           {confirm.isPending ? "Verificando..." : "Liberar painel"}
         </Button>
+        <p className="text-xs text-muted-foreground">
+          Ainda não tem senha (entra pelo Google ou link mágico)?{" "}
+          <Link to="/entrar" className="font-medium text-primary underline">
+            Defina uma em Entrar &gt; Senha &gt; "Esqueci minha senha"
+          </Link>
+          .
+        </p>
       </form>
     </div>
   );
