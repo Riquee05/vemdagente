@@ -2,8 +2,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-const MODEL = "gemini-3.6-flash";
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+const MODEL = "gemini-3.1-flash-lite";
+const geminiUrl = (model: string) =>
+  `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
 const askSchema = z.object({
   message: z.string().trim().min(2).max(600),
