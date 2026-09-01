@@ -31,6 +31,14 @@ function GoogleG({ className }: { className?: string }) {
   );
 }
 
+/** Retorno interno preservado no login (ex.: tela de autorização de apps). */
+function safeNext(): string | null {
+  if (typeof window === "undefined") return null;
+  const raw = new URLSearchParams(window.location.search).get("next");
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return null;
+  return raw;
+}
+
 function EntrarPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
