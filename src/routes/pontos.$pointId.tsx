@@ -116,7 +116,7 @@ function PointDetailPage() {
                     <a
                       href={`https://wa.me/${data.whatsapp.replace(/\D/g, "")}`}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                     >
                       Falar no WhatsApp
                     </a>
@@ -126,14 +126,14 @@ function PointDetailPage() {
                   <a
                     href={`https://www.openstreetmap.org/?mlat=${data.lat}&mlon=${data.lng}#map=17/${data.lat}/${data.lng}`}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
                     Abrir no mapa
                   </a>
                 </Button>
                 {data.website ? (
                   <Button asChild variant="ghost">
-                    <a href={data.website} target="_blank" rel="noreferrer">
+                    <a href={data.website} target="_blank" rel="noopener noreferrer">
                       Site
                     </a>
                   </Button>

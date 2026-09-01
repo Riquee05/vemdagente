@@ -277,7 +277,7 @@ function AdminVoluntarios() {
                     <a
                       href={`https://wa.me/55${selecionado.phone.replace(/\D/g, "")}`}
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                       className="underline"
                     >
                       {selecionado.phone} (WhatsApp)
