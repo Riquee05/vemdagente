@@ -99,12 +99,10 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   const center: [number, number] = coords ? [coords.lat, coords.lng] : DEFAULT_CENTER;
 
   const activeNeeds = useQuery({
-    queryKey: ["active-needs", points.map((p) => p.id).join(",")],
+    queryKey: ["active-needs", points.length, points.map((p) => p.id).join(",")],
     queryFn: () => fetchActiveNeedsByPointIds(points.map((p) => p.id)),
     enabled: points.length > 0,
   });
-
-  console.log("debug activeNeeds", { pointsCount: points.length, enabled: points.length > 0, isPending: activeNeeds.isPending, dataLength: activeNeeds.data?.length, error: activeNeeds.error });
 
   const needsByPoint = new Map<string, { urgency: string; category_label: string; note: string | null }[]>();
   for (const need of activeNeeds.data ?? []) {
