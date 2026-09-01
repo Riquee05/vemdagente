@@ -42,14 +42,20 @@ function EntrarPage() {
       (new URLSearchParams(window.location.search).has("recuperar") ||
         window.location.hash.includes("type=recovery"));
     if (!loading && user && !recovering) {
+      const next = safeNext();
+      if (next) {
+        window.location.replace(next);
+        return;
+      }
       navigate({ to: "/minha-conta", replace: true });
     }
   }, [loading, user, navigate]);
 
   async function signInWithGoogle() {
     setBusy(true);
+    const next = safeNext();
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: next ? `${window.location.origin}${next}` : window.location.origin,
     });
     if (result.error) {
       setBusy(false);
@@ -57,6 +63,10 @@ function EntrarPage() {
       return;
     }
     if (result.redirected) return;
+    if (next) {
+      window.location.replace(next);
+      return;
+    }
     navigate({ to: "/minha-conta" });
   }
 
