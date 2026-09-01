@@ -13,8 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   adminStepUpStatus,
   endAdminStepUp,
-  requestAdminCode,
-  verifyAdminCode,
+  verifyAdminPassword,
 } from "@/lib/admin-2fa.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
