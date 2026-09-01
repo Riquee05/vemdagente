@@ -43,7 +43,10 @@ export type AssistantAnswer = {
 
 type GeminiSchema = Record<string, unknown>;
 
-/** Chama o Gemini e devolve o texto final. */
+const FALLBACK_MODELS = [MODEL, "gemini-2.5-flash-lite", "gemini-2.5-flash"];
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Chama o Gemini e devolve o texto final, com retentativas e modelos de reserva. */
 async function geminiText(args: {
   instructions: string;
   prompt: string;
@@ -52,43 +55,62 @@ async function geminiText(args: {
   const apiKey = process.env["GEMINI_API_KEY"];
   if (!apiKey) throw new Error("O assistente não está configurado (chave de IA ausente).");
 
-  const res = await fetch(geminiUrl(MODEL), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-goog-api-key": apiKey,
+  const body = JSON.stringify({
+    systemInstruction: { parts: [{ text: args.instructions }] },
+    contents: [{ role: "user", parts: [{ text: args.prompt }] }],
+    generationConfig: {
+      temperature: 0.4,
+      maxOutputTokens: 800,
+      thinkingConfig: { thinkingLevel: "low" },
+      ...(args.jsonSchema
+        ? { responseMimeType: "application/json", responseSchema: args.jsonSchema }
+        : {}),
     },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: args.instructions }] },
-      contents: [{ role: "user", parts: [{ text: args.prompt }] }],
-      generationConfig: {
-        temperature: 0.4,
-        maxOutputTokens: 800,
-        thinkingConfig: { thinkingLevel: "low" },
-        ...(args.jsonSchema
-          ? { responseMimeType: "application/json", responseSchema: args.jsonSchema }
-          : {}),
-      },
-    }),
   });
 
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    if (res.status === 429) throw new Error("Muitas perguntas ao mesmo tempo. Tente de novo em alguns segundos.");
-    if (res.status === 401 || res.status === 403)
-      throw new Error("O assistente está temporariamente indisponível (chave do Gemini inválida ou sem permissão).");
-    throw new Error(`Falha ao consultar o assistente (${res.status}). ${detail.slice(0, 200)}`);
+  let lastStatus = 0;
+  let lastDetail = "";
+
+  for (let i = 0; i < FALLBACK_MODELS.length; i++) {
+    const model = FALLBACK_MODELS[i]!;
+    // até 2 tentativas por modelo para falhas transitórias (429/5xx)
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const res = await fetch(geminiUrl(model), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+        body,
+      });
+
+      if (res.ok) {
+        const json = (await res.json()) as {
+          candidates?: { content?: { parts?: { text?: string }[] } }[];
+        };
+        const parts = json.candidates?.[0]?.content?.parts ?? [];
+        return parts
+          .map((p) => p.text ?? "")
+          .join("")
+          .trim();
+      }
+
+      lastStatus = res.status;
+      lastDetail = await res.text().catch(() => "");
+
+      if (res.status === 401 || res.status === 403)
+        throw new Error("O assistente está temporariamente indisponível (chave do Gemini inválida ou sem permissão).");
+
+      const transient = res.status === 429 || res.status >= 500;
+      if (!transient) break; // erro de requisição: tenta próximo modelo sem esperar
+      if (attempt === 0) await sleep(700 + Math.floor(Math.random() * 500));
+    }
   }
 
-  const json = (await res.json()) as {
-    candidates?: { content?: { parts?: { text?: string }[] } }[];
-  };
-  const parts = json.candidates?.[0]?.content?.parts ?? [];
-  return parts
-    .map((p) => p.text ?? "")
-    .join("")
-    .trim();
+  if (lastStatus === 429)
+    throw new Error("Muitas perguntas ao mesmo tempo. Tente de novo em alguns segundos.");
+  if (lastStatus >= 500)
+    throw new Error("O assistente está com muita procura agora. Tente de novo em alguns instantes.");
+  throw new Error(`Falha ao consultar o assistente (${lastStatus}). ${lastDetail.slice(0, 200)}`);
 }
+
 
 type Intent = {
   intencao: "doar" | "receber" | "outro";
