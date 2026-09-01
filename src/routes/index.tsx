@@ -80,8 +80,8 @@ function Index() {
               <span className="marker-underline">falta</span> em alguém.
             </h1>
             <p className="mt-8 max-w-lg text-lg leading-relaxed md:text-xl">
-              O Vem da Gente reúne pontos de coleta e ONGs verificadas, mostra o que cada um precisa
-              agora e leva a doação direto a quem a recebe.
+              O Vem da Gente reúne pontos de coleta e instituições a partir de dados públicos do
+              Google Maps, mostra o que cada um precisa agora e leva a doação direto a quem a recebe.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-5">
               <Button
