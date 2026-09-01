@@ -44,6 +44,65 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_invites: {
+        Row: {
+          application_id: string | null
+          attempts: number
+          created_at: string
+          created_by: string | null
+          email: string
+          expires_at: string
+          full_name: string | null
+          id: string
+          password_hash: string
+          password_salt: string
+          status: string
+          updated_at: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          attempts?: number
+          created_at?: string
+          created_by?: string | null
+          email: string
+          expires_at: string
+          full_name?: string | null
+          id?: string
+          password_hash: string
+          password_salt: string
+          status?: string
+          updated_at?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          attempts?: number
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          expires_at?: string
+          full_name?: string | null
+          id?: string
+          password_hash?: string
+          password_salt?: string
+          status?: string
+          updated_at?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_invites_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "volunteer_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_otp_attempts: {
         Row: {
           attempts: number
