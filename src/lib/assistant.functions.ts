@@ -2,8 +2,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/responses";
-const MODEL = "openai/gpt-5.6-sol";
+const MODEL = "gemini-3.1-flash-lite";
+const geminiUrl = (model: string) =>
+  `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
 const askSchema = z.object({
   message: z.string().trim().min(2).max(600),
@@ -40,58 +41,53 @@ export type AssistantAnswer = {
   categoryLabel: string | null;
 };
 
-/** Lê o texto final de uma chamada streaming da Responses API. */
-async function streamResponsesText(body: Record<string, unknown>): Promise<string> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
+type GeminiSchema = Record<string, unknown>;
+
+/** Chama o Gemini e devolve o texto final. */
+async function geminiText(args: {
+  instructions: string;
+  prompt: string;
+  jsonSchema?: GeminiSchema;
+}): Promise<string> {
+  const apiKey = process.env["GEMINI_API_KEY"];
   if (!apiKey) throw new Error("O assistente não está configurado (chave de IA ausente).");
 
-  const res = await fetch(GATEWAY_URL, {
+  const res = await fetch(geminiUrl(MODEL), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Lovable-API-Key": apiKey,
-      "X-Lovable-AIG-SDK": "fetch",
+      "x-goog-api-key": apiKey,
     },
-    body: JSON.stringify({ ...body, model: MODEL, stream: true }),
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: args.instructions }] },
+      contents: [{ role: "user", parts: [{ text: args.prompt }] }],
+      generationConfig: {
+        temperature: 0.4,
+        maxOutputTokens: 800,
+        thinkingConfig: { thinkingLevel: "low" },
+        ...(args.jsonSchema
+          ? { responseMimeType: "application/json", responseSchema: args.jsonSchema }
+          : {}),
+      },
+    }),
   });
 
-  if (!res.ok || !res.body) {
+  if (!res.ok) {
     const detail = await res.text().catch(() => "");
     if (res.status === 429) throw new Error("Muitas perguntas ao mesmo tempo. Tente de novo em alguns segundos.");
-    if (res.status === 402 || res.status === 403)
-      throw new Error("O assistente está temporariamente indisponível (limite de uso da IA).");
+    if (res.status === 401 || res.status === 403)
+      throw new Error("O assistente está temporariamente indisponível (chave do Gemini inválida ou sem permissão).");
     throw new Error(`Falha ao consultar o assistente (${res.status}). ${detail.slice(0, 200)}`);
   }
 
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let text = "";
-
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const chunks = buffer.split("\n\n");
-    buffer = chunks.pop() ?? "";
-    for (const chunk of chunks) {
-      for (const line of chunk.split("\n")) {
-        if (!line.startsWith("data:")) continue;
-        const payload = line.slice(5).trim();
-        if (!payload || payload === "[DONE]") continue;
-        try {
-          const event = JSON.parse(payload) as { type?: string; delta?: string };
-          if (event.type === "response.output_text.delta" && typeof event.delta === "string") {
-            text += event.delta;
-          }
-        } catch {
-          // ignora eventos parciais
-        }
-      }
-    }
-  }
-
-  return text.trim();
+  const json = (await res.json()) as {
+    candidates?: { content?: { parts?: { text?: string }[] } }[];
+  };
+  const parts = json.candidates?.[0]?.content?.parts ?? [];
+  return parts
+    .map((p) => p.text ?? "")
+    .join("")
+    .trim();
 }
 
 type Intent = {
@@ -106,45 +102,28 @@ async function extractIntent(
   message: string,
   categories: { slug: string; label: string; kind: string }[],
 ): Promise<Intent> {
-  const raw = await streamResponsesText({
+  const raw = await geminiText({
     instructions:
       "Você interpreta perguntas em português do Brasil sobre doações e redes de apoio. " +
       "Escolha a categoria mais próxima da lista, ou null quando não houver. " +
-      "Extraia o local citado (cidade, bairro ou endereço) exatamente como aparece, ou null.",
-    input: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text:
-              `Categorias disponíveis (slug — rótulo):\n` +
-              categories.map((c) => `${c.slug} — ${c.label}`).join("\n") +
-              `\n\nPergunta: ${message}`,
-          },
-        ],
+      "Extraia o local citado (cidade, bairro ou endereço) exatamente como aparece, ou null. " +
+      "Responda apenas com o JSON pedido.",
+    prompt:
+      `Categorias disponíveis (slug — rótulo):\n` +
+      categories.map((c) => `${c.slug} — ${c.label}`).join("\n") +
+      `\n\nPergunta: ${message}`,
+    jsonSchema: {
+      type: "object",
+      properties: {
+        intencao: { type: "string", enum: ["doar", "receber", "outro"] },
+        categoria_slug: { type: "string", nullable: true },
+        local: { type: "string", nullable: true },
+        raio_km: { type: "number" },
       },
-    ],
-    reasoning: { effort: "low", summary: "auto" },
-    text: {
-      format: {
-        type: "json_schema",
-        name: "intencao_doacao",
-        strict: true,
-        schema: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            intencao: { type: "string", enum: ["doar", "receber", "outro"] },
-            categoria_slug: { type: ["string", "null"] },
-            local: { type: ["string", "null"] },
-            raio_km: { type: "number" },
-          },
-          required: ["intencao", "categoria_slug", "local", "raio_km"],
-        },
-      },
+      required: ["intencao", "raio_km"],
     },
   });
+
 
   try {
     const parsed = JSON.parse(raw) as Intent;
@@ -247,7 +226,7 @@ export const askAssistant = createServerFn({ method: "POST" })
       .map((m) => `${m.role === "user" ? "Pessoa" : "Assistente"}: ${m.content}`)
       .join("\n");
 
-    const reply = await streamResponsesText({
+    const reply = await geminiText({
       instructions:
         "Você é o assistente do Vem da Gente, uma plataforma brasileira que conecta quem quer doar a pontos de coleta, ONGs e redes de apoio reais. " +
         "Fale português do Brasil, com tom acolhedor, direto e curto (máximo 120 palavras). " +
@@ -256,23 +235,12 @@ export const askAssistant = createServerFn({ method: "POST" })
         "Se não houver pontos, explique com gentileza e sugira informar a cidade ou usar a busca em /pontos. " +
         "Nunca peça nem oriente pedir dinheiro para pessoas físicas: doação em dinheiro é só para instituições. " +
         "Não use markdown com títulos; escreva em frases simples.",
-      input: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "input_text",
-              text:
-                (history ? `Conversa anterior:\n${history}\n\n` : "") +
-                `Pergunta: ${data.message}\n` +
-                `Local considerado: ${location?.label ?? "não informado"}\n` +
-                `Categoria: ${category?.label ?? "não definida"}\n` +
-                `Raio: ${intent.raio_km} km\n\nPontos verificados encontrados:\n${contexto}`,
-            },
-          ],
-        },
-      ],
-      reasoning: { effort: "low", summary: "auto" },
+      prompt:
+        (history ? `Conversa anterior:\n${history}\n\n` : "") +
+        `Pergunta: ${data.message}\n` +
+        `Local considerado: ${location?.label ?? "não informado"}\n` +
+        `Categoria: ${category?.label ?? "não definida"}\n` +
+        `Raio: ${intent.raio_km} km\n\nPontos verificados encontrados:\n${contexto}`,
     });
 
     return {
