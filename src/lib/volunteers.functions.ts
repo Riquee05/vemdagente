@@ -49,7 +49,7 @@ const statusSchema = z.object({
 
 export const submitVolunteerApplication = createServerFn({ method: "POST" })
   .inputValidator((data) => submitSchema.parse(data))
-  .handler(async ({ data }): Promise<{ ok: true; id: string }> => {
+  .handler(async ({ data }): Promise<{ ok: true }> => {
     const { createClient } = await import("@supabase/supabase-js");
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
     const supabasePublic = createClient<Database>(process.env["SUPABASE_URL"]!, key, {
