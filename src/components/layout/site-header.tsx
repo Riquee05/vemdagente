@@ -84,6 +84,15 @@ export function SiteHeader() {
                     {item.label}
                   </Link>
                 ))}
+                {!loading && user && admin.data === true && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setOpen(false)}
+                    className="mt-2 border-2 border-foreground px-3 py-2 text-sm font-semibold uppercase tracking-wide"
+                  >
+                    Painel administrador
+                  </Link>
+                )}
                 <Link
                   to={user ? "/minha-conta" : "/entrar"}
                   onClick={() => setOpen(false)}
@@ -92,6 +101,7 @@ export function SiteHeader() {
                   {user ? "Minha conta" : "Entrar"}
                 </Link>
               </nav>
+
             </SheetContent>
           </Sheet>
         </div>
