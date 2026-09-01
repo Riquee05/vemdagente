@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PageShell } from "@/components/layout/page-shell";
@@ -18,7 +18,14 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { geocodeAddress, getBrowserLocation } from "@/lib/geocode";
+import {
+  geocodeAddress,
+  getBrowserLocation,
+  isCep,
+  lookupCep,
+  suggestAddresses,
+  type AddressSuggestion,
+} from "@/lib/geocode";
 import { fetchCategories, searchNearbyPoints } from "@/lib/points";
 
 export const Route = createFileRoute("/pedir-ajuda")({
@@ -57,20 +64,71 @@ function PedirAjudaPage() {
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [chosenPlace, setChosenPlace] = useState<string | null>(null);
+  const suggestionsBox = useRef<HTMLDivElement>(null);
 
   const categories = useQuery({ queryKey: ["item-categories"], queryFn: fetchCategories });
 
   const results = useQuery({
     queryKey: ["help-nearby", coords?.lat, coords?.lng, categoryId],
-    queryFn: () =>
-      searchNearbyPoints({
-        lat: coords!.lat,
-        lng: coords!.lng,
+    queryFn: () => {
+      if (!coords) return Promise.resolve([]);
+      return searchNearbyPoints({
+        lat: coords.lat,
+        lng: coords.lng,
         categoryId: categoryId || null,
         radiusKm: RADIUS_KM,
-      }),
+      });
+    },
     enabled: coords != null,
   });
+
+  useEffect(() => {
+    const term = place.trim();
+    if (term.length < 3 || term === chosenPlace) {
+      setSuggestions([]);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(async () => {
+      try {
+        const found = await suggestAddresses(term);
+        if (!cancelled) {
+          setSuggestions(found);
+          setShowSuggestions(found.length > 0);
+        }
+      } catch {
+        if (!cancelled) setSuggestions([]);
+      }
+    }, 450);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [place, chosenPlace]);
+
+  useEffect(() => {
+    function closeSuggestions(event: MouseEvent) {
+      if (!suggestionsBox.current?.contains(event.target as Node)) setShowSuggestions(false);
+    }
+    document.addEventListener("mousedown", closeSuggestions);
+    return () => document.removeEventListener("mousedown", closeSuggestions);
+  }, []);
+
+  function pickSuggestion(suggestion: AddressSuggestion) {
+    const label = [suggestion.title, suggestion.subtitle].filter(Boolean).join(" — ");
+    setPlace(label);
+    setChosenPlace(label);
+    setCity(suggestion.city);
+    setCoords({ lat: suggestion.lat, lng: suggestion.lng });
+    setSuggestions([]);
+    setShowSuggestions(false);
+    toast.success("Localização encontrada.");
+  }
 
   async function locateFromPlace() {
     if (place.trim().length < 3) {
@@ -79,9 +137,10 @@ function PedirAjudaPage() {
     }
     setBusy(true);
     try {
-      const found = await geocodeAddress(place);
+      const cepResult = isCep(place) ? await lookupCep(place) : null;
+      const found = cepResult ?? (await geocodeAddress(place));
       if (!found) {
-        toast.error("Não encontramos esse lugar. Tente cidade e estado.");
+        toast.error("Não encontramos esse lugar. Tente um CEP, cidade ou endereço.");
         return;
       }
       setCoords({ lat: found.lat, lng: found.lng });
@@ -183,14 +242,38 @@ function PedirAjudaPage() {
           <div>
             <Label htmlFor="help-place">Onde você está *</Label>
             <div className="mt-2 flex flex-wrap gap-2">
-              <Input
-                id="help-place"
-                className="min-w-[16rem] flex-1"
-                placeholder="Cidade, bairro ou endereço"
-                value={place}
-                maxLength={120}
-                onChange={(event) => setPlace(event.target.value)}
-              />
+              <div ref={suggestionsBox} className="relative min-w-[16rem] flex-1">
+                <Input
+                  id="help-place"
+                  placeholder="CEP, cidade, bairro ou endereço"
+                  value={place}
+                  maxLength={120}
+                  autoComplete="postal-code"
+                  onFocus={() => setShowSuggestions(suggestions.length > 0)}
+                  onChange={(event) => {
+                    setPlace(event.target.value);
+                    setChosenPlace(null);
+                    setCoords(null);
+                  }}
+                />
+                {showSuggestions ? (
+                  <div className="absolute top-full right-0 left-0 z-[1000] mt-1 overflow-hidden border-2 border-border bg-popover shadow-md">
+                    {suggestions.map((suggestion) => (
+                      <button
+                        key={suggestion.id}
+                        type="button"
+                        className="block w-full border-b border-border px-3 py-2 text-left last:border-b-0 hover:bg-muted focus:bg-muted focus:outline-none"
+                        onClick={() => pickSuggestion(suggestion)}
+                      >
+                        <span className="block text-sm font-semibold">{suggestion.title}</span>
+                        <span className="block text-xs text-muted-foreground">
+                          {suggestion.subtitle}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
               <Button type="button" variant="outline" onClick={locateFromPlace} disabled={busy}>
                 Buscar no mapa
               </Button>
@@ -272,6 +355,7 @@ function PedirAjudaPage() {
                   <PointCard
                     key={point.id}
                     point={point}
+                    context="support"
                     active={selectedId === point.id}
                     onHighlight={setSelectedId}
                   />
