@@ -20,17 +20,17 @@ import { Input } from "@/components/ui/input";
 export const Route = createFileRoute("/apoiar")({
   head: () => ({
     meta: [
-      { title: "Apoiar o DoaAqui — espalhe essa ideia" },
+      { title: "Apoiar o Vem da Gente — espalhe essa ideia" },
       {
         name: "description",
         content:
-          "O DoaAqui se mantém com a força da comunidade. Por enquanto, a melhor forma de apoiar é compartilhar e indicar pontos de coleta.",
+          "O Vem da Gente se mantém com a força da comunidade. Por enquanto, a melhor forma de apoiar é compartilhar e indicar pontos de coleta.",
       },
-      { property: "og:title", content: "Apoiar o DoaAqui — espalhe essa ideia" },
+      { property: "og:title", content: "Apoiar o Vem da Gente — espalhe essa ideia" },
       {
         property: "og:description",
         content:
-          "O DoaAqui se mantém com a força da comunidade. Por enquanto, a melhor forma de apoiar é compartilhar e indicar pontos de coleta.",
+          "O Vem da Gente se mantém com a força da comunidade. Por enquanto, a melhor forma de apoiar é compartilhar e indicar pontos de coleta.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -40,7 +40,7 @@ export const Route = createFileRoute("/apoiar")({
 });
 
 function usePublicUrl() {
-  const [url, setUrl] = useState("https://doaaqui.org");
+  const [url, setUrl] = useState("https://vemdagente.org");
   useEffect(() => {
     setUrl(window.location.origin);
   }, []);
@@ -58,17 +58,17 @@ function useMensagens(siteUrl: string): [Mensagem, Mensagem, Mensagem] {
     {
       id: "geral",
       label: "Geral",
-      texto: `Conheci o DoaAqui: uma plataforma que conecta doadores a pontos de coleta, ONGs e redes de apoio reais no Brasil. Quem precisa acha ajuda perto de casa e quem doa sabe onde entregar. Acesse: ${siteUrl}`,
+      texto: `Conheci o Vem da Gente: uma plataforma que conecta doadores a pontos de coleta, ONGs e redes de apoio reais no Brasil. Quem precisa acha ajuda perto de casa e quem doa sabe onde entregar. Acesse: ${siteUrl}`,
     },
     {
       id: "doador",
       label: "Para doadores",
-      texto: `Quer doar roupas, alimentos ou apoio e não sabe onde entregar? O DoaAqui mostra pontos verificados perto de você e o que cada um precisa agora. ${siteUrl}`,
+      texto: `Quer doar roupas, alimentos ou apoio e não sabe onde entregar? O Vem da Gente mostra pontos verificados perto de você e o que cada um precisa agora. ${siteUrl}`,
     },
     {
       id: "quem-precisa",
       label: "Para quem precisa",
-      texto: `Se você ou alguém perto precisa de ajuda, o DoaAqui lista pontos de coleta, ONGs e redes de apoio verificadas no Brasil. Busque por cidade ou categoria: ${siteUrl}`,
+      texto: `Se você ou alguém perto precisa de ajuda, o Vem da Gente lista pontos de coleta, ONGs e redes de apoio verificadas no Brasil. Busque por cidade ou categoria: ${siteUrl}`,
     },
   ];
 }
@@ -112,7 +112,7 @@ const shareButtons = [
     icon: Mail,
     color: "bg-accent",
     makeUrl: (text: string, _siteUrl: string) =>
-      `mailto:?subject=${encodeURIComponent("Conheça o DoaAqui")}&body=${encodeURIComponent(text)}`,
+      `mailto:?subject=${encodeURIComponent("Conheça o Vem da Gente")}&body=${encodeURIComponent(text)}`,
   },
 ];
 
@@ -139,7 +139,7 @@ function ApoiarPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "DoaAqui",
+          title: "Vem da Gente",
           text: textoAtivo,
           url: siteUrl,
         });
@@ -162,7 +162,7 @@ function ApoiarPage() {
             Espalhe essa <span className="text-primary">ideia</span>.
           </h1>
           <p className="mt-8 max-w-2xl text-lg leading-relaxed md:text-xl">
-            Por enquanto o DoaAqui não recebe doações em dinheiro. A melhor forma de apoiar é
+            Por enquanto o Vem da Gente não recebe doações em dinheiro. A melhor forma de apoiar é
             contar para outras pessoas, indicar pontos de coleta e ajudar a manter o mapa vivo.
           </p>
         </div>
@@ -259,7 +259,7 @@ function ApoiarPage() {
               </div>
               <p className="mt-5 leading-relaxed opacity-90">
                 Conhece uma igreja, ONG, CRAS ou ponto de coleta que deveria aparecer no mapa?
-                Cadastre gratuitamente. A equipe do DoaAqui cura cada indicação antes de publicar.
+                Cadastre gratuitamente. A equipe do Vem da Gente cura cada indicação antes de publicar.
               </p>
               <div className="mt-8">
                 <Button

@@ -20,13 +20,13 @@ import {
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "Administração | DoaAqui" },
+      { title: "Administração | Vem da Gente" },
       {
         name: "description",
         content:
-          "Painel de administração do DoaAqui: curadoria de pontos, usuários e categorias de itens.",
+          "Painel de administração do Vem da Gente: curadoria de pontos, usuários e categorias de itens.",
       },
-      { property: "og:title", content: "Administração | DoaAqui" },
+      { property: "og:title", content: "Administração | Vem da Gente" },
       { property: "og:description", content: "Gerencie pontos, usuários e categorias." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -200,7 +200,7 @@ function AdminLayout() {
       <section className="mx-auto w-full max-w-6xl px-4 py-12">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">Administração</p>
         <div className="mt-2 flex flex-wrap items-center gap-3">
-          <h1 className="font-display text-3xl">Painel do DoaAqui</h1>
+          <h1 className="font-display text-3xl">Painel do Vem da Gente</h1>
           {status.data?.isOwner && (
             <span className="border-2 border-foreground bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary-foreground">
               Dono
@@ -214,7 +214,7 @@ function AdminLayout() {
           <div className="card-ink mt-8 max-w-lg p-6">
             <h2 className="font-display text-xl">Acesso restrito</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Esta área é exclusiva da equipe autorizada do DoaAqui. O acesso é concedido apenas
+              Esta área é exclusiva da equipe autorizada do Vem da Gente. O acesso é concedido apenas
               pelo dono da plataforma — não é possível liberá-lo por conta própria.
             </p>
             <Button asChild variant="outline" className="mt-4">

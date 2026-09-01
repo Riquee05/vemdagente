@@ -15,13 +15,13 @@ import { redeemAdminInvite } from "@/lib/admin-invites.functions";
 export const Route = createFileRoute("/ativar-admin")({
   head: () => ({
     meta: [
-      { title: "Ativar acesso administrativo | DoaAqui" },
+      { title: "Ativar acesso administrativo | Vem da Gente" },
       {
         name: "description",
         content:
-          "Recebeu uma senha temporária do DoaAqui? Ative aqui seu acesso de administrador e defina sua senha definitiva.",
+          "Recebeu uma senha temporária do Vem da Gente? Ative aqui seu acesso de administrador e defina sua senha definitiva.",
       },
-      { property: "og:title", content: "Ativar acesso administrativo | DoaAqui" },
+      { property: "og:title", content: "Ativar acesso administrativo | Vem da Gente" },
       {
         property: "og:description",
         content: "Ative seu acesso de administrador com a senha temporária enviada pelo dono.",
@@ -77,7 +77,7 @@ function AtivarAdmin() {
         <h1 className="mt-4 font-display text-3xl">Ativar acesso administrativo</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Use o <strong className="text-foreground">mesmo e-mail da sua candidatura de voluntário</strong>{" "}
-          e a senha temporária que o dono do DoaAqui te enviou. Em seguida, crie a sua senha
+          e a senha temporária que o dono do Vem da Gente te enviou. Em seguida, crie a sua senha
           definitiva.
         </p>
 

@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/doar")({
   head: () => ({
     meta: [
-      { title: "Quero doar — encontre pontos de coleta | DoaAqui" },
+      { title: "Quero doar — encontre pontos de coleta | Vem da Gente" },
       {
         name: "description",
         content:
-          "Informe sua localização e o que quer doar: o DoaAqui mostra no mapa os pontos de coleta e ONGs próximas que aceitam e precisam do item.",
+          "Informe sua localização e o que quer doar: o Vem da Gente mostra no mapa os pontos de coleta e ONGs próximas que aceitam e precisam do item.",
       },
-      { property: "og:title", content: "Quero doar — encontre pontos de coleta | DoaAqui" },
+      { property: "og:title", content: "Quero doar — encontre pontos de coleta | Vem da Gente" },
       {
         property: "og:description",
         content: "Pontos de coleta e ONGs próximas que aceitam roupas, alimentos e dinheiro.",

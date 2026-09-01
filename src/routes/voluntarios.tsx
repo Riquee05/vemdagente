@@ -13,17 +13,17 @@ import { useServerFn } from "@tanstack/react-start";
 export const Route = createFileRoute("/voluntarios")({
   head: () => ({
     meta: [
-      { title: "Seja voluntário no DoaAqui" },
+      { title: "Seja voluntário no Vem da Gente" },
       {
         name: "description",
         content:
-          "Ajude o DoaAqui a verificar pontos, curar conteúdo, divulgar a plataforma e muito mais. Inscreva-se como voluntário.",
+          "Ajude o Vem da Gente a verificar pontos, curar conteúdo, divulgar a plataforma e muito mais. Inscreva-se como voluntário.",
       },
-      { property: "og:title", content: "Seja voluntário no DoaAqui" },
+      { property: "og:title", content: "Seja voluntário no Vem da Gente" },
       {
         property: "og:description",
         content:
-          "Ajude o DoaAqui a verificar pontos, curar conteúdo, divulgar a plataforma e muito mais.",
+          "Ajude o Vem da Gente a verificar pontos, curar conteúdo, divulgar a plataforma e muito mais.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -103,7 +103,7 @@ function VoluntariosPage() {
             Seja <span className="text-primary">voluntário</span>.
           </h1>
           <p className="mt-8 max-w-2xl text-lg leading-relaxed md:text-xl">
-            O DoaAqui é feito por pessoas. Precisamos de ajuda para verificar pontos, curar
+            O Vem da Gente é feito por pessoas. Precisamos de ajuda para verificar pontos, curar
             conteúdo, divulgar a plataforma e apoiar quem chega por aqui.
           </p>
         </div>
@@ -254,13 +254,13 @@ function VoluntariosPage() {
                   required
                   maxLength={1000}
                   rows={3}
-                  placeholder="Conte o que te move a fazer parte do DoaAqui"
+                  placeholder="Conte o que te move a fazer parte do Vem da Gente"
                   className="border-2 border-foreground bg-background"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="heard_from">Como conheceu o DoaAqui?</Label>
+                <Label htmlFor="heard_from">Como conheceu o Vem da Gente?</Label>
                 <Input
                   id="heard_from"
                   name="heard_from"

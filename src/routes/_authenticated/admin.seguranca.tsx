@@ -24,7 +24,7 @@ function AdminSeguranca() {
       <div>
         <h2 className="text-lg font-semibold">Segurança e privacidade</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Como o DoaAqui protege o acesso a esta área e os dados das pessoas.
+          Como o Vem da Gente protege o acesso a esta área e os dados das pessoas.
         </p>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {[

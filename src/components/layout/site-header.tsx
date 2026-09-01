@@ -38,7 +38,7 @@ export function SiteHeader() {
           <span className="flex size-9 -rotate-3 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
             <HeartHandshake className="size-5" aria-hidden="true" />
           </span>
-          <span className="font-display text-lg tracking-tight">DoaAqui</span>
+          <span className="font-display text-lg tracking-tight">Vem da Gente</span>
         </Link>
 
         <nav aria-label="Navegação principal" className="hidden items-center gap-1 md:flex">
@@ -72,7 +72,7 @@ export function SiteHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
-              <SheetTitle className="font-display">DoaAqui</SheetTitle>
+              <SheetTitle className="font-display">Vem da Gente</SheetTitle>
               <nav aria-label="Navegação" className="mt-6 flex flex-col gap-1">
                 {navItems.map((item) => (
                   <Link

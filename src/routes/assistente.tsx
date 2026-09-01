@@ -15,13 +15,13 @@ import { getBrowserLocation } from "@/lib/geocode";
 export const Route = createFileRoute("/assistente")({
   head: () => ({
     meta: [
-      { title: "Assistente inteligente de doações | DoaAqui" },
+      { title: "Assistente inteligente de doações | Vem da Gente" },
       {
         name: "description",
         content:
-          "Pergunte em português: onde posso doar roupas infantis? O assistente do DoaAqui indica pontos reais e verificados perto de você.",
+          "Pergunte em português: onde posso doar roupas infantis? O assistente do Vem da Gente indica pontos reais e verificados perto de você.",
       },
-      { property: "og:title", content: "Assistente inteligente de doações | DoaAqui" },
+      { property: "og:title", content: "Assistente inteligente de doações | Vem da Gente" },
       {
         property: "og:description",
         content: "Pergunte em linguagem natural e receba pontos de doação reais perto de você.",

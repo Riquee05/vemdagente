@@ -31,15 +31,15 @@ import { fetchCategories, searchNearbyPoints } from "@/lib/points";
 export const Route = createFileRoute("/pedir-ajuda")({
   head: () => ({
     meta: [
-      { title: "Preciso de ajuda — encontre apoio perto de você | DoaAqui" },
+      { title: "Preciso de ajuda — encontre apoio perto de você | Vem da Gente" },
       {
         name: "description",
         content:
-          "Diga onde você está e que tipo de ajuda precisa: o DoaAqui mostra pontos de apoio próximos e registra seu pedido.",
+          "Diga onde você está e que tipo de ajuda precisa: o Vem da Gente mostra pontos de apoio próximos e registra seu pedido.",
       },
       {
         property: "og:title",
-        content: "Preciso de ajuda — encontre apoio perto de você | DoaAqui",
+        content: "Preciso de ajuda — encontre apoio perto de você | Vem da Gente",
       },
       {
         property: "og:description",
@@ -301,7 +301,7 @@ function PedirAjudaPage() {
             />
             <p className="mt-1 text-xs text-muted-foreground">
               Não escreva documentos, senhas ou dados bancários. Seu pedido é visível apenas para
-              você e para a curadoria do DoaAqui.
+              você e para a curadoria do Vem da Gente.
             </p>
           </div>
 
