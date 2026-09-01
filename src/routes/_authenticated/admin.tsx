@@ -61,6 +61,7 @@ export function useIsAdmin() {
 function StepUpForm({ email, onDone }: { email: string | null; onDone: () => void }) {
   const verify = useServerFn(verifyAdminPassword);
   const [password, setPassword] = useState("");
+  const [showSetPassword, setShowSetPassword] = useState(false);
 
   const confirm = useMutation({
     mutationFn: () => verify({ data: { password } }),
