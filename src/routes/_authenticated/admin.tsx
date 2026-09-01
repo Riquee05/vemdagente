@@ -57,33 +57,19 @@ export function useIsAdmin() {
   });
 }
 
-/** Etapa extra: código de 6 dígitos enviado ao e-mail da conta administrativa. */
+/** Etapa extra: confirmação da senha da conta administrativa. */
 function StepUpForm({ email, onDone }: { email: string | null; onDone: () => void }) {
-  const send = useServerFn(requestAdminCode);
-  const verify = useServerFn(verifyAdminCode);
-  const [code, setCode] = useState("");
-  const [sent, setSent] = useState(false);
+  const verify = useServerFn(verifyAdminPassword);
+  const [password, setPassword] = useState("");
 
-  const sendCode = useMutation({
-    mutationFn: () => send(),
+  const confirm = useMutation({
+    mutationFn: () => verify({ data: { password } }),
     onSuccess: () => {
-      setSent(true);
-      toast.success("Código enviado para o seu e-mail.");
-    },
-    onError: (e: Error) => {
-      // Um código pode já ter sido enviado (limite de reenvio): mostramos o campo.
-      setSent(true);
-      toast.error(e.message || "Não foi possível enviar o código.");
-    },
-  });
-
-  const verifyCode = useMutation({
-    mutationFn: () => verify({ data: { code } }),
-    onSuccess: () => {
+      setPassword("");
       toast.success("Painel liberado por 2 horas.");
       onDone();
     },
-    onError: (e: Error) => toast.error(e.message || "Código incorreto."),
+    onError: (e: Error) => toast.error(e.message || "Senha incorreta."),
   });
 
   return (
@@ -91,53 +77,33 @@ function StepUpForm({ email, onDone }: { email: string | null; onDone: () => voi
       <span className="inline-flex size-10 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
         <ShieldCheck className="size-5" aria-hidden="true" />
       </span>
-      <h2 className="mt-4 font-display text-xl">Verificação em duas etapas</h2>
+      <h2 className="mt-4 font-display text-xl">Confirme que é você</h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Por segurança, o painel só abre com um código enviado para{" "}
-        <strong className="text-foreground">{email ?? "o e-mail da sua conta"}</strong>. O código
-        vale por poucos minutos e libera o painel por 2 horas.
+        Por segurança, digite a senha da conta{" "}
+        <strong className="text-foreground">{email ?? "administrativa"}</strong> para abrir o painel.
+        A liberação vale por 2 horas.
       </p>
 
-      {!sent ? (
-        <Button
-          className="mt-5"
-          onClick={() => sendCode.mutate()}
-          disabled={sendCode.isPending}
-        >
-          {sendCode.isPending ? "Enviando..." : "Enviar código por e-mail"}
+      <form
+        className="mt-5 space-y-3"
+        onSubmit={(event) => {
+          event.preventDefault();
+          confirm.mutate();
+        }}
+      >
+        <Input
+          type="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          autoComplete="current-password"
+          placeholder="Sua senha"
+          aria-label="Senha da conta"
+          className="max-w-xs"
+        />
+        <Button type="submit" disabled={password.length < 6 || confirm.isPending}>
+          {confirm.isPending ? "Verificando..." : "Liberar painel"}
         </Button>
-      ) : (
-        <form
-          className="mt-5 space-y-3"
-          onSubmit={(event) => {
-            event.preventDefault();
-            verifyCode.mutate();
-          }}
-        >
-          <Input
-            value={code}
-            onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            placeholder="000000"
-            aria-label="Código de 6 dígitos"
-            className="max-w-40 text-center font-display text-xl tracking-[0.4em]"
-          />
-          <div className="flex flex-wrap gap-2">
-            <Button type="submit" disabled={code.length !== 6 || verifyCode.isPending}>
-              {verifyCode.isPending ? "Verificando..." : "Liberar painel"}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => sendCode.mutate()}
-              disabled={sendCode.isPending}
-            >
-              Reenviar código
-            </Button>
-          </div>
-        </form>
-      )}
+      </form>
     </div>
   );
 }
