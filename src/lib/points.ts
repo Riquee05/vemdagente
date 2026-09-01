@@ -156,3 +156,23 @@ export async function fetchPointIdsByCause(causeId: string): Promise<string[]> {
   if (error) throw error;
   return (data ?? []).map((row) => row.point_id);
 }
+
+/** Necessidades ativas de uma lista de pontos (leitura pública). */
+export async function fetchActiveNeedsByPointIds(
+  pointIds: string[],
+): Promise<{ point_id: string; urgency: string; category_label: string; note: string | null }[]> {
+  if (pointIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from("point_needs")
+    .select("point_id, urgency, note, item_categories ( label )")
+    .in("point_id", pointIds)
+    .eq("is_active", true)
+    .limit(500);
+  if (error) throw error;
+  return (data ?? []).map((row: any) => ({
+    point_id: row.point_id,
+    urgency: row.urgency,
+    category_label: row.item_categories?.label ?? "",
+    note: row.note,
+  }));
+}
