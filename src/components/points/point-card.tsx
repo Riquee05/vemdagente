@@ -67,7 +67,7 @@ export function PointCard({
             <a
               href={`https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lng}`}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               Como chegar
             </a>
@@ -82,7 +82,7 @@ export function PointCard({
               <a
                 href={`https://wa.me/${point.whatsapp.replace(/\D/g, "")}`}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 WhatsApp
               </a>
