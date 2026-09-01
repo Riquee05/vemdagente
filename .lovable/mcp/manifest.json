@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "sdk_version": "1.0.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://oulybeevjhdkxyjdesxr.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "vem-da-gente",
+      "version": "0.1.0",
+      "title": "Vem da Gente"
+    },
+    "tools": [
+      {
+        "name": "search_points",
+        "title": "Buscar pontos próximos",
+        "description": "Busca pontos de coleta, ONGs e redes de apoio verificados perto de uma coordenada (latitude/longitude), com raio em km.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "lat": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "description": "Latitude do ponto de partida."
+            },
+            "lng": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "description": "Longitude do ponto de partida."
+            },
+            "radius_km": {
+              "default": 15,
+              "description": "Raio da busca em quilômetros.",
+              "type": "number",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "limit": {
+              "default": 20,
+              "description": "Quantidade máxima de resultados.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "lat",
+            "lng"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_points",
+        "title": "Listar pontos por cidade ou nome",
+        "description": "Lista pontos verificados e ativos da plataforma, com filtro opcional por cidade e por parte do nome.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "city": {
+              "description": "Cidade, ex.: São Paulo.",
+              "type": "string",
+              "minLength": 2
+            },
+            "search": {
+              "description": "Parte do nome da instituição.",
+              "type": "string",
+              "minLength": 2
+            },
+            "limit": {
+              "default": 30,
+              "description": "Quantidade máxima de resultados.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "point_details",
+        "title": "Detalhes de um ponto",
+        "description": "Traz os dados completos de um ponto: contato, causas atendidas, itens aceitos e necessidades ativas.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "point_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "ID do ponto."
+            }
+          },
+          "required": [
+            "point_id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_causes",
+        "title": "Listar causas e categorias",
+        "description": "Lista as causas atendidas (crianças, idosos, animais, saúde, meio ambiente etc.) e as categorias de itens aceitos.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "my_points",
+        "title": "Meus pontos",
+        "description": "Lista os pontos que a pessoa logada enviou ou administra, com o status de curadoria de cada um.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "suggest_point",
+        "title": "Sugerir um novo ponto",
+        "description": "Envia uma nova instituição ou ponto de coleta para a curadoria da plataforma. Fica pendente até ser aprovado e não aparece no mapa antes disso.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 3,
+              "description": "Nome da instituição ou ponto."
+            },
+            "city": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Cidade."
+            },
+            "lat": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "description": "Latitude."
+            },
+            "lng": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "description": "Longitude."
+            },
+            "state": {
+              "description": "UF, ex.: SP.",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 2
+            },
+            "address": {
+              "description": "Endereço completo.",
+              "type": "string",
+              "minLength": 5
+            },
+            "description": {
+              "description": "O que o local faz e o que precisa.",
+              "type": "string",
+              "minLength": 10
+            },
+            "phone": {
+              "description": "Telefone de contato.",
+              "type": "string"
+            },
+            "whatsapp": {
+              "description": "WhatsApp de contato.",
+              "type": "string"
+            },
+            "website": {
+              "description": "Site ou rede social.",
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": [
+            "name",
+            "city",
+            "lat",
+            "lng"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

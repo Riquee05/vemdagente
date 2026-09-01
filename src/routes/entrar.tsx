@@ -31,6 +31,14 @@ function GoogleG({ className }: { className?: string }) {
   );
 }
 
+/** Retorno interno preservado no login (ex.: tela de autorização de apps). */
+function safeNext(): string | null {
+  if (typeof window === "undefined") return null;
+  const raw = new URLSearchParams(window.location.search).get("next");
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return null;
+  return raw;
+}
+
 function EntrarPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -42,14 +50,20 @@ function EntrarPage() {
       (new URLSearchParams(window.location.search).has("recuperar") ||
         window.location.hash.includes("type=recovery"));
     if (!loading && user && !recovering) {
+      const next = safeNext();
+      if (next) {
+        window.location.replace(next);
+        return;
+      }
       navigate({ to: "/minha-conta", replace: true });
     }
   }, [loading, user, navigate]);
 
   async function signInWithGoogle() {
     setBusy(true);
+    const next = safeNext();
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: next ? `${window.location.origin}${next}` : window.location.origin,
     });
     if (result.error) {
       setBusy(false);
@@ -57,6 +71,10 @@ function EntrarPage() {
       return;
     }
     if (result.redirected) return;
+    if (next) {
+      window.location.replace(next);
+      return;
+    }
     navigate({ to: "/minha-conta" });
   }
 
