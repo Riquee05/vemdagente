@@ -88,6 +88,25 @@ function EntrarPage() {
     navigate({ to: "/minha-conta" });
   }
 
+  /** Envia o e-mail de redefinição de senha (também serve para criar a primeira senha). */
+  async function sendPasswordReset() {
+    if (!email) {
+      toast.error("Escreva seu e-mail acima primeiro.");
+      return;
+    }
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/redefinir-senha`,
+    });
+    setBusy(false);
+    if (error) {
+      toast.error("Não conseguimos enviar o e-mail agora. Tente de novo em instantes.");
+      return;
+    }
+    toast.success("Enviamos um link para você criar uma nova senha.");
+  }
+
+
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
