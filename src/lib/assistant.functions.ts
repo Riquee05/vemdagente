@@ -100,45 +100,28 @@ async function extractIntent(
   message: string,
   categories: { slug: string; label: string; kind: string }[],
 ): Promise<Intent> {
-  const raw = await streamResponsesText({
+  const raw = await geminiText({
     instructions:
       "Você interpreta perguntas em português do Brasil sobre doações e redes de apoio. " +
       "Escolha a categoria mais próxima da lista, ou null quando não houver. " +
-      "Extraia o local citado (cidade, bairro ou endereço) exatamente como aparece, ou null.",
-    input: [
-      {
-        role: "user",
-        content: [
-          {
-            type: "input_text",
-            text:
-              `Categorias disponíveis (slug — rótulo):\n` +
-              categories.map((c) => `${c.slug} — ${c.label}`).join("\n") +
-              `\n\nPergunta: ${message}`,
-          },
-        ],
+      "Extraia o local citado (cidade, bairro ou endereço) exatamente como aparece, ou null. " +
+      "Responda apenas com o JSON pedido.",
+    prompt:
+      `Categorias disponíveis (slug — rótulo):\n` +
+      categories.map((c) => `${c.slug} — ${c.label}`).join("\n") +
+      `\n\nPergunta: ${message}`,
+    jsonSchema: {
+      type: "object",
+      properties: {
+        intencao: { type: "string", enum: ["doar", "receber", "outro"] },
+        categoria_slug: { type: "string", nullable: true },
+        local: { type: "string", nullable: true },
+        raio_km: { type: "number" },
       },
-    ],
-    reasoning: { effort: "low", summary: "auto" },
-    text: {
-      format: {
-        type: "json_schema",
-        name: "intencao_doacao",
-        strict: true,
-        schema: {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            intencao: { type: "string", enum: ["doar", "receber", "outro"] },
-            categoria_slug: { type: ["string", "null"] },
-            local: { type: ["string", "null"] },
-            raio_km: { type: "number" },
-          },
-          required: ["intencao", "categoria_slug", "local", "raio_km"],
-        },
-      },
+      required: ["intencao", "raio_km"],
     },
   });
+
 
   try {
     const parsed = JSON.parse(raw) as Intent;
