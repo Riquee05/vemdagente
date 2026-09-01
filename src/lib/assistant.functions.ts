@@ -224,7 +224,7 @@ export const askAssistant = createServerFn({ method: "POST" })
       .map((m) => `${m.role === "user" ? "Pessoa" : "Assistente"}: ${m.content}`)
       .join("\n");
 
-    const reply = await streamResponsesText({
+    const reply = await geminiText({
       instructions:
         "Você é o assistente do Vem da Gente, uma plataforma brasileira que conecta quem quer doar a pontos de coleta, ONGs e redes de apoio reais. " +
         "Fale português do Brasil, com tom acolhedor, direto e curto (máximo 120 palavras). " +
@@ -233,23 +233,12 @@ export const askAssistant = createServerFn({ method: "POST" })
         "Se não houver pontos, explique com gentileza e sugira informar a cidade ou usar a busca em /pontos. " +
         "Nunca peça nem oriente pedir dinheiro para pessoas físicas: doação em dinheiro é só para instituições. " +
         "Não use markdown com títulos; escreva em frases simples.",
-      input: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "input_text",
-              text:
-                (history ? `Conversa anterior:\n${history}\n\n` : "") +
-                `Pergunta: ${data.message}\n` +
-                `Local considerado: ${location?.label ?? "não informado"}\n` +
-                `Categoria: ${category?.label ?? "não definida"}\n` +
-                `Raio: ${intent.raio_km} km\n\nPontos verificados encontrados:\n${contexto}`,
-            },
-          ],
-        },
-      ],
-      reasoning: { effort: "low", summary: "auto" },
+      prompt:
+        (history ? `Conversa anterior:\n${history}\n\n` : "") +
+        `Pergunta: ${data.message}\n` +
+        `Local considerado: ${location?.label ?? "não informado"}\n` +
+        `Categoria: ${category?.label ?? "não definida"}\n` +
+        `Raio: ${intent.raio_km} km\n\nPontos verificados encontrados:\n${contexto}`,
     });
 
     return {
