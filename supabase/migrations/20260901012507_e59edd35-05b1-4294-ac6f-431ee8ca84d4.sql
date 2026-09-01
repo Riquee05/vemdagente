@@ -1,0 +1,2 @@
+ALTER TABLE public.point_needs DROP CONSTRAINT IF EXISTS point_needs_urgency_check;
+ALTER TABLE public.point_needs ADD CONSTRAINT point_needs_urgency_check CHECK (urgency = ANY (ARRAY['low'::text, 'normal'::text, 'high'::text, 'critical'::text]));

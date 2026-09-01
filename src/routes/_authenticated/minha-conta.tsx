@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { PointNeedsEditor } from "@/components/points/point-needs-editor";
 import { SetPasswordForm } from "@/components/account/set-password-form";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -65,6 +73,34 @@ function MinhaContaPage() {
         .maybeSingle();
       if (error) throw error;
       return { profile: data, email: auth.user.email ?? "" };
+    },
+  });
+
+  const myPoints = useQuery({
+    queryKey: ["my-points", profileQuery.data?.profile?.id],
+    enabled: !!profileQuery.data?.profile?.id,
+    queryFn: async () => {
+      const id = profileQuery.data?.profile?.id;
+      if (!id) throw new Error("Perfil não encontrado");
+      const { data, error } = await supabase
+        .from("collection_points")
+        .select(
+          "id, name, city, state, address, curation_status, is_active, point_needs ( id, is_active )",
+        )
+        .or(`claimed_by.eq.${id},submitted_by.eq.${id}`)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []).map((point) => ({
+        id: point.id,
+        name: point.name,
+        city: point.city,
+        state: point.state,
+        address: point.address,
+        curation_status: point.curation_status,
+        is_active: point.is_active,
+        needs_count: (point.point_needs as { id: string; is_active: boolean }[]).filter((n) => n.is_active)
+          .length,
+      }));
     },
   });
 
@@ -236,6 +272,77 @@ function MinhaContaPage() {
                   </Button>
                 </div>
               </form>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="mt-8 shadow-soft">
+          <CardHeader>
+            <CardTitle>Meus pontos</CardTitle>
+            <CardDescription>
+              Instituições que você cadastrou ou que foram vinculadas à sua conta. Você pode
+              informar o que cada uma precisa receber.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {myPoints.isLoading && <Skeleton className="h-20 w-full" />}
+            {myPoints.isSuccess && myPoints.data.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                Você ainda não tem nenhum ponto vinculado. Quando cadastrar um ponto de coleta ou
+                rede de apoio, ele aparecerá aqui.
+              </p>
+            )}
+            {myPoints.isSuccess && myPoints.data.length > 0 && (
+              <ul className="space-y-3">
+                {myPoints.data.map((point) => (
+                  <li
+                    key={point.id}
+                    className="flex flex-col gap-3 rounded-lg border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div>
+                      <p className="font-medium">{point.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {point.address ?? `${point.city}${point.state ? `, ${point.state}` : ""}`}
+                        {" · "}
+                        {point.curation_status === "verified" ? "verificado" : point.curation_status}
+                        {point.is_active ? "" : " · inativo"}
+                      </p>
+                      <p className="mt-1 text-xs">
+                        {point.needs_count > 0 ? (
+                          <span className="font-medium text-amber-700">
+                            {point.needs_count} necessidade{point.needs_count > 1 ? "s" : ""} ativa
+                            {point.needs_count > 1 ? "s" : ""}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">Sem necessidades ativas</span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Sheet>
+                        <SheetTrigger asChild>
+                          <Button size="sm" variant="outline">
+                            Editar necessidades
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
+                          <SheetHeader>
+                            <SheetTitle>{point.name}</SheetTitle>
+                          </SheetHeader>
+                          <div className="mt-6">
+                            <PointNeedsEditor pointId={point.id} />
+                          </div>
+                        </SheetContent>
+                      </Sheet>
+                      <Button size="sm" variant="ghost" asChild>
+                        <Link to="/pontos/$pointId" params={{ pointId: point.id }} target="_blank">
+                          Ver
+                        </Link>
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             )}
           </CardContent>
         </Card>

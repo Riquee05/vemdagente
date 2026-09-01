@@ -15,7 +15,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { geocodeAddress, getBrowserLocation } from "@/lib/geocode";
-import { fetchCategories, fetchCauses, fetchPointIdsByCause, searchNearbyPoints } from "@/lib/points";
+import {
+  fetchActiveNeedsByPointIds,
+  fetchCategories,
+  fetchCauses,
+  fetchPointIdsByCause,
+  searchNearbyPoints,
+} from "@/lib/points";
 
 const DEFAULT_CENTER: [number, number] = [-23.5505, -46.6333];
 const RADIUS_OPTIONS = [5, 10, 20, 50];
@@ -91,6 +97,19 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   const allowedIds = causeId === "all" ? null : new Set(causePointIds.data ?? []);
   const points = (results.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
   const center: [number, number] = coords ? [coords.lat, coords.lng] : DEFAULT_CENTER;
+
+  const activeNeeds = useQuery({
+    queryKey: ["active-needs", points.length, points.map((p) => p.id).join(",")],
+    queryFn: () => fetchActiveNeedsByPointIds(points.map((p) => p.id)),
+    enabled: points.length > 0,
+  });
+
+  const needsByPoint = new Map<string, { urgency: string; category_label: string; note: string | null }[]>();
+  for (const need of activeNeeds.data ?? []) {
+    const list = needsByPoint.get(need.point_id) ?? [];
+    list.push(need);
+    needsByPoint.set(need.point_id, list);
+  }
 
   return (
     <div className="space-y-6">
@@ -205,6 +224,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
               point={point}
               active={selectedId === point.id}
               onHighlight={setSelectedId}
+              needs={needsByPoint.get(point.id) ?? []}
             />
           ))
         )}
