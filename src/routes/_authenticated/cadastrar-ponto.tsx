@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { geocodeAddress, getBrowserLocation } from "@/lib/geocode";
+import { geocodeAddress, getBrowserLocation, isCep, lookupCep } from "@/lib/geocode";
 import { fetchCategories, fetchCauses, PHOTO_BUCKET } from "@/lib/points";
 
 export const Route = createFileRoute("/_authenticated/cadastrar-ponto")({
@@ -77,9 +77,27 @@ function CadastrarPontoPage() {
   }
 
   async function locateFromAddress() {
+    // CEP no campo de endereço preenche rua, cidade e UF automaticamente.
+    if (isCep(form.address)) {
+      const byCep = await lookupCep(form.address);
+      if (!byCep) {
+        toast.error("CEP não encontrado. Confira os 8 dígitos.");
+        return;
+      }
+      setCoords({ lat: byCep.lat, lng: byCep.lng });
+      setForm((previous) => ({
+        ...previous,
+        address: byCep.title,
+        city: byCep.city || previous.city,
+        state: byCep.state ? byCep.state.slice(0, 2).toUpperCase() : previous.state,
+      }));
+      toast.success("Endereço preenchido pelo CEP. Ajuste o pino se precisar.");
+      return;
+    }
+
     const query = [form.address, form.city, form.state].filter(Boolean).join(", ");
     if (!query) {
-      toast.error("Preencha o endereço ou a cidade primeiro.");
+      toast.error("Preencha o CEP, o endereço ou a cidade primeiro.");
       return;
     }
     const found = await geocodeAddress(query);
@@ -91,6 +109,7 @@ function CadastrarPontoPage() {
     if (!form.city && found.city) update("city", found.city);
     toast.success("Localização encontrada. Ajuste o pino clicando no mapa se precisar.");
   }
+
 
   async function locateFromBrowser() {
     try {

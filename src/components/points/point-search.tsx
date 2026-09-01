@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PointsMap } from "@/components/map/points-map";
@@ -14,7 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { geocodeAddress, getBrowserLocation } from "@/lib/geocode";
+import {
+  geocodeAddress,
+  getBrowserLocation,
+  isCep,
+  lookupCep,
+  suggestAddresses,
+  type AddressSuggestion,
+} from "@/lib/geocode";
 import {
   extractNeighborhood,
   fetchActiveNeedsByPointIds,
@@ -23,6 +30,7 @@ import {
   fetchPointIdsByCauses,
   searchNearbyPoints,
 } from "@/lib/points";
+
 
 const DEFAULT_CENTER: [number, number] = [-23.5505, -46.6333];
 const RADIUS_OPTIONS = [5, 10, 20, 50];
@@ -37,6 +45,53 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   const [radiusKm, setRadiusKm] = useState(10);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [locating, setLocating] = useState(false);
+  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [chosenLabel, setChosenLabel] = useState<string | null>(null);
+  const suggestionsBox = useRef<HTMLDivElement>(null);
+
+  // Autocomplete com debounce: aceita rua, bairro, cidade ou CEP.
+  useEffect(() => {
+    const term = query.trim();
+    if (term.length < 3 || term === chosenLabel) {
+      setSuggestions([]);
+      return;
+    }
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const found = await suggestAddresses(term);
+        if (!cancelled) {
+          setSuggestions(found);
+          setShowSuggestions(true);
+        }
+      } catch {
+        if (!cancelled) setSuggestions([]);
+      }
+    }, 450);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [query, chosenLabel]);
+
+  useEffect(() => {
+    function onClickOutside(event: MouseEvent) {
+      if (!suggestionsBox.current?.contains(event.target as Node)) setShowSuggestions(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  function pickSuggestion(suggestion: AddressSuggestion) {
+    const label = [suggestion.title, suggestion.subtitle].filter(Boolean).join(" — ");
+    setQuery(label);
+    setChosenLabel(label);
+    setCoords({ lat: suggestion.lat, lng: suggestion.lng });
+    setSuggestions([]);
+    setShowSuggestions(false);
+  }
+
 
   const categories = useQuery({ queryKey: ["item-categories"], queryFn: fetchCategories });
   const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
@@ -86,10 +141,21 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   async function searchByAddress(event: React.FormEvent) {
     event.preventDefault();
     setLocating(true);
+    setShowSuggestions(false);
     try {
+      if (isCep(query)) {
+        const byCep = await lookupCep(query);
+        if (!byCep) {
+          toast.error("CEP não encontrado. Confira os 8 dígitos.");
+          return;
+        }
+        pickSuggestion(byCep);
+        toast.success(`${byCep.title} — ${byCep.subtitle}`);
+        return;
+      }
       const found = await geocodeAddress(query);
       if (!found) {
-        toast.error("Não encontramos esse endereço. Tente cidade e estado.");
+        toast.error("Não encontramos esse endereço. Tente cidade, CEP e estado.");
         return;
       }
       setCoords({ lat: found.lat, lng: found.lng });
@@ -98,6 +164,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     } finally {
       setLocating(false);
     }
+
   }
 
   const allowedIds = causeIds.length === 0 ? null : new Set(causePointIds.data ?? []);
@@ -135,20 +202,49 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     <div className="space-y-6">
       {/* z-10 garante que os filtros fiquem sempre acima do mapa */}
       <form onSubmit={searchByAddress} className="relative z-10 grid gap-4 md:grid-cols-[1.4fr_auto]">
-        <div>
+        <div ref={suggestionsBox} className="relative">
           <Label htmlFor="local">Onde você está</Label>
           <div className="mt-2 flex gap-2">
             <Input
               id="local"
-              placeholder="Cidade, bairro ou endereço"
+              autoComplete="off"
+              placeholder="CEP, rua, bairro ou cidade"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setChosenLabel(null);
+              }}
+              onFocus={() => {
+                if (suggestions.length) setShowSuggestions(true);
+              }}
             />
             <Button type="submit" disabled={locating}>
               Buscar
             </Button>
           </div>
+          {showSuggestions && suggestions.length > 0 ? (
+            <ul className="absolute left-0 right-0 top-full z-30 mt-1 max-h-72 overflow-auto rounded-md border-2 border-foreground bg-background shadow-[4px_4px_0_0_hsl(var(--foreground))]">
+              {suggestions.map((suggestion) => (
+                <li key={suggestion.id}>
+                  <button
+                    type="button"
+                    onClick={() => pickSuggestion(suggestion)}
+                    className="block w-full px-3 py-2 text-left hover:bg-muted"
+                  >
+                    <span className="block text-sm font-semibold">{suggestion.title}</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {suggestion.subtitle || suggestion.city}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          <p className="mt-2 text-xs text-muted-foreground">
+            Digite o CEP (ex.: 01310-100) ou o nome da rua e escolha a sugestão.
+          </p>
         </div>
+
         <div className="flex items-end">
           <Button type="button" variant="outline" onClick={useMyLocation} disabled={locating}>
             Usar minha localização
