@@ -67,13 +67,19 @@ function StepUpForm({ email, onDone }: { email: string | null; onDone: () => voi
 
   const confirm = useMutation({
     mutationFn: () => verify({ data: { password } }),
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (!result.ok) {
+        toast.error(result.message ?? "Senha incorreta.");
+        setShowSetPassword(true);
+        return;
+      }
       setPassword("");
       toast.success("Painel liberado por 2 horas.");
       onDone();
     },
-    onError: (e: Error) => toast.error(e.message || "Senha incorreta."),
+    onError: (e: Error) => toast.error(e.message || "Não foi possível confirmar a senha."),
   });
+
 
   return (
     <div className="card-ink mt-8 max-w-lg p-6">
