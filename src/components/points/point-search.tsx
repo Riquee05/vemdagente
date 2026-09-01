@@ -224,6 +224,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
               point={point}
               active={selectedId === point.id}
               onHighlight={setSelectedId}
+              needs={needsByPoint.get(point.id) ?? []}
             />
           ))
         )}
