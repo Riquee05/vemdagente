@@ -278,6 +278,77 @@ function MinhaContaPage() {
 
         <Card className="mt-8 shadow-soft">
           <CardHeader>
+            <CardTitle>Meus pontos</CardTitle>
+            <CardDescription>
+              Instituições que você cadastrou ou que foram vinculadas à sua conta. Você pode
+              informar o que cada uma precisa receber.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {myPoints.isLoading && <Skeleton className="h-20 w-full" />}
+            {myPoints.isSuccess && myPoints.data.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                Você ainda não tem nenhum ponto vinculado. Quando cadastrar um ponto de coleta ou
+                rede de apoio, ele aparecerá aqui.
+              </p>
+            )}
+            {myPoints.isSuccess && myPoints.data.length > 0 && (
+              <ul className="space-y-3">
+                {myPoints.data.map((point) => (
+                  <li
+                    key={point.id}
+                    className="flex flex-col gap-3 rounded-lg border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div>
+                      <p className="font-medium">{point.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {point.address ?? `${point.city}${point.state ? `, ${point.state}` : ""}`}
+                        {" · "}
+                        {point.curation_status === "verified" ? "verificado" : point.curation_status}
+                        {point.is_active ? "" : " · inativo"}
+                      </p>
+                      <p className="mt-1 text-xs">
+                        {point.needs_count > 0 ? (
+                          <span className="font-medium text-amber-700">
+                            {point.needs_count} necessidade{point.needs_count > 1 ? "s" : ""} ativa
+                            {point.needs_count > 1 ? "s" : ""}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">Sem necessidades ativas</span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Sheet>
+                        <SheetTrigger asChild>
+                          <Button size="sm" variant="outline">
+                            Editar necessidades
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
+                          <SheetHeader>
+                            <SheetTitle>{point.name}</SheetTitle>
+                          </SheetHeader>
+                          <div className="mt-6">
+                            <PointNeedsEditor pointId={point.id} />
+                          </div>
+                        </SheetContent>
+                      </Sheet>
+                      <Button size="sm" variant="ghost" asChild>
+                        <Link to="/pontos/$pointId" params={{ pointId: point.id }} target="_blank">
+                          Ver
+                        </Link>
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="mt-8 shadow-soft">
+          <CardHeader>
             <CardTitle>Senha de acesso</CardTitle>
             <CardDescription>
               Crie ou troque a senha que você usa para entrar no DoaAqui e acompanhar suas doações
