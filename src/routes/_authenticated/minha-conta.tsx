@@ -76,6 +76,34 @@ function MinhaContaPage() {
     },
   });
 
+  const myPoints = useQuery({
+    queryKey: ["my-points", profileQuery.data?.profile?.id],
+    enabled: !!profileQuery.data?.profile?.id,
+    queryFn: async () => {
+      const id = profileQuery.data?.profile?.id;
+      if (!id) throw new Error("Perfil não encontrado");
+      const { data, error } = await supabase
+        .from("collection_points")
+        .select(
+          "id, name, city, state, address, curation_status, is_active, point_needs ( id, is_active )",
+        )
+        .or(`claimed_by.eq.${id},submitted_by.eq.${id}`)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []).map((point) => ({
+        id: point.id,
+        name: point.name,
+        city: point.city,
+        state: point.state,
+        address: point.address,
+        curation_status: point.curation_status,
+        is_active: point.is_active,
+        needs_count: (point.point_needs as { id: string; is_active: boolean }[]).filter((n) => n.is_active)
+          .length,
+      }));
+    },
+  });
+
   const [fullName, setFullName] = useState("");
   const [city, setCity] = useState("");
   const [role, setRole] = useState<Role>("donor");
