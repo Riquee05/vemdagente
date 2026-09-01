@@ -78,7 +78,12 @@ export const updatePointNeed = createServerFn({ method: "POST" })
     const { error } = await context.supabase.from("point_needs").update(patch).eq("id", data.needId);
     if (error) throw new Error(error.message);
 
-    await audit(context.supabase, context.userId, "update", data.needId, patch);
+    const auditDetails: Record<string, unknown> = {};
+    if (data.urgency !== undefined) auditDetails["urgency"] = data.urgency;
+    if (data.note !== undefined) auditDetails["note"] = data.note;
+    if (data.isActive !== undefined) auditDetails["is_active"] = data.isActive;
+
+    await audit(context.supabase, context.userId, "update", data.needId, auditDetails);
 
     return { ok: true };
   });
