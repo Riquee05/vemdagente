@@ -66,8 +66,7 @@ export function PointCard({
           <Button asChild size="sm" variant="outline">
             <a
               href={`https://www.google.com/maps/dir/?api=1&destination=${point.lat},${point.lng}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              target="_top"
             >
               Como chegar
             </a>
