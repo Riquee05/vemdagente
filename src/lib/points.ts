@@ -145,3 +145,14 @@ export function formatDistance(km: number | null): string | null {
   if (km == null) return null;
   return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
 }
+
+/** IDs dos pontos que atendem uma causa (leitura pública). */
+export async function fetchPointIdsByCause(causeId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("point_causes")
+    .select("point_id")
+    .eq("cause_id", causeId)
+    .limit(3000);
+  if (error) throw error;
+  return (data ?? []).map((row) => row.point_id);
+}

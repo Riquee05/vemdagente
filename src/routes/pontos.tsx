@@ -9,7 +9,14 @@ import { PointCard } from "@/components/points/point-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { fetchVerifiedPoints } from "@/lib/points";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { fetchCauses, fetchPointIdsByCause, fetchVerifiedPoints } from "@/lib/points";
 
 export const Route = createFileRoute("/pontos")({
   head: () => ({
@@ -44,6 +51,7 @@ function PontosLayout() {
 function PontosPage() {
   const [cityInput, setCityInput] = useState("");
   const [city, setCity] = useState("");
+  const [causeId, setCauseId] = useState("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const points = useQuery({
@@ -51,7 +59,16 @@ function PontosPage() {
     queryFn: () => fetchVerifiedPoints(city),
   });
 
-  const list = points.data ?? [];
+  const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
+
+  const causePointIds = useQuery({
+    queryKey: ["cause-point-ids", causeId],
+    queryFn: () => fetchPointIdsByCause(causeId),
+    enabled: causeId !== "all",
+  });
+
+  const allowedIds = causeId === "all" ? null : new Set(causePointIds.data ?? []);
+  const list = (points.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
   const first = list[0];
   const center: [number, number] = first ? [first.lat, first.lng] : DEFAULT_CENTER;
 
@@ -63,29 +80,48 @@ function PontosPage() {
         </p>
         <h1 className="mt-3 text-4xl font-semibold">Pontos de coleta e ONGs</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Todos os locais abaixo passaram pela curadoria do DoaAqui. Filtre por cidade ou navegue
-          pelo mapa.
+          Todos os locais abaixo passaram pela curadoria do DoaAqui. Filtre por cidade, por causa ou
+          navegue pelo mapa.
         </p>
 
-        <form
-          className="mt-8 flex max-w-md items-end gap-2"
-          onSubmit={(event) => {
-            event.preventDefault();
-            setCity(cityInput);
-          }}
-        >
-          <div className="flex-1">
-            <Label htmlFor="cidade">Cidade</Label>
-            <Input
-              id="cidade"
-              className="mt-2"
-              placeholder="Ex.: Campinas"
-              value={cityInput}
-              onChange={(event) => setCityInput(event.target.value)}
-            />
+        <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
+          <form
+            className="flex items-end gap-2"
+            onSubmit={(event) => {
+              event.preventDefault();
+              setCity(cityInput);
+            }}
+          >
+            <div className="flex-1">
+              <Label htmlFor="cidade">Cidade</Label>
+              <Input
+                id="cidade"
+                className="mt-2"
+                placeholder="Ex.: Campinas"
+                value={cityInput}
+                onChange={(event) => setCityInput(event.target.value)}
+              />
+            </div>
+            <Button type="submit">Filtrar</Button>
+          </form>
+          <div>
+            <Label>Causa</Label>
+            <Select value={causeId} onValueChange={setCauseId}>
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Todas as causas" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as causas</SelectItem>
+                {(causes.data ?? []).map((cause) => (
+                  <SelectItem key={cause.id} value={cause.id}>
+                    {cause.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <Button type="submit">Filtrar</Button>
-        </form>
+        </div>
+
 
         <div className="mt-8">
           <PointsMap

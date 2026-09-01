@@ -92,78 +92,17 @@ export const adminStepUpStatus = createServerFn({ method: "GET" })
     return { isAdmin: true, isOwner: isOwner === true, verified, expiresAt, email };
   });
 
-/** Envia o código de 6 dígitos para o e-mail da conta administrativa. */
-export const requestAdminCode = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    await assertAdminAccess(context.supabase);
+const verifySchema = z.object({ password: z.string().min(1, "Informe a senha.") });
 
-    const email = (context.claims as { email?: string }).email;
-    if (!email) throw new Error("Sua conta não tem e-mail para receber o código.");
-
-    const db = await admin();
-    const { data: state } = await db
-      .from("admin_otp_attempts")
-      .select("last_sent_at, blocked_until")
-      .eq("user_id", context.userId)
-      .maybeSingle();
-
-    if (state?.blocked_until && new Date(state.blocked_until).getTime() > Date.now()) {
-      throw new Error("Muitas tentativas. Aguarde alguns minutos e tente novamente.");
-    }
-    if (state?.last_sent_at && Date.now() - new Date(state.last_sent_at).getTime() < 45_000) {
-      const wait = Math.ceil(
-        (45_000 - (Date.now() - new Date(state.last_sent_at).getTime())) / 1000,
-      );
-      throw new Error(`Já enviamos um código. Verifique o e-mail ou aguarde ${wait}s para reenviar.`);
-    }
-
-    const client = await otpClient();
-    const { error } = await client.auth.signInWithOtp({
-      email,
-      options: { shouldCreateUser: false },
-    });
-    if (error) {
-      console.error("Falha ao enviar código do painel:", error);
-      const status = (error as { status?: number }).status;
-      if (status === 429) {
-        throw new Error(
-          "Já enviamos um código há poucos segundos. Verifique seu e-mail (inclusive o spam) ou aguarde um minuto para reenviar.",
-        );
-      }
-      throw new Error("Não foi possível enviar o código agora. Tente de novo em instantes.");
-    }
-
-
-    await db.from("admin_otp_attempts").upsert(
-      {
-        user_id: context.userId,
-        attempts: 0,
-        last_sent_at: new Date().toISOString(),
-        blocked_until: null,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id" },
-    );
-
-    await audit(context.userId, "admin_2fa_code_sent");
-
-    const [name, domain] = email.split("@");
-    const masked = `${(name ?? "").slice(0, 2)}${"*".repeat(Math.max((name ?? "").length - 2, 1))}@${domain ?? ""}`;
-    return { ok: true, maskedEmail: masked };
-  });
-
-const verifySchema = z.object({ code: z.string().regex(/^\d{6}$/, "Código inválido.") });
-
-/** Valida o código e libera o painel por 2 horas. */
-export const verifyAdminCode = createServerFn({ method: "POST" })
+/** Confirma a senha da conta e libera o painel por 2 horas. */
+export const verifyAdminPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => verifySchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertAdminAccess(context.supabase);
 
     const email = (context.claims as { email?: string }).email;
-    if (!email) throw new Error("Sua conta não tem e-mail para receber o código.");
+    if (!email) throw new Error("Sua conta não tem e-mail cadastrado.");
 
     const db = await admin();
     const { data: state } = await db
@@ -177,9 +116,14 @@ export const verifyAdminCode = createServerFn({ method: "POST" })
     }
 
     const client = await otpClient();
-    const { error } = await client.auth.verifyOtp({ email, token: data.code, type: "email" });
+    const { data: signIn, error } = await client.auth.signInWithPassword({
+      email,
+      password: data.password,
+    });
+    if (!error) await client.auth.signOut({ scope: "local" });
 
-    if (error) {
+    if (error || signIn?.user?.id !== context.userId) {
+
       const attempts = (state?.attempts ?? 0) + 1;
       const blocked = attempts >= MAX_ATTEMPTS;
       await db.from("admin_otp_attempts").upsert(
@@ -196,8 +140,8 @@ export const verifyAdminCode = createServerFn({ method: "POST" })
       await audit(context.userId, "admin_2fa_failed", { attempts });
       throw new Error(
         blocked
-          ? "Código incorreto. Acesso bloqueado por 15 minutos."
-          : "Código incorreto ou expirado.",
+          ? "Senha incorreta. Acesso ao painel bloqueado por 15 minutos."
+          : "Senha incorreta.",
       );
     }
 
