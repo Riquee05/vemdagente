@@ -136,7 +136,7 @@ function EntrarPage() {
         <h1 className="text-3xl font-semibold">Entrar no DoaAqui</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Você só precisa de conta para registrar um pedido de ajuda que fica salvo ou para
-          administrar. Para{" "}
+          cadastrar um ponto de doação. Para{" "}
           <Link to="/doar" className="font-medium text-primary underline-offset-4 hover:underline">
             buscar pontos
           </Link>{" "}
@@ -239,12 +239,6 @@ function EntrarPage() {
                   >
                     Esqueci minha senha / quero definir uma
                   </button>
-                  <p className="text-xs text-muted-foreground">
-                    Recebeu um convite de administração?{" "}
-                    <Link to="/ativar-admin" className="underline underline-offset-4">
-                      Ativar acesso
-                    </Link>
-                  </p>
                 </form>
               </TabsContent>
 
