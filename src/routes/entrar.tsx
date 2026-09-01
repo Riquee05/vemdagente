@@ -208,6 +208,14 @@ function EntrarPage() {
                   <Button type="submit" className="w-full" disabled={busy}>
                     {busy ? "Entrando..." : "Entrar"}
                   </Button>
+                  <button
+                    type="button"
+                    className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+                    onClick={sendPasswordReset}
+                    disabled={busy}
+                  >
+                    Esqueci minha senha / quero definir uma
+                  </button>
                 </form>
               </TabsContent>
 
