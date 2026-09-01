@@ -61,23 +61,23 @@ export function PointNeedsEditor({
   const queryClient = useQueryClient();
   const categories = useQuery({ queryKey: ["item-categories"], queryFn: fetchCategories });
 
+  const listNeeds = useServerFn(listPointNeeds);
+  const addNeed = useServerFn(addPointNeed);
+  const patchNeed = useServerFn(updatePointNeed);
+  const removeNeed = useServerFn(deletePointNeed);
+
   const needs = useQuery({
     queryKey: ["point-needs", pointId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("point_needs")
-        .select("id, point_id, category_id, urgency, note, is_active, item_categories ( id, slug, label, kind )")
-        .eq("point_id", pointId)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []).map((n: any) => ({
+      const rows = await listNeeds({ data: { pointId } });
+      return (rows ?? []).map((n: any) => ({
         id: n.id,
         point_id: n.point_id,
         category_id: n.category_id,
         urgency: n.urgency,
         note: n.note,
         is_active: n.is_active,
-        category: n.item_categories as ItemCategory,
+        category: (n.item_categories ?? { id: n.category_id, slug: "", label: "Categoria", kind: "item" }) as ItemCategory,
       })) as PointNeed[];
     },
   });
@@ -89,20 +89,23 @@ export function PointNeedsEditor({
   const save = useMutation({
     mutationFn: async (input: { id?: string; category_id: string; urgency: string; note: string | null; is_active?: boolean }) => {
       if (input.id) {
-        const { error } = await supabase
-          .from("point_needs")
-          .update({ urgency: input.urgency, note: input.note, is_active: input.is_active ?? true })
-          .eq("id", input.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from("point_needs").insert({
-          point_id: pointId,
-          category_id: input.category_id,
-          urgency: input.urgency,
-          note: input.note,
-          is_active: true,
+        await patchNeed({
+          data: {
+            needId: input.id,
+            urgency: input.urgency as any,
+            note: input.note,
+            isActive: input.is_active ?? true,
+          },
         });
-        if (error) throw error;
+      } else {
+        await addNeed({
+          data: {
+            pointId,
+            categoryId: input.category_id,
+            urgency: input.urgency as any,
+            note: input.note,
+          },
+        });
       }
     },
     onSuccess: () => {
