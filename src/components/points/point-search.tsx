@@ -141,10 +141,21 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   async function searchByAddress(event: React.FormEvent) {
     event.preventDefault();
     setLocating(true);
+    setShowSuggestions(false);
     try {
+      if (isCep(query)) {
+        const byCep = await lookupCep(query);
+        if (!byCep) {
+          toast.error("CEP não encontrado. Confira os 8 dígitos.");
+          return;
+        }
+        pickSuggestion(byCep);
+        toast.success(`${byCep.title} — ${byCep.subtitle}`);
+        return;
+      }
       const found = await geocodeAddress(query);
       if (!found) {
-        toast.error("Não encontramos esse endereço. Tente cidade e estado.");
+        toast.error("Não encontramos esse endereço. Tente cidade, CEP e estado.");
         return;
       }
       setCoords({ lat: found.lat, lng: found.lng });
@@ -153,6 +164,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     } finally {
       setLocating(false);
     }
+
   }
 
   const allowedIds = causeIds.length === 0 ? null : new Set(causePointIds.data ?? []);
