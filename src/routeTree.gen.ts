@@ -27,6 +27,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedCadastrarPontoRouteImport } from './routes/_authenticated/cadastrar-ponto'
 import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
 import { Route as PontosPointIdRouteImport } from './routes/pontos.$pointId'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_authenticated/admin.categorias'
 import { Route as AuthenticatedAdminCuradoriaRouteImport } from './routes/_authenticated/admin.curadoria'
@@ -128,6 +129,11 @@ const PontosPointIdRoute = PontosPointIdRouteImport.update({
   path: '/$pointId',
   getParentRoute: () => PontosRoute,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/admin/necessidades': typeof AuthenticatedAdminNecessidadesRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByTo {
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/admin/necessidades': typeof AuthenticatedAdminNecessidadesRoute
@@ -256,6 +264,7 @@ export interface FileRoutesById {
   '/_authenticated/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
   '/_authenticated/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/_authenticated/admin/necessidades': typeof AuthenticatedAdminNecessidadesRoute
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/cadastrar-ponto'
     | '/minha-conta'
     | '/pontos/$pointId'
+    | '/.lovable/oauth/consent'
     | '/admin/categorias'
     | '/admin/curadoria'
     | '/admin/necessidades'
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
     | '/cadastrar-ponto'
     | '/minha-conta'
     | '/pontos/$pointId'
+    | '/.lovable/oauth/consent'
     | '/admin/categorias'
     | '/admin/curadoria'
     | '/admin/necessidades'
@@ -342,6 +353,7 @@ export interface FileRouteTypes {
     | '/_authenticated/cadastrar-ponto'
     | '/_authenticated/minha-conta'
     | '/pontos/$pointId'
+    | '/.lovable/oauth/consent'
     | '/_authenticated/admin/categorias'
     | '/_authenticated/admin/curadoria'
     | '/_authenticated/admin/necessidades'
@@ -368,6 +380,7 @@ export interface RootRouteChildren {
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
   VoluntariosRoute: typeof VoluntariosRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -497,6 +510,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/pontos/$pointId'
       preLoaderRoute: typeof PontosPointIdRouteImport
       parentRoute: typeof PontosRoute
+    }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
@@ -633,6 +653,7 @@ const rootRouteChildren: RootRouteChildren = {
   VoluntariosRoute: VoluntariosRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
