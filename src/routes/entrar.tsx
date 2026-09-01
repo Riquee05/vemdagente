@@ -42,7 +42,11 @@ function EntrarPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) {
+    const recovering =
+      typeof window !== "undefined" &&
+      (new URLSearchParams(window.location.search).has("recuperar") ||
+        window.location.hash.includes("type=recovery"));
+    if (!loading && user && !recovering) {
       navigate({ to: "/minha-conta", replace: true });
     }
   }, [loading, user, navigate]);

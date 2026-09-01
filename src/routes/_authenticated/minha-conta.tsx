@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { SetPasswordForm } from "@/components/account/set-password-form";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -238,6 +239,21 @@ function MinhaContaPage() {
             )}
           </CardContent>
         </Card>
+
+        <Card className="mt-8 shadow-soft">
+          <CardHeader>
+            <CardTitle>Senha de acesso</CardTitle>
+            <CardDescription>
+              Crie ou troque a senha da sua conta. Ela também é usada para liberar o painel de
+              administração.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <SetPasswordForm />
+          </CardContent>
+        </Card>
+
+
 
         <Card className="mt-8 shadow-soft">
           <CardHeader>
