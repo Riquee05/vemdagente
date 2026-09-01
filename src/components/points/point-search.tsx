@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PointsMap } from "@/components/map/points-map";
@@ -14,7 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { geocodeAddress, getBrowserLocation } from "@/lib/geocode";
+import {
+  geocodeAddress,
+  getBrowserLocation,
+  isCep,
+  lookupCep,
+  suggestAddresses,
+  type AddressSuggestion,
+} from "@/lib/geocode";
 import {
   extractNeighborhood,
   fetchActiveNeedsByPointIds,
@@ -23,6 +30,7 @@ import {
   fetchPointIdsByCauses,
   searchNearbyPoints,
 } from "@/lib/points";
+
 
 const DEFAULT_CENTER: [number, number] = [-23.5505, -46.6333];
 const RADIUS_OPTIONS = [5, 10, 20, 50];
