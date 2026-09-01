@@ -52,7 +52,7 @@ async function geminiText(args: {
   const apiKey = process.env["GEMINI_API_KEY"];
   if (!apiKey) throw new Error("O assistente não está configurado (chave de IA ausente).");
 
-  const res = await fetch(GEMINI_URL, {
+  const res = await fetch(geminiUrl(MODEL), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -64,6 +64,7 @@ async function geminiText(args: {
       generationConfig: {
         temperature: 0.4,
         maxOutputTokens: 800,
+        thinkingConfig: { thinkingLevel: "low" },
         ...(args.jsonSchema
           ? { responseMimeType: "application/json", responseSchema: args.jsonSchema }
           : {}),
