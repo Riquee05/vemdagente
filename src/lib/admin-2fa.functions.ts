@@ -141,7 +141,7 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
       throw new Error(
         blocked
           ? "Senha incorreta. Acesso ao painel bloqueado por 15 minutos."
-          : "Senha incorreta.",
+          : "Senha incorreta. Se você entra pelo Google ou link mágico, defina uma senha em Entrar > Senha > \"Esqueci minha senha\".",
       );
     }
 
