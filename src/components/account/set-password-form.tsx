@@ -33,7 +33,7 @@ export function SetPasswordForm({ onDone, submitLabel = "Salvar senha" }: Props)
 
     setBusy(true);
     const payload: Record<string, string> = { password };
-    if (needsCurrent && currentPassword) payload.current_password = currentPassword;
+    if (needsCurrent && currentPassword) payload["current_password"] = currentPassword;
     const { error } = await supabase.auth.updateUser(payload as { password: string });
     setBusy(false);
 
