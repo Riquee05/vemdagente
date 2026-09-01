@@ -15,7 +15,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { geocodeAddress, getBrowserLocation } from "@/lib/geocode";
-import { fetchCategories, fetchCauses, fetchPointIdsByCause, searchNearbyPoints } from "@/lib/points";
+import {
+  fetchActiveNeedsByPointIds,
+  fetchCategories,
+  fetchCauses,
+  fetchPointIdsByCause,
+  searchNearbyPoints,
+} from "@/lib/points";
 
 const DEFAULT_CENTER: [number, number] = [-23.5505, -46.6333];
 const RADIUS_OPTIONS = [5, 10, 20, 50];
