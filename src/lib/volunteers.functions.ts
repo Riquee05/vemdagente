@@ -80,18 +80,14 @@ export const submitVolunteerApplication = createServerFn({ method: "POST" })
       status: "pending",
     };
 
-    const { data: row, error } = await supabasePublic
-      .from("volunteer_applications")
-      .insert(insert)
-      .select("id")
-      .single();
+    const { error } = await supabasePublic.from("volunteer_applications").insert(insert);
 
-    if (error || !row) {
+    if (error) {
       console.error("Erro ao salvar voluntário:", error);
       throw new Error("Não foi possível enviar sua inscrição. Tente novamente.");
     }
 
-    return { ok: true, id: row.id };
+    return { ok: true };
   });
 
 export const listVolunteerApplications = createServerFn({ method: "GET" })
