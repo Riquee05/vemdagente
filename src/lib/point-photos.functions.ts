@@ -33,6 +33,7 @@ export const getPublishedPointPhotoUrl = createServerFn({ method: "POST" })
       .eq("photo_url", data.path)
       .eq("is_active", true)
       .eq("curation_status", "verified")
+      .eq("state", "SP")
       .maybeSingle();
 
     if (error || !point) throw new Error("Foto indisponível.");

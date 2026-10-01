@@ -78,6 +78,7 @@ export async function fetchVerifiedPoints(city?: string): Promise<NearbyPoint[]>
     )
     .eq("is_active", true)
     .eq("curation_status", "verified")
+    .eq("state", "SP")
     .order("name")
     .limit(1500);
 
@@ -94,6 +95,7 @@ export type PointDetail = NearbyPoint & {
   confirmation_status: string;
   confirmed_at: string | null;
   donation_hours: string | null;
+  location_type: string;
   accepted: (ItemCategory & { confirmed_at: string | null })[];
   causes: Cause[];
   needs: {
@@ -117,52 +119,16 @@ export const CONFIRMATION_LABELS: Record<string, string> = {
   needs_update: "Precisa de atualização",
 };
 
+export const LOCATION_TYPE_LABELS: Record<string, string> = {
+  social_organization: "Instituição ou organização social",
+  collection_point: "Ponto de coleta",
+  support_service: "Serviço ou rede de apoio",
+  partner_business: "Empresa parceira",
+};
+
 export function formatDate(value: string | null | undefined): string | null {
   if (!value) return null;
   return new Date(value).toLocaleDateString("pt-BR");
-}
-
-export async function fetchPoint(id: string): Promise<PointDetail | null> {
-  const { data, error } = await supabase
-    .from("collection_points")
-    .select(
-      `id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url,
-       opening_hours, donation_method, curation_status, source, confirmation_status, confirmed_at, donation_hours,
-       point_accepted_items ( confirmed_at, item_categories ( id, slug, label, kind ) ),
-       point_causes ( causes ( id, slug, label ) ),
-       point_needs ( id, urgency, note, is_active, updated_at, item_categories ( id, slug, label, kind ) )`,
-    )
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) throw error;
-  if (!data) return null;
-
-  const raw = data as Record<string, any>;
-  return {
-    ...(raw as NearbyPoint),
-    distance_km: null,
-    curation_status: raw['curation_status'],
-    source: raw['source'],
-    confirmation_status: raw['confirmation_status'],
-    confirmed_at: raw['confirmed_at'],
-    donation_hours: raw['donation_hours'],
-    accepted: (raw['point_accepted_items'] ?? [])
-      .filter((r: any) => r.item_categories)
-      .map((r: any) => ({ ...r.item_categories, confirmed_at: r.confirmed_at ?? null })),
-    causes: (raw['point_causes'] ?? [])
-      .map((r: any) => r.causes)
-      .filter(Boolean) as Cause[],
-    needs: (raw['point_needs'] ?? [])
-      .filter((n: any) => n.is_active && n.item_categories)
-      .map((n: any) => ({
-        id: n.id,
-        urgency: n.urgency,
-        note: n.note,
-        updated_at: n.updated_at,
-        category: n.item_categories as ItemCategory,
-      })),
-  };
 }
 
 export function formatDistance(km: number | null): string | null {

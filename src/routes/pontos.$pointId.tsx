@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { PageShell } from "@/components/layout/page-shell";
 import { MoneyNotice } from "@/components/money-notice";
@@ -7,21 +7,27 @@ import { PointPhoto } from "@/components/points/point-photo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SuggestCorrection } from "@/components/points/suggest-correction";
-import { CONFIRMATION_LABELS, SOURCE_LABELS, fetchPoint, formatDate } from "@/lib/points";
+import { CONFIRMATION_LABELS, LOCATION_TYPE_LABELS, SOURCE_LABELS, formatDate } from "@/lib/points";
+import { getPublicPointDetail } from "@/lib/point-detail.functions";
 
 const BASE_URL = "https://vemdagente.lovable.app";
 
 export const Route = createFileRoute("/pontos/$pointId")({
   loader: async ({ params }) => {
-    const point = await fetchPoint(params.pointId);
-    if (!point) throw notFound();
-    return point;
+    return getPublicPointDetail({ data: { id: params.pointId } });
   },
   head: ({ loaderData }) => {
-    const point = loaderData;
+    const point = loaderData?.status === "available" ? loaderData.point : null;
     if (!point) {
       return {
-        meta: [{ title: "Ponto não encontrado | Vem da Gente" }],
+        meta: [
+          { title: "Local indisponível | Vem da Gente" },
+          { name: "description", content: "Este local não está disponível na área de atuação atual do Vem da Gente." },
+          { property: "og:title", content: "Local indisponível | Vem da Gente" },
+          { property: "og:description", content: "Consulte os locais disponíveis no estado de São Paulo." },
+          { property: "og:type", content: "website" },
+          { name: "twitter:card", content: "summary" },
+        ],
       };
     }
 
@@ -58,14 +64,14 @@ export const Route = createFileRoute("/pontos/$pointId")({
           name: "description",
           content:
             point.description ||
-            `Endereço, horários, contato, itens aceitos e necessidades de ${point.name}.`,
+            `Consulte endereço, horários, contato e informações cadastradas de ${point.name}. Confirme antes de ir.`,
         },
         { property: "og:title", content: `${point.name} — ponto de coleta | Vem da Gente` },
         {
           property: "og:description",
           content:
             point.description ||
-            `Veja o que ${point.name} aceita e o que está precisando agora.`,
+            `Consulte as informações cadastradas de ${point.name} e confirme diretamente antes de ir.`,
         },
         { property: "og:type", content: "website" },
         { property: "og:url", content: pageUrl },
@@ -82,15 +88,10 @@ export const Route = createFileRoute("/pontos/$pointId")({
   },
   errorComponent: () => (
     <PageShell>
-      <div className="mx-auto max-w-3xl px-4 py-20 text-sm text-muted-foreground">
-        Não foi possível carregar este ponto. Tente novamente em instantes.
-      </div>
-    </PageShell>
-  ),
-  notFoundComponent: () => (
-    <PageShell>
-      <div className="mx-auto max-w-3xl px-4 py-20 text-sm text-muted-foreground">
-        Ponto não encontrado.
+      <div className="mx-auto max-w-3xl px-4 py-20">
+        <h1 className="text-3xl">Não foi possível carregar este local</h1>
+        <p className="mt-3 text-sm text-muted-foreground">A falha pode ser temporária. Tente novamente ou volte à busca.</p>
+        <Button asChild className="mt-6"><Link to="/pontos">Ver locais em São Paulo</Link></Button>
       </div>
     </PageShell>
   ),
@@ -98,7 +99,25 @@ export const Route = createFileRoute("/pontos/$pointId")({
 });
 
 function PointDetailPage() {
-  const data = Route.useLoaderData();
+  const result = Route.useLoaderData();
+  if (result.status !== "available") {
+    return (
+      <PageShell>
+        <section className="mx-auto max-w-3xl px-4 py-20">
+          <h1 className="text-3xl">
+            {result.status === "not_found" ? "Local não encontrado" : "Local indisponível"}
+          </h1>
+          <p className="mt-3 text-muted-foreground">
+            {result.status === "not_found"
+              ? "Este cadastro não existe ou o endereço do link está incorreto."
+              : "Este cadastro está fora da área de atuação atual, está em revisão ou não está publicado."}
+          </p>
+          <Button asChild className="mt-6"><Link to="/pontos">Ver locais no estado de São Paulo</Link></Button>
+        </section>
+      </PageShell>
+    );
+  }
+  const data = result.point;
 
   return (
     <PageShell>
@@ -115,13 +134,16 @@ function PointDetailPage() {
               className="h-56 w-full rounded-xl"
             />
             <h1 className="mt-6 text-3xl font-semibold">{data.name}</h1>
+            <p className="mt-2 text-sm font-medium text-muted-foreground">
+              {LOCATION_TYPE_LABELS[data.location_type] ?? "Tipo não informado"}
+            </p>
             {data.curation_status !== "verified" ? (
               <Badge variant="secondary" className="mt-2">
                 Em revisão — visível só para você
               </Badge>
             ) : null}
             <div className="mt-2 flex flex-wrap gap-2">
-              {data.confirmation_status === "confirmed" ? (
+              {data.confirmation_status === "confirmed" && data.confirmed_at ? (
                 <Badge>Recebimento de doações confirmado</Badge>
               ) : (
                 <Badge variant="outline">
@@ -146,8 +168,12 @@ function PointDetailPage() {
               <div>
                 <dt className="font-medium">Confirmação</dt>
                 <dd className="text-muted-foreground">
-                  {CONFIRMATION_LABELS[data.confirmation_status] ?? "Não confirmado"}
-                  {data.confirmed_at ? ` — última confirmação em ${formatDate(data.confirmed_at)}` : ""}
+                  {data.confirmation_status === "confirmed" && !data.confirmed_at
+                    ? "Não confirmado"
+                    : CONFIRMATION_LABELS[data.confirmation_status] ?? "Não confirmado"}
+                  {data.confirmation_status === "confirmed" && data.confirmed_at
+                    ? ` — última confirmação em ${formatDate(data.confirmed_at)}`
+                    : ""}
                 </dd>
               </div>
               {data.opening_hours ? (

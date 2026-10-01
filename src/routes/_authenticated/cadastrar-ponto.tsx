@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { geocodeAddress, getBrowserLocation, isCep, lookupCep } from "@/lib/geocode";
+import { geocodeAddress, getBrowserLocation, isCep, isSaoPauloState, isWithinSaoPauloBounds, lookupCep } from "@/lib/geocode";
 import { fetchCategories, fetchCauses, PHOTO_BUCKET } from "@/lib/points";
 
 export const Route = createFileRoute("/_authenticated/cadastrar-ponto")({
@@ -47,12 +47,13 @@ function CadastrarPontoPage() {
     description: "",
     address: "",
     city: "",
-    state: "",
+    state: "SP",
     phone: "",
     whatsapp: "",
     website: "",
     opening_hours: "",
     donation_method: "",
+    location_type: "social_organization",
   });
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [accepted, setAccepted] = useState<string[]>([]);
@@ -81,7 +82,7 @@ function CadastrarPontoPage() {
     if (isCep(form.address)) {
       const byCep = await lookupCep(form.address);
       if (!byCep) {
-        toast.error("CEP não encontrado. Confira os 8 dígitos.");
+        toast.error("CEP não encontrado no estado de São Paulo.");
         return;
       }
       setCoords({ lat: byCep.lat, lng: byCep.lng });
@@ -113,7 +114,12 @@ function CadastrarPontoPage() {
 
   async function locateFromBrowser() {
     try {
-      setCoords(await getBrowserLocation());
+      const position = await getBrowserLocation();
+      if (!isWithinSaoPauloBounds(position.lat, position.lng)) {
+        toast.error("A atuação atual está restrita ao estado de São Paulo.");
+        return;
+      }
+      setCoords(position);
       toast.success("Usando sua localização atual.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Erro ao localizar.");
@@ -129,6 +135,10 @@ function CadastrarPontoPage() {
     }
     if (!coords) {
       toast.error("Marque a localização no mapa.");
+      return;
+    }
+    if (!isSaoPauloState(form.state) || !isWithinSaoPauloBounds(coords.lat, coords.lng)) {
+      toast.error("Só é possível cadastrar locais no estado de São Paulo nesta fase.");
       return;
     }
 
@@ -156,12 +166,13 @@ function CadastrarPontoPage() {
           description: form.description.trim() || null,
           address: form.address.trim() || null,
           city: form.city.trim(),
-          state: form.state.trim() || null,
+          state: "SP",
           phone: form.phone.trim() || null,
           whatsapp: form.whatsapp.trim() || null,
           website: form.website.trim() || null,
           opening_hours: form.opening_hours.trim() || null,
           donation_method: form.donation_method.trim() || null,
+          location_type: form.location_type as "social_organization" | "collection_point" | "support_service" | "partner_business",
           lat: coords.lat,
           lng: coords.lng,
           photo_url: photoPath,
@@ -209,13 +220,28 @@ function CadastrarPontoPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">
           Cadastro de ponto
         </p>
-        <h1 className="mt-3 text-3xl font-semibold">Cadastrar um ponto de coleta real</h1>
+        <h1 className="mt-3 text-3xl font-semibold">Cadastrar um local no estado de São Paulo</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           Preencha os dados do local, marque a posição no mapa e envie uma foto. A curadoria revisa
-          antes de publicar para todo mundo.
+          antes de publicar. A atuação atual está restrita ao estado de São Paulo.
         </p>
 
         <form onSubmit={submit} className="mt-8 space-y-6">
+          <div>
+            <Label htmlFor="location_type">Tipo de local *</Label>
+            <select
+              id="location_type"
+              className="mt-2 h-10 w-full border border-input bg-background px-3 text-sm"
+              value={form.location_type}
+              onChange={(event) => update("location_type", event.target.value)}
+            >
+              <option value="social_organization">Instituição ou organização social</option>
+              <option value="collection_point">Ponto de coleta</option>
+              <option value="support_service">Serviço ou rede de apoio</option>
+              <option value="partner_business">Empresa parceira</option>
+            </select>
+          </div>
+
           <div>
             <Label htmlFor="name">Nome do local *</Label>
             <Input
@@ -265,7 +291,8 @@ function CadastrarPontoPage() {
                 className="mt-2"
                 maxLength={2}
                 value={form.state}
-                onChange={(event) => update("state", event.target.value.toUpperCase())}
+                readOnly
+                aria-readonly="true"
               />
             </div>
           </div>
@@ -377,7 +404,7 @@ function CadastrarPontoPage() {
               <Input
                 id="donation_method"
                 className="mt-2"
-                placeholder="Entregar no local, retirada agendada, Pix…"
+                placeholder="Entregar no local ou combinar previamente"
                 value={form.donation_method}
                 onChange={(event) => update("donation_method", event.target.value)}
               />

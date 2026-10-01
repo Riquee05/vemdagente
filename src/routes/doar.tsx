@@ -12,12 +12,12 @@ export const Route = createFileRoute("/doar")({
       {
         name: "description",
         content:
-          "Informe sua localização e o que quer doar: o Vem da Gente mostra no mapa os pontos de coleta e ONGs próximas que aceitam e precisam do item.",
+          "Consulte locais publicados no estado de São Paulo e confirme diretamente endereço, horário e recebimento antes de doar.",
       },
       { property: "og:title", content: "Quero doar — encontre pontos de coleta | Vem da Gente" },
       {
         property: "og:description",
-        content: "Pontos de coleta e ONGs próximas que aceitam roupas, alimentos e dinheiro.",
+        content: "Locais de doação e apoio publicados no estado de São Paulo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -31,10 +31,10 @@ function DoarPage() {
     <PageShell>
       <section className="mx-auto w-full max-w-5xl px-4 py-12">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">Quero doar</p>
-        <h1 className="mt-3 text-4xl font-semibold">Encontre onde doar perto de você</h1>
+        <h1 className="mt-3 text-4xl font-semibold">Encontre locais para doar em São Paulo</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Escolha o que você tem para doar e onde está. Mostramos apenas pontos e instituições cadastrados, com
-          endereço, contato e o que cada um está precisando agora. Buscar não exige conta.
+          Escolha o que você tem para doar e onde está no estado de São Paulo. Consulte endereço,
+          contato e informações cadastradas; confirme diretamente com o local antes de ir. Buscar não exige conta.
         </p>
 
         <ol className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -46,13 +46,13 @@ function DoarPage() {
             },
             {
               step: "02",
-              title: "A gente mostra quem precisa perto",
-              text: "Pontos e instituições reunidos a partir de dados públicos e indicações da comunidade, no mapa e em lista, com endereço e horários.",
+              title: "Consulte os locais publicados",
+              text: "Pontos, instituições e redes de apoio reunidos a partir de dados públicos e indicações da comunidade.",
             },
             {
               step: "03",
-              title: "Você entrega direto na instituição",
-              text: "Sem intermediário: chame no WhatsApp, ligue ou trace a rota e leve sua doação. Dinheiro só pelos canais oficiais da instituição.",
+              title: "Confirme antes de ir",
+              text: "Use o contato informado para confirmar itens, horários e forma de recebimento. O Vem da Gente não realiza entregas.",
             },
           ].map((item, index) => (
             <li

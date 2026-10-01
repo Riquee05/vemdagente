@@ -43,6 +43,9 @@ export type AssistantAnswer = {
 
 type GeminiSchema = Record<string, unknown>;
 
+const isInsideSaoPaulo = (lat: number, lng: number) =>
+  lat >= -25.35 && lat <= -19.75 && lng >= -53.2 && lng <= -44.0;
+
 const FALLBACK_MODELS = [MODEL, "gemini-2.5-flash-lite", "gemini-2.5-flash"];
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -162,10 +165,12 @@ async function extractIntent(
 
 async function geocode(query: string) {
   const url = new URL("https://nominatim.openstreetmap.org/search");
-  url.searchParams.set("q", query);
+  url.searchParams.set("q", `${query}, São Paulo, Brasil`);
   url.searchParams.set("format", "jsonv2");
   url.searchParams.set("limit", "1");
   url.searchParams.set("countrycodes", "br");
+  url.searchParams.set("viewbox", "-53.2,-19.75,-44,-25.35");
+  url.searchParams.set("bounded", "1");
   const res = await fetch(url.toString(), {
     headers: { Accept: "application/json", "User-Agent": "Vem da Gente/1.0 (assistente)" },
   });
@@ -173,7 +178,8 @@ async function geocode(query: string) {
   const list = (await res.json()) as { display_name: string; lat: string; lon: string }[];
   const first = list[0];
   if (!first) return null;
-  return { label: first.display_name, lat: Number(first.lat), lng: Number(first.lon) };
+  const result = { label: first.display_name, lat: Number(first.lat), lng: Number(first.lon) };
+  return isInsideSaoPaulo(result.lat, result.lng) ? result : null;
 }
 
 export const askAssistant = createServerFn({ method: "POST" })
@@ -202,7 +208,12 @@ export const askAssistant = createServerFn({ method: "POST" })
 
     let location: { label: string; lat: number; lng: number } | null = null;
     if (intent.local) location = await geocode(intent.local);
-    if (!location && typeof data.lat === "number" && typeof data.lng === "number") {
+    if (
+      !location &&
+      typeof data.lat === "number" &&
+      typeof data.lng === "number" &&
+      isInsideSaoPaulo(data.lat, data.lng)
+    ) {
       location = { label: "sua localização atual", lat: data.lat, lng: data.lng };
     }
 
@@ -250,13 +261,15 @@ export const askAssistant = createServerFn({ method: "POST" })
 
     const reply = await geminiText({
       instructions:
-        "Você é o assistente do Vem da Gente, uma plataforma brasileira que conecta quem quer doar a pontos de coleta, ONGs e redes de apoio reais. " +
+        "Você é o assistente do Vem da Gente, uma iniciativa independente que facilita a descoberta de locais de doação e apoio no estado de São Paulo. " +
         "Fale português do Brasil, com tom acolhedor, direto e curto (máximo 120 palavras). " +
         "Use SOMENTE os pontos listados no contexto; nunca invente locais, telefones ou endereços. " +
         "Cite no máximo 3 pontos pelo nome, dizendo a distância quando houver. " +
-        "Se não houver pontos, explique com gentileza e sugira informar a cidade ou usar a busca em /pontos. " +
+        "A atuação atual é somente no estado de São Paulo. Se a pergunta citar outro estado, explique esse limite. " +
+        "Se não houver pontos, explique com gentileza e sugira informar um município paulista ou usar a busca em /pontos. " +
+        "Não prometa atendimento, entrega, disponibilidade ou recebimento. Oriente a confirmar diretamente com o local. " +
         "Nunca peça nem oriente pedir dinheiro para pessoas físicas: doação em dinheiro é só para instituições. " +
-        "Não use markdown com títulos; escreva em frases simples.",
+        "Não invente ou complete dados ausentes. Não use markdown com títulos; escreva em frases simples.",
       prompt:
         (history ? `Conversa anterior:\n${history}\n\n` : "") +
         `Pergunta: ${data.message}\n` +

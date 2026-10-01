@@ -25,12 +25,12 @@ export const Route = createFileRoute("/pontos")({
       {
         name: "description",
         content:
-          "Mapa e lista de pontos e instituições reunidos pelo Vem da Gente, com o que cada um aceita e o que está precisando agora.",
+          "Mapa e lista de locais publicados no estado de São Paulo, com origem, contato e informações para confirmar antes de ir.",
       },
       { property: "og:title", content: "Pontos e instituições | Vem da Gente" },
       {
         property: "og:description",
-        content: "Pontos e instituições com origem, grau de confirmação, endereço, horários e necessidades atuais.",
+        content: "Locais no estado de São Paulo com origem, grau de confirmação, endereço e horários informados.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/pontos")({
   component: PontosLayout,
 });
 
-const DEFAULT_CENTER: [number, number] = [-14.235, -51.9253];
+const DEFAULT_CENTER: [number, number] = [-22.5, -48.6];
 
 function PontosLayout() {
   const matches = useMatches();
@@ -53,6 +53,7 @@ function PontosPage() {
   const [city, setCity] = useState("");
   const [causeId, setCauseId] = useState("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(30);
 
   const points = useQuery({
     queryKey: ["verified-points", city],
@@ -69,6 +70,7 @@ function PontosPage() {
 
   const allowedIds = causeId === "all" ? null : new Set(causePointIds.data ?? []);
   const list = (points.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
+  const visibleList = list.slice(0, visibleCount);
   const first = list[0];
   const center: [number, number] = first ? [first.lat, first.lng] : DEFAULT_CENTER;
 
@@ -80,7 +82,7 @@ function PontosPage() {
         </p>
         <h1 className="mt-3 text-4xl font-semibold">Pontos e instituições</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Reunimos locais a partir de dados públicos e indicações da comunidade. Confira os detalhes e entre em contato com a instituição antes de levar sua doação. Filtre por cidade, por causa ou
+          Reunimos locais no estado de São Paulo a partir de dados públicos e indicações da comunidade. Confira os detalhes e entre em contato antes de ir. Filtre por município, por causa ou
           navegue pelo mapa.
         </p>
 
@@ -93,7 +95,7 @@ function PontosPage() {
             }}
           >
             <div className="flex-1">
-              <Label htmlFor="cidade">Cidade</Label>
+              <Label htmlFor="cidade">Município em São Paulo</Label>
               <Input
                 id="cidade"
                 className="mt-2"
@@ -103,10 +105,23 @@ function PontosPage() {
               />
             </div>
             <Button type="submit">Filtrar</Button>
+            {(city || cityInput) ? (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setCityInput("");
+                  setCity("");
+                  setVisibleCount(30);
+                }}
+              >
+                Limpar
+              </Button>
+            ) : null}
           </form>
           <div>
             <Label>Causa</Label>
-            <Select value={causeId} onValueChange={setCauseId}>
+            <Select value={causeId} onValueChange={(value) => { setCauseId(value); setVisibleCount(30); }}>
               <SelectTrigger className="mt-2">
                 <SelectValue placeholder="Todas as causas" />
               </SelectTrigger>
@@ -126,7 +141,7 @@ function PontosPage() {
         <div className="mt-8">
           <PointsMap
             center={center}
-            zoom={first ? 12 : 4}
+            zoom={first ? 12 : 7}
             fitBounds
             selectedId={selectedId}
             onSelect={setSelectedId}
@@ -156,7 +171,7 @@ function PontosPage() {
               .
             </p>
           ) : (
-            list.map((point) => (
+            visibleList.map((point) => (
               <PointCard
                 key={point.id}
                 point={point}
@@ -165,6 +180,16 @@ function PontosPage() {
               />
             ))
           )}
+          {!points.isPending && visibleList.length > 0 ? (
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 text-sm text-muted-foreground">
+              <span>Mostrando {visibleList.length} de {list.length} locais.</span>
+              {visibleList.length < list.length ? (
+                <Button type="button" variant="outline" onClick={() => setVisibleCount((count) => count + 30)}>
+                  Mostrar mais
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </section>
     </PageShell>

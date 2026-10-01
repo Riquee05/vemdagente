@@ -18,6 +18,8 @@ import {
   geocodeAddress,
   getBrowserLocation,
   isCep,
+  isSaoPauloState,
+  isWithinSaoPauloBounds,
   lookupCep,
   suggestAddresses,
   type AddressSuggestion,
@@ -84,6 +86,10 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   }, []);
 
   function pickSuggestion(suggestion: AddressSuggestion) {
+    if (!isSaoPauloState(suggestion.state) || !isWithinSaoPauloBounds(suggestion.lat, suggestion.lng)) {
+      toast.error("A busca atual cobre somente o estado de São Paulo.");
+      return;
+    }
     const label = [suggestion.title, suggestion.subtitle].filter(Boolean).join(" — ");
     setQuery(label);
     setChosenLabel(label);
@@ -129,6 +135,10 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     setLocating(true);
     try {
       const position = await getBrowserLocation();
+      if (!isWithinSaoPauloBounds(position.lat, position.lng)) {
+        toast.error("Sua localização está fora da área de atuação atual: estado de São Paulo.");
+        return;
+      }
       setCoords(position);
       toast.success("Localização detectada.");
     } catch (error) {
@@ -146,7 +156,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
       if (isCep(query)) {
         const byCep = await lookupCep(query);
         if (!byCep) {
-          toast.error("CEP não encontrado. Confira os 8 dígitos.");
+          toast.error("CEP não encontrado no estado de São Paulo.");
           return;
         }
         pickSuggestion(byCep);
@@ -155,7 +165,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
       }
       const found = await geocodeAddress(query);
       if (!found) {
-        toast.error("Não encontramos esse endereço. Tente cidade, CEP e estado.");
+        toast.error("Não encontramos esse endereço no estado de São Paulo.");
         return;
       }
       setCoords({ lat: found.lat, lng: found.lng });
@@ -208,7 +218,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
             <Input
               id="local"
               autoComplete="off"
-              placeholder="CEP, rua, bairro ou cidade"
+              placeholder="CEP, rua, bairro ou município de SP"
               value={query}
               onChange={(event) => {
                 setQuery(event.target.value);
@@ -241,7 +251,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
             </ul>
           ) : null}
           <p className="mt-2 text-xs text-muted-foreground">
-            Digite o CEP (ex.: 01310-100) ou o nome da rua e escolha a sugestão.
+            Digite um CEP ou endereço do estado de São Paulo e escolha a sugestão.
           </p>
         </div>
 
@@ -369,7 +379,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
       <div className="space-y-3">
         {!coords ? (
           <p className="text-sm text-muted-foreground">
-            Mostrando pontos e instituições na região de São Paulo. Informe sua localização acima para
+            Mostrando pontos e instituições no estado de São Paulo. Informe sua localização acima para
             ver os mais próximos de você.
           </p>
         ) : null}

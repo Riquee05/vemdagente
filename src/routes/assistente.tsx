@@ -19,12 +19,12 @@ export const Route = createFileRoute("/assistente")({
       {
         name: "description",
         content:
-          "Pergunte em português: onde posso doar roupas infantis? O assistente do Vem da Gente indica pontos e instituições cadastrados perto de você.",
+          "Pergunte em português sobre locais cadastrados no estado de São Paulo e confirme as informações diretamente antes de ir.",
       },
       { property: "og:title", content: "Assistente inteligente de doações | Vem da Gente" },
       {
         property: "og:description",
-        content: "Pergunte em linguagem natural e receba pontos de doação reais perto de você.",
+        content: "Pergunte em linguagem natural e consulte locais publicados no estado de São Paulo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -35,9 +35,9 @@ export const Route = createFileRoute("/assistente")({
 
 const SUGGESTIONS = [
   "Onde posso doar roupas infantis em São Paulo?",
-  "Preciso de cesta básica perto de Belo Horizonte",
-  "Quero doar alimentos no Recife, qual ONG recebe?",
-  "Tem albergue aberto no centro do Rio de Janeiro?",
+  "Onde encontro apoio em Campinas?",
+  "Quero doar alimentos em Santos, quais locais posso contatar?",
+  "Há algum local cadastrado no centro de Ribeirão Preto?",
 ];
 
 type Turn = { role: "user" | "assistant"; content: string };
@@ -92,7 +92,7 @@ function AssistentePage() {
     ? [points[0].lat, points[0].lng]
     : answer?.location
       ? [answer.location.lat, answer.location.lng]
-      : [-14.235, -51.925];
+      : [-22.5, -48.6];
 
   return (
     <PageShell>
@@ -106,7 +106,8 @@ function AssistentePage() {
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground">
           Escreva em português como você falaria com alguém: o que quer doar ou precisa receber e
-          onde você está. Respondemos só com pontos e instituições disponíveis na plataforma. Sem login.
+          onde você está no estado de São Paulo. Respondemos apenas com dados publicados na plataforma;
+          confirme diretamente com o local antes de ir. Sem login.
         </p>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
@@ -128,7 +129,7 @@ function AssistentePage() {
             <div className="mt-5 space-y-3">
               {turns.length === 0 ? (
                 <p className="rounded border-2 border-dashed border-border bg-surface p-4 text-sm text-muted-foreground">
-                  Exemplo: “tenho um sofá e roupas de bebê para doar em Curitiba”.
+                  Exemplo: “tenho roupas de bebê para doar em Sorocaba”.
                 </p>
               ) : null}
 
@@ -163,7 +164,7 @@ function AssistentePage() {
               <Textarea
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="Onde posso doar roupas de inverno em Porto Alegre?"
+                placeholder="Onde posso doar roupas de inverno em Jundiaí?"
                 rows={3}
                 maxLength={600}
                 onKeyDown={(event) => {
@@ -194,7 +195,7 @@ function AssistentePage() {
 
             <PointsMap
               center={center}
-              zoom={points.length ? 12 : 4}
+              zoom={points.length ? 12 : 7}
               points={points.map((point) => ({
                 id: point.id,
                 name: point.name,

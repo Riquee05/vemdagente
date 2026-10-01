@@ -30,7 +30,7 @@ const sections = [
   },
   {
     title: "Para que usamos",
-    body: "Apenas para conectar quem doa a quem precisa: mostrar pontos próximos, encaminhar pedidos de ajuda e avaliar candidaturas de voluntariado. Não vendemos dados e não usamos para publicidade.",
+    body: "Para mostrar locais publicados, permitir a consulta administrativa de pedidos de ajuda e avaliar candidaturas de voluntariado. O envio de um pedido não gera encaminhamento automático a instituições. Não vendemos dados e não usamos para publicidade.",
   },
   {
     title: "Base legal (LGPD)",
@@ -79,11 +79,11 @@ function PrivacidadePage() {
           <Link to="/minha-conta" className="marker-underline font-semibold">
             Minha conta
           </Link>{" "}
-          ou consulte o contato informado na página{" "}
+          ou consulte a página{" "}
           <Link to="/sobre" className="marker-underline font-semibold">
             Sobre o projeto
           </Link>
-          .
+          . Se ainda não houver um canal publicado, essa pendência estará indicada lá.
         </p>
       </section>
     </PageShell>

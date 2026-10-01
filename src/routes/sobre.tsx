@@ -75,8 +75,9 @@ function AboutPage() {
         <div className="mt-8 space-y-6 text-base leading-7 text-foreground">
           <p>
             O Vem da Gente é uma iniciativa independente que aproxima pessoas dispostas a doar de
-            pontos, instituições e redes de apoio. A plataforma não recebe, administra nem intermedia
-            dinheiro ou a entrega de doações.
+            pontos, instituições e redes de apoio no estado de São Paulo. A plataforma facilita a
+            descoberta e o contato; não recebe ou intermedia dinheiro, não realiza entregas e não
+            garante atendimento, disponibilidade ou recebimento de doações.
           </p>
           <p>
             Reunimos locais a partir de dados públicos e indicações da comunidade. Confira os detalhes
@@ -114,11 +115,16 @@ function AboutPage() {
           </p>
         </section>
 
-        {contact && (
+        {contact ? (
           <section className="mt-8 border-t border-border pt-8">
             <h2 className="font-display text-2xl">Contato</h2>
             {data["contact_email"] && <p className="mt-3">E-mail: {data["contact_email"]}</p>}
             {data["contact_whatsapp"] && <p className="mt-1">WhatsApp: {data["contact_whatsapp"]}</p>}
+          </section>
+        ) : (
+          <section className="mt-8 border-t border-border pt-8">
+            <h2 className="font-display text-2xl">Contato</h2>
+            <p className="mt-3 text-muted-foreground">Canal de contato do projeto pendente de configuração pelo responsável.</p>
           </section>
         )}
 
