@@ -6,7 +6,8 @@ import { PointsMap } from "@/components/map/points-map";
 import { PointPhoto } from "@/components/points/point-photo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { fetchPoint } from "@/lib/points";
+import { SuggestCorrection } from "@/components/points/suggest-correction";
+import { CONFIRMATION_LABELS, SOURCE_LABELS, fetchPoint, formatDate } from "@/lib/points";
 
 const BASE_URL = "https://vemdagente.lovable.app";
 
@@ -116,9 +117,18 @@ function PointDetailPage() {
             <h1 className="mt-6 text-3xl font-semibold">{data.name}</h1>
             {data.curation_status !== "verified" ? (
               <Badge variant="secondary" className="mt-2">
-                Em curadoria — visível só para você
+                Em revisão — visível só para você
               </Badge>
             ) : null}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {data.confirmation_status === "confirmed" ? (
+                <Badge>Recebimento de doações confirmado</Badge>
+              ) : (
+                <Badge variant="outline">
+                  {CONFIRMATION_LABELS[data.confirmation_status] ?? "Não confirmado"}
+                </Badge>
+              )}
+            </div>
             <p className="mt-2 text-sm text-muted-foreground">
               {data.address ? `${data.address} — ` : ""}
               {data.city}
@@ -127,12 +137,32 @@ function PointDetailPage() {
             {data.description ? <p className="mt-4 text-base">{data.description}</p> : null}
 
             <dl className="mt-6 space-y-2 text-sm">
+              <div>
+                <dt className="font-medium">Origem do cadastro</dt>
+                <dd className="text-muted-foreground">
+                  {SOURCE_LABELS[data.source] ?? "Não informada"}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-medium">Confirmação</dt>
+                <dd className="text-muted-foreground">
+                  {CONFIRMATION_LABELS[data.confirmation_status] ?? "Não confirmado"}
+                  {data.confirmed_at ? ` — última confirmação em ${formatDate(data.confirmed_at)}` : ""}
+                </dd>
+              </div>
               {data.opening_hours ? (
                 <div>
-                  <dt className="font-medium">Horários</dt>
+                  <dt className="font-medium">Horário de funcionamento</dt>
                   <dd className="text-muted-foreground">{data.opening_hours}</dd>
                 </div>
               ) : null}
+              <div>
+                <dt className="font-medium">Horário para receber doações</dt>
+                <dd className="text-muted-foreground">
+                  {data.donation_hours ||
+                    "Não informado. O horário de funcionamento não garante recebimento de doações — confirme antes de ir."}
+                </dd>
+              </div>
               {data.donation_method ? (
                 <div>
                   <dt className="font-medium">Como doar</dt>
@@ -199,22 +229,25 @@ function PointDetailPage() {
               </>
             ) : null}
 
-            <h2 className="mt-6 text-lg font-semibold">Aceita</h2>
+            <h2 className="mt-6 text-lg font-semibold">Itens que podem ser aceitos</h2>
             <div className="mt-2 flex flex-wrap gap-2">
               {data.accepted.length ? (
                 data.accepted.map((category) => (
                   <Badge key={category.id} variant="secondary">
                     {category.label}
+                    {category.confirmed_at
+                      ? ` · confirmado em ${formatDate(category.confirmed_at)}`
+                      : " · não confirmado"}
                   </Badge>
                 ))
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Ainda sem itens categorizados neste ponto.
+                  Ainda sem itens informados para este local.
                 </p>
               )}
             </div>
 
-            <h2 className="mt-6 text-lg font-semibold">Precisando agora</h2>
+            <h2 className="mt-6 text-lg font-semibold">Necessidades atuais</h2>
             <div className="mt-2 space-y-2">
               {data.needs.length ? (
                 data.needs.map((need) => (
@@ -228,17 +261,29 @@ function PointDetailPage() {
                     {need.note ? (
                       <p className="mt-1 text-muted-foreground">{need.note}</p>
                     ) : null}
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Atualizado em {formatDate(need.updated_at)}
+                    </p>
                   </div>
                 ))
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Nenhuma necessidade registrada no momento.
+                  Este local ainda não informou suas necessidades atuais. Entre em contato para saber
+                  como ajudar.
                 </p>
               )}
             </div>
+
+            <div className="mt-6">
+              <SuggestCorrection pointId={data.id} />
+            </div>
           </div>
         </div>
-        <MoneyNotice className="mt-10" />
+        <p className="mt-8 text-sm text-muted-foreground">
+          Reunimos locais a partir de dados públicos e indicações da comunidade. Confira os detalhes e
+          entre em contato com a instituição antes de levar sua doação.
+        </p>
+        <MoneyNotice className="mt-6" />
       </section>
     </PageShell>
   );
