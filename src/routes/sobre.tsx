@@ -65,7 +65,7 @@ function AboutPage() {
   });
 
   const data = settings.data ?? {};
-  const contact = data.contact_email || data.contact_whatsapp;
+  const contact = data["contact_email"] || data["contact_whatsapp"];
 
   return (
     <PageShell>
@@ -89,19 +89,19 @@ function AboutPage() {
           </p>
         </div>
 
-        {(data.owner_name || data.owner_bio) && (
+        {(data["owner_name"] || data["owner_bio"]) && (
           <section className="mt-10 border-t border-border pt-8">
             <h2 className="font-display text-2xl">Responsável pelo projeto</h2>
-            {data.owner_name && <p className="mt-3 font-semibold">{data.owner_name}</p>}
-            {data.owner_bio && <p className="mt-2 max-w-2xl text-muted-foreground">{data.owner_bio}</p>}
+            {data["owner_name"] && <p className="mt-3 font-semibold">{data["owner_name"]}</p>}
+            {data["owner_bio"] && <p className="mt-2 max-w-2xl text-muted-foreground">{data["owner_bio"]}</p>}
           </section>
         )}
 
         {contact && (
           <section className="mt-8 border-t border-border pt-8">
             <h2 className="font-display text-2xl">Contato</h2>
-            {data.contact_email && <p className="mt-3">E-mail: {data.contact_email}</p>}
-            {data.contact_whatsapp && <p className="mt-1">WhatsApp: {data.contact_whatsapp}</p>}
+            {data["contact_email"] && <p className="mt-3">E-mail: {data["contact_email"]}</p>}
+            {data["contact_whatsapp"] && <p className="mt-1">WhatsApp: {data["contact_whatsapp"]}</p>}
           </section>
         )}
 
@@ -114,11 +114,11 @@ function AboutPage() {
             <p className="text-sm text-muted-foreground">
               Campos vazios não aparecem publicamente.
             </p>
-            <div><Label htmlFor="owner-name">Nome do responsável</Label><Input id="owner-name" className="mt-2" value={form.owner_name ?? ""} onChange={(e) => setForm({ ...form, owner_name: e.target.value })} /></div>
-            <div><Label htmlFor="owner-bio">Breve história</Label><Textarea id="owner-bio" className="mt-2" rows={4} value={form.owner_bio ?? ""} onChange={(e) => setForm({ ...form, owner_bio: e.target.value })} /></div>
+            <div><Label htmlFor="owner-name">Nome do responsável</Label><Input id="owner-name" className="mt-2" value={form["owner_name"] ?? ""} onChange={(e) => setForm({ ...form, owner_name: e.target.value })} /></div>
+            <div><Label htmlFor="owner-bio">Breve história</Label><Textarea id="owner-bio" className="mt-2" rows={4} value={form["owner_bio"] ?? ""} onChange={(e) => setForm({ ...form, owner_bio: e.target.value })} /></div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div><Label htmlFor="contact-email">E-mail do projeto</Label><Input id="contact-email" className="mt-2" value={form.contact_email ?? ""} onChange={(e) => setForm({ ...form, contact_email: e.target.value })} /></div>
-              <div><Label htmlFor="contact-whatsapp">WhatsApp do projeto</Label><Input id="contact-whatsapp" className="mt-2" value={form.contact_whatsapp ?? ""} onChange={(e) => setForm({ ...form, contact_whatsapp: e.target.value })} /></div>
+              <div><Label htmlFor="contact-email">E-mail do projeto</Label><Input id="contact-email" className="mt-2" value={form["contact_email"] ?? ""} onChange={(e) => setForm({ ...form, contact_email: e.target.value })} /></div>
+              <div><Label htmlFor="contact-whatsapp">WhatsApp do projeto</Label><Input id="contact-whatsapp" className="mt-2" value={form["contact_whatsapp"] ?? ""} onChange={(e) => setForm({ ...form, contact_whatsapp: e.target.value })} /></div>
             </div>
             <Button type="submit" disabled={save.isPending}>{save.isPending ? "Salvando…" : "Salvar"}</Button>
           </form>
