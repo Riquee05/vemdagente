@@ -141,13 +141,14 @@ export default function PointsMapImpl({
     const bounds = new window.google.maps.LatLngBounds();
 
     markersRef.current = points.map((point) => {
-      const marker = new window.google.maps.Marker({
+      const markerOptions: google.maps.MarkerOptions = {
         map,
         position: { lat: point.lat, lng: point.lng },
         title: point.name,
         zIndex: selectedId === point.id ? 2 : 1,
-        animation: selectedId === point.id ? window.google.maps.Animation.BOUNCE : undefined,
-      });
+      };
+      if (selectedId === point.id) markerOptions.animation = window.google.maps.Animation.BOUNCE;
+      const marker = new window.google.maps.Marker(markerOptions);
       marker.addListener("click", () => {
         onSelect?.(point.id);
         const infoWindow = infoWindowRef.current;
