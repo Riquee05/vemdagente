@@ -212,7 +212,7 @@ function PedirAjudaPage() {
         </p>
         <h1 className="mt-3 text-4xl font-semibold">Você não precisa resolver isso sozinho</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Diga o que você precisa e onde está. Mostramos os pontos de apoio verificados mais
+          Diga o que você precisa e onde está. Mostramos os pontos e instituições mais
           próximos e registramos seu pedido para as redes de apoio da região. Não é preciso criar
           conta.
         </p>
@@ -347,7 +347,7 @@ function PedirAjudaPage() {
                 </p>
               ) : coords && points.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  Nenhum ponto verificado nesse raio para essa categoria. Tente outra categoria ou
+                  Nenhum ponto encontrado nesse raio para essa categoria. Tente outra categoria ou
                   fale com o assistente.
                 </p>
               ) : (

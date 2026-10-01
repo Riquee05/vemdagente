@@ -30,7 +30,7 @@ export const Route = createFileRoute("/pontos")({
       { property: "og:title", content: "Pontos e instituições | Vem da Gente" },
       {
         property: "og:description",
-        content: "Pontos curados, com endereço, horários e necessidades atuais.",
+        content: "Pontos e instituições com origem, grau de confirmação, endereço, horários e necessidades atuais.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -78,7 +78,7 @@ function PontosPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">
           Pontos e instituições
         </p>
-        <h1 className="mt-3 text-4xl font-semibold">Pontos de coleta e ONGs</h1>
+        <h1 className="mt-3 text-4xl font-semibold">Pontos e instituições</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
           Reunimos locais a partir de dados públicos e indicações da comunidade. Confira os detalhes e entre em contato com a instituição antes de levar sua doação. Filtre por cidade, por causa ou
           navegue pelo mapa.

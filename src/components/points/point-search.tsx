@@ -381,7 +381,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
           </p>
         ) : points.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Nenhum ponto verificado nesse raio. Tente aumentar a distância ou trocar a categoria.
+            Nenhum ponto encontrado nesse raio. Tente aumentar a distância ou trocar a categoria.
           </p>
         ) : (
           points.map((point) => (
