@@ -7,7 +7,7 @@ import { PointPhoto } from "@/components/points/point-photo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SuggestCorrection } from "@/components/points/suggest-correction";
-import { CONFIRMATION_LABELS, SOURCE_LABELS, formatDate } from "@/lib/points";
+import { CONFIRMATION_LABELS, LOCATION_TYPE_LABELS, SOURCE_LABELS, formatDate } from "@/lib/points";
 import { getPublicPointDetail } from "@/lib/point-detail.functions";
 
 const BASE_URL = "https://vemdagente.lovable.app";
@@ -134,13 +134,16 @@ function PointDetailPage() {
               className="h-56 w-full rounded-xl"
             />
             <h1 className="mt-6 text-3xl font-semibold">{data.name}</h1>
+            <p className="mt-2 text-sm font-medium text-muted-foreground">
+              {LOCATION_TYPE_LABELS[data.location_type] ?? "Tipo não informado"}
+            </p>
             {data.curation_status !== "verified" ? (
               <Badge variant="secondary" className="mt-2">
                 Em revisão — visível só para você
               </Badge>
             ) : null}
             <div className="mt-2 flex flex-wrap gap-2">
-              {data.confirmation_status === "confirmed" ? (
+              {data.confirmation_status === "confirmed" && data.confirmed_at ? (
                 <Badge>Recebimento de doações confirmado</Badge>
               ) : (
                 <Badge variant="outline">
@@ -165,8 +168,12 @@ function PointDetailPage() {
               <div>
                 <dt className="font-medium">Confirmação</dt>
                 <dd className="text-muted-foreground">
-                  {CONFIRMATION_LABELS[data.confirmation_status] ?? "Não confirmado"}
-                  {data.confirmed_at ? ` — última confirmação em ${formatDate(data.confirmed_at)}` : ""}
+                  {data.confirmation_status === "confirmed" && !data.confirmed_at
+                    ? "Não confirmado"
+                    : CONFIRMATION_LABELS[data.confirmation_status] ?? "Não confirmado"}
+                  {data.confirmation_status === "confirmed" && data.confirmed_at
+                    ? ` — última confirmação em ${formatDate(data.confirmed_at)}`
+                    : ""}
                 </dd>
               </div>
               {data.opening_hours ? (

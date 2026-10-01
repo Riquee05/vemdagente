@@ -119,6 +119,13 @@ export const CONFIRMATION_LABELS: Record<string, string> = {
   needs_update: "Precisa de atualização",
 };
 
+export const LOCATION_TYPE_LABELS: Record<string, string> = {
+  social_organization: "Instituição ou organização social",
+  collection_point: "Ponto de coleta",
+  support_service: "Serviço ou rede de apoio",
+  partner_business: "Empresa parceira",
+};
+
 export function formatDate(value: string | null | undefined): string | null {
   if (!value) return null;
   return new Date(value).toLocaleDateString("pt-BR");

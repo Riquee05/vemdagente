@@ -8,8 +8,9 @@ type PointDetailResult =
   | { status: "unavailable" | "not_found"; point: null };
 
 export const getPublicPointDetail = createServerFn({ method: "GET" })
-  .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
+  .inputValidator((data) => z.object({ id: z.string().trim().max(100) }).parse(data))
   .handler(async ({ data }): Promise<PointDetailResult> => {
+    if (!z.string().uuid().safeParse(data.id).success) return { status: "not_found", point: null };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("collection_points")

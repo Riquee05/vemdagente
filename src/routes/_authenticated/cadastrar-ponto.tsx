@@ -172,7 +172,7 @@ function CadastrarPontoPage() {
           website: form.website.trim() || null,
           opening_hours: form.opening_hours.trim() || null,
           donation_method: form.donation_method.trim() || null,
-          location_type: form.location_type,
+          location_type: form.location_type as "social_organization" | "collection_point" | "support_service" | "partner_business",
           lat: coords.lat,
           lng: coords.lng,
           photo_url: photoPath,

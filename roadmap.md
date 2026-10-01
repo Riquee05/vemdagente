@@ -1,6 +1,6 @@
 # Roadmap
 
-- [x] Reconectar Google Maps Platform no novo espaço de trabalho
+- [ ] Reconectar Google Maps Platform no novo espaço de trabalho (conexão não concluída)
 - [x] Importar lote de instituições das 5 zonas de São Paulo (Centro, Sul, Leste, Norte, Oeste)
 - [x] Transparência: página "Sobre o projeto" + link no rodapé
 - [x] Transparência: remover promessas de "verificado"; título "Pontos e instituições"

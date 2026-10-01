@@ -53,6 +53,7 @@ function PontosPage() {
   const [city, setCity] = useState("");
   const [causeId, setCauseId] = useState("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(30);
 
   const points = useQuery({
     queryKey: ["verified-points", city],
@@ -69,6 +70,7 @@ function PontosPage() {
 
   const allowedIds = causeId === "all" ? null : new Set(causePointIds.data ?? []);
   const list = (points.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
+  const visibleList = list.slice(0, visibleCount);
   const first = list[0];
   const center: [number, number] = first ? [first.lat, first.lng] : DEFAULT_CENTER;
 
@@ -156,7 +158,7 @@ function PontosPage() {
               .
             </p>
           ) : (
-            list.map((point) => (
+            visibleList.map((point) => (
               <PointCard
                 key={point.id}
                 point={point}
@@ -165,6 +167,16 @@ function PontosPage() {
               />
             ))
           )}
+          {!points.isPending && visibleList.length > 0 ? (
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 text-sm text-muted-foreground">
+              <span>Mostrando {visibleList.length} de {list.length} locais.</span>
+              {visibleList.length < list.length ? (
+                <Button type="button" variant="outline" onClick={() => setVisibleCount((count) => count + 30)}>
+                  Mostrar mais
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       </section>
     </PageShell>
