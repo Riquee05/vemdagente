@@ -253,11 +253,15 @@ export type Database = {
           address: string | null
           city: string
           claimed_by: string | null
+          confirmation_status: string
+          confirmed_at: string | null
           created_at: string
           curation_status: string
           description: string | null
+          donation_hours: string | null
           donation_method: string | null
           google_place_id: string | null
+          hidden_reason: string | null
           id: string
           is_active: boolean
           lat: number
@@ -277,11 +281,15 @@ export type Database = {
           address?: string | null
           city: string
           claimed_by?: string | null
+          confirmation_status?: string
+          confirmed_at?: string | null
           created_at?: string
           curation_status?: string
           description?: string | null
+          donation_hours?: string | null
           donation_method?: string | null
           google_place_id?: string | null
+          hidden_reason?: string | null
           id?: string
           is_active?: boolean
           lat: number
@@ -301,11 +309,15 @@ export type Database = {
           address?: string | null
           city?: string
           claimed_by?: string | null
+          confirmation_status?: string
+          confirmed_at?: string | null
           created_at?: string
           curation_status?: string
           description?: string | null
+          donation_hours?: string | null
           donation_method?: string | null
           google_place_id?: string | null
+          hidden_reason?: string | null
           id?: string
           is_active?: boolean
           lat?: number
@@ -422,6 +434,7 @@ export type Database = {
       point_accepted_items: {
         Row: {
           category_id: string
+          confirmed_at: string | null
           created_at: string
           id: string
           point_id: string
@@ -429,6 +442,7 @@ export type Database = {
         }
         Insert: {
           category_id: string
+          confirmed_at?: string | null
           created_at?: string
           id?: string
           point_id: string
@@ -436,6 +450,7 @@ export type Database = {
         }
         Update: {
           category_id?: string
+          confirmed_at?: string | null
           created_at?: string
           id?: string
           point_id?: string
@@ -490,6 +505,47 @@ export type Database = {
           },
           {
             foreignKeyName: "point_causes_point_id_fkey"
+            columns: ["point_id"]
+            isOneToOne: false
+            referencedRelation: "collection_points"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      point_corrections: {
+        Row: {
+          contact: string | null
+          created_at: string
+          id: string
+          message: string
+          point_id: string
+          status: string
+          submitted_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          contact?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          point_id: string
+          status?: string
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contact?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          point_id?: string
+          status?: string
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "point_corrections_point_id_fkey"
             columns: ["point_id"]
             isOneToOne: false
             referencedRelation: "collection_points"
@@ -605,6 +661,27 @@ export type Database = {
           id?: string
           role?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      project_settings: {
+        Row: {
+          created_at: string
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          created_at?: string
+          key?: string
+          updated_at?: string
+          value?: string
         }
         Relationships: []
       }
