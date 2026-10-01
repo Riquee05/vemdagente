@@ -24,10 +24,10 @@ function loadGoogleMaps(): Promise<GoogleMapsApi> {
   mapsPromise = new Promise((resolve, reject) => {
     const callbackName = "initVemDaGenteMap";
     const cleanup = () => {
-      delete window[callbackName];
+      delete window.initVemDaGenteMap;
     };
 
-    window[callbackName] = () => {
+    window.initVemDaGenteMap = () => {
       cleanup();
       resolve(window.google.maps);
     };
@@ -90,6 +90,7 @@ export default function PointsMapImpl({
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
+  const [mapReady, setMapReady] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -110,6 +111,7 @@ export default function PointsMapImpl({
         });
         mapRef.current = map;
         infoWindowRef.current = new maps.InfoWindow();
+        setMapReady(true);
         if (onPick) {
           clickListener = map.addListener("click", (event: google.maps.MapMouseEvent) => {
             const location = event.latLng;
@@ -164,7 +166,7 @@ export default function PointsMapImpl({
       map.setCenter({ lat: center[0], lng: center[1] });
       map.setZoom(zoom);
     }
-  }, [center[0], center[1], fitBounds, onSelect, points, selectedId, zoom]);
+  }, [center[0], center[1], fitBounds, mapReady, onSelect, points, selectedId, zoom]);
 
   if (loadError) {
     return (
@@ -179,7 +181,6 @@ export default function PointsMapImpl({
 
 declare global {
   interface Window {
-    google: GoogleMapsApi extends never ? never : typeof google;
-    [key: string]: unknown;
+    initVemDaGenteMap?: () => void;
   }
 }
