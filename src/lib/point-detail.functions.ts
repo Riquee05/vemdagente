@@ -36,32 +36,32 @@ export const getPublicPointDetail = createServerFn({ method: "GET" })
 
     const raw = row as Record<string, any>;
     const point: PointDetail = {
-      id: raw.id,
-      name: raw.name,
-      description: raw.description,
-      address: raw.address,
-      city: raw.city,
-      state: raw.state,
-      lat: raw.lat,
-      lng: raw.lng,
-      phone: raw.phone,
-      whatsapp: raw.whatsapp,
-      website: raw.website,
-      photo_url: raw.photo_url,
-      opening_hours: raw.opening_hours,
-      donation_method: raw.donation_method,
+      id: raw["id"],
+      name: raw["name"],
+      description: raw["description"],
+      address: raw["address"],
+      city: raw["city"],
+      state: raw["state"],
+      lat: raw["lat"],
+      lng: raw["lng"],
+      phone: raw["phone"],
+      whatsapp: raw["whatsapp"],
+      website: raw["website"],
+      photo_url: raw["photo_url"],
+      opening_hours: raw["opening_hours"],
+      donation_method: raw["donation_method"],
       distance_km: null,
-      curation_status: raw.curation_status,
-      source: raw.source,
-      confirmation_status: raw.confirmation_status,
-      confirmed_at: raw.confirmed_at,
-      donation_hours: raw.donation_hours,
-      location_type: raw.location_type,
-      accepted: (raw.point_accepted_items ?? [])
+      curation_status: raw["curation_status"],
+      source: raw["source"],
+      confirmation_status: raw["confirmation_status"],
+      confirmed_at: raw["confirmed_at"],
+      donation_hours: raw["donation_hours"],
+      location_type: raw["location_type"] ?? "collection_point",
+      accepted: (raw["point_accepted_items"] ?? [])
         .filter((item: any) => item.item_categories)
         .map((item: any) => ({ ...item.item_categories, confirmed_at: item.confirmed_at ?? null })),
-      causes: (raw.point_causes ?? []).map((item: any) => item.causes).filter(Boolean),
-      needs: (raw.point_needs ?? [])
+      causes: (raw["point_causes"] ?? []).map((item: any) => item.causes).filter(Boolean),
+      needs: (raw["point_needs"] ?? [])
         .filter((need: any) => need.is_active && need.item_categories)
         .map((need: any) => ({
           id: need.id,
