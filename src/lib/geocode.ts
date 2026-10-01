@@ -21,6 +21,16 @@ export type AddressSuggestion = {
 
 const CEP_REGEX = /^\d{5}-?\d{3}$/;
 
+export function isSaoPauloState(state: string | null | undefined): boolean {
+  if (!state) return false;
+  const normalized = state.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toUpperCase();
+  return normalized === "SP" || normalized === "SAO PAULO";
+}
+
+export function isWithinSaoPauloBounds(lat: number, lng: number): boolean {
+  return lat >= -25.35 && lat <= -19.75 && lng >= -53.2 && lng <= -44.0;
+}
+
 /** Detecta se o texto digitado é um CEP (com ou sem hífen). */
 export function isCep(value: string): boolean {
   return CEP_REGEX.test(value.trim());
@@ -84,6 +94,8 @@ export async function suggestAddresses(query: string): Promise<AddressSuggestion
   url.searchParams.set("addressdetails", "1");
   url.searchParams.set("limit", "6");
   url.searchParams.set("countrycodes", "br");
+  url.searchParams.set("viewbox", "-53.2,-19.75,-44,-25.35");
+  url.searchParams.set("bounded", "1");
 
   const response = await fetch(url.toString(), { headers: { Accept: "application/json" } });
   if (!response.ok) return [];
@@ -118,7 +130,7 @@ export async function suggestAddresses(query: string): Promise<AddressSuggestion
       lat: Number(item.lat),
       lng: Number(item.lon),
     };
-  });
+  }).filter((item) => isSaoPauloState(item.state) && isWithinSaoPauloBounds(item.lat, item.lng));
 }
 
 /** Geocodificação gratuita (OpenStreetMap/Nominatim) para cidade, endereço ou CEP. */
@@ -138,6 +150,8 @@ export async function geocodeAddress(query: string): Promise<GeocodeResult | nul
   url.searchParams.set("addressdetails", "1");
   url.searchParams.set("limit", "1");
   url.searchParams.set("countrycodes", "br");
+  url.searchParams.set("viewbox", "-53.2,-19.75,-44,-25.35");
+  url.searchParams.set("bounded", "1");
 
   const response = await fetch(url.toString(), { headers: { Accept: "application/json" } });
   if (!response.ok) return null;
@@ -152,13 +166,16 @@ export async function geocodeAddress(query: string): Promise<GeocodeResult | nul
   if (!first) return null;
 
   const address = first.address ?? {};
-  return {
+  const result = {
     label: first.display_name,
     city: address["city"] ?? address["town"] ?? address["village"] ?? address["municipality"] ?? "",
     state: address["state"] ?? null,
     lat: Number(first.lat),
     lng: Number(first.lon),
   };
+  return isSaoPauloState(result.state) && isWithinSaoPauloBounds(result.lat, result.lng)
+    ? result
+    : null;
 }
 
 /** Localização do navegador. */
