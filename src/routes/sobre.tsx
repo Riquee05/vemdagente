@@ -89,13 +89,30 @@ function AboutPage() {
           </p>
         </div>
 
-        {(data["owner_name"] || data["owner_bio"]) && (
-          <section className="mt-10 border-t border-border pt-8">
-            <h2 className="font-display text-2xl">Responsável pelo projeto</h2>
-            {data["owner_name"] && <p className="mt-3 font-semibold">{data["owner_name"]}</p>}
-            {data["owner_bio"] && <p className="mt-2 max-w-2xl text-muted-foreground">{data["owner_bio"]}</p>}
-          </section>
-        )}
+        <section className="mt-10 border-t border-border pt-8">
+          <h2 className="font-display text-2xl">Responsável pelo projeto</h2>
+          <p className="mt-3 font-semibold">{data["owner_name"] || "Henrique Oliveira"}</p>
+          <p className="mt-2 max-w-2xl text-muted-foreground">
+            {data["owner_bio"] ||
+              "Idealizador e responsável pelo Vem da Gente, Henrique criou o projeto para facilitar a conexão entre pessoas dispostas a doar e locais e redes de apoio em São Paulo."}
+          </p>
+        </section>
+
+        <section className="mt-8 border-t border-border pt-8">
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent">Nossa inspiração</p>
+          <blockquote className="mt-4 max-w-3xl border-l-2 border-primary pl-5">
+            <p className="font-display text-2xl leading-9">
+              “O Rei responderá: ‘Digo a verdade: o que vocês fizeram a algum dos meus menores irmãos,
+              a mim o fizeram’.”
+            </p>
+            <footer className="mt-3 text-sm font-semibold text-muted-foreground">Mateus 25:40 — NVI</footer>
+          </blockquote>
+          <p className="mt-5 max-w-2xl text-muted-foreground">
+            Acreditamos que ajudar quem precisa é também uma forma de servir a Deus. Inspirado nesse
+            princípio, o Vem da Gente aproxima pessoas dispostas a doar de locais e redes de apoio em
+            São Paulo, acolhendo todos, independentemente de religião ou crença.
+          </p>
+        </section>
 
         {contact && (
           <section className="mt-8 border-t border-border pt-8">
