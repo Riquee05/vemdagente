@@ -63,12 +63,12 @@ function useMensagens(siteUrl: string): [Mensagem, Mensagem, Mensagem] {
     {
       id: "doador",
       label: "Para doadores",
-      texto: `Quer doar roupas, alimentos ou apoio e não sabe onde entregar? O Vem da Gente mostra pontos verificados perto de você e o que cada um precisa agora. ${siteUrl}`,
+      texto: `Quer doar roupas, alimentos ou apoio e não sabe onde entregar? O Vem da Gente mostra pontos e instituições perto de você e o que cada um precisa agora. ${siteUrl}`,
     },
     {
       id: "quem-precisa",
       label: "Para quem precisa",
-      texto: `Se você ou alguém perto precisa de ajuda, o Vem da Gente lista pontos de coleta, ONGs e redes de apoio verificadas no Brasil. Busque por cidade ou categoria: ${siteUrl}`,
+      texto: `Se você ou alguém perto precisa de ajuda, o Vem da Gente lista pontos de coleta, ONGs e redes de apoio cadastradas no Brasil. Busque por cidade ou categoria: ${siteUrl}`,
     },
   ];
 }

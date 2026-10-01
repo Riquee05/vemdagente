@@ -7,7 +7,7 @@ export default defineTool({
   name: "search_points",
   title: "Buscar pontos próximos",
   description:
-    "Busca pontos de coleta, ONGs e redes de apoio verificados perto de uma coordenada (latitude/longitude), com raio em km.",
+    "Busca pontos de coleta, ONGs e redes de apoio disponíveis perto de uma coordenada (latitude/longitude), com raio em km.",
   inputSchema: {
     lat: z.number().min(-90).max(90).describe("Latitude do ponto de partida."),
     lng: z.number().min(-180).max(180).describe("Longitude do ponto de partida."),

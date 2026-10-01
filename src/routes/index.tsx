@@ -11,13 +11,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Encontre pontos de coleta e ONGs verificadas perto de você, veja o que cada um precisa agora e peça ajuda sem burocracia. Buscar não exige conta.",
+          "Encontre pontos de coleta e instituições cadastradas perto de você, veja o que cada um precisa agora e peça ajuda sem burocracia. Buscar não exige conta.",
       },
       { property: "og:title", content: "Vem da Gente — conecte doações a quem precisa de verdade" },
       {
         property: "og:description",
         content:
-          "Pontos de coleta verificados, necessidades reais e um assistente que responde em português.",
+          "Pontos e instituições, necessidades reais e um assistente que responde em português.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -32,7 +32,7 @@ const entradas = [
     eyebrow: "Quero doar",
     title: "Encontrar onde doar",
     description:
-      "Diga o que você tem e onde está. Mostramos pontos verificados por perto e o que cada um está precisando agora.",
+      "Diga o que você tem e onde está. Mostramos pontos e instituições por perto e o que cada um está precisando agora.",
     cta: "Buscar pontos",
   },
   {
@@ -56,7 +56,7 @@ const passos = [
     numero: "02",
     titulo: "Ache o local mais perto",
     texto:
-      "Use o mapa ou o assistente em português para encontrar pontos verificados perto de você, ordenados por distância.",
+      "Use o mapa ou o assistente em português para encontrar pontos e instituições perto de você, ordenados por distância.",
   },
   {
     numero: "03",
@@ -123,7 +123,7 @@ function Index() {
             </span>
             <h2 className="mt-4 mb-6 text-3xl">Encontrar onde doar</h2>
             <p className="mb-8 text-lg leading-relaxed">
-              Diga o que você tem e onde está. Mostramos pontos verificados por perto e o que cada
+              Diga o que você tem e onde está. Mostramos pontos e instituições por perto e o que cada
               um está precisando agora.
             </p>
             <div className="mb-8 h-1 w-full bg-foreground" />
