@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Generate point-photo signed URLs only in server functions after verifying publication or admin access, because the storage bucket is private.
+- Enforce the public geographic scope in database policies and server functions, because UI-only filters can be bypassed.

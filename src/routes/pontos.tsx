@@ -105,10 +105,23 @@ function PontosPage() {
               />
             </div>
             <Button type="submit">Filtrar</Button>
+            {(city || cityInput) ? (
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setCityInput("");
+                  setCity("");
+                  setVisibleCount(30);
+                }}
+              >
+                Limpar
+              </Button>
+            ) : null}
           </form>
           <div>
             <Label>Causa</Label>
-            <Select value={causeId} onValueChange={setCauseId}>
+            <Select value={causeId} onValueChange={(value) => { setCauseId(value); setVisibleCount(30); }}>
               <SelectTrigger className="mt-2">
                 <SelectValue placeholder="Todas as causas" />
               </SelectTrigger>

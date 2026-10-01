@@ -189,6 +189,10 @@ function PedirAjudaPage() {
       toast.error("Informe sua cidade.");
       return;
     }
+    if (coords && !isWithinSaoPauloBounds(coords.lat, coords.lng)) {
+      toast.error("A atuação atual está restrita ao estado de São Paulo.");
+      return;
+    }
 
     setBusy(true);
     try {
