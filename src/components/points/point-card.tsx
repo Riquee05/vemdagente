@@ -42,8 +42,13 @@ export function PointCard({
           {point.city}
           {point.state ? `/${point.state}` : ""}
         </p>
+        {point.confirmation_status === "confirmed" ? (
+          <Badge className="mt-2 text-xs">Recebimento de doações confirmado</Badge>
+        ) : null}
         {point.opening_hours ? (
-          <p className="mt-1 text-xs text-muted-foreground">Horários: {point.opening_hours}</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Horário de funcionamento: {point.opening_hours}
+          </p>
         ) : null}
         {needs.length > 0 && (
           <div className="mt-2 flex flex-wrap items-center gap-2">

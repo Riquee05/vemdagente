@@ -36,6 +36,7 @@ export type NearbyPoint = {
   opening_hours: string | null;
   donation_method: string | null;
   distance_km: number | null;
+  confirmation_status?: string | null;
 };
 
 export const PHOTO_BUCKET = "point-photos";
@@ -68,12 +69,12 @@ export async function searchNearbyPoints(params: {
   return (data ?? []) as NearbyPoint[];
 }
 
-/** Lista pública de pontos verificados (sem localização informada). */
+/** Lista pública de pontos aprovados para exibição (sem localização informada). */
 export async function fetchVerifiedPoints(city?: string): Promise<NearbyPoint[]> {
   let query = supabase
     .from("collection_points")
     .select(
-      "id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url, opening_hours, donation_method",
+      "id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url, opening_hours, donation_method, confirmation_status",
     )
     .eq("is_active", true)
     .eq("curation_status", "verified")
@@ -89,20 +90,47 @@ export async function fetchVerifiedPoints(city?: string): Promise<NearbyPoint[]>
 
 export type PointDetail = NearbyPoint & {
   curation_status: string;
-  accepted: ItemCategory[];
+  source: string;
+  confirmation_status: string;
+  confirmed_at: string | null;
+  donation_hours: string | null;
+  accepted: (ItemCategory & { confirmed_at: string | null })[];
   causes: Cause[];
-  needs: { id: string; urgency: string; note: string | null; category: ItemCategory }[];
+  needs: {
+    id: string;
+    urgency: string;
+    note: string | null;
+    updated_at: string;
+    category: ItemCategory;
+  }[];
 };
+
+export const SOURCE_LABELS: Record<string, string> = {
+  google_maps: "Dados públicos do Google Maps",
+  manual: "Indicação da comunidade",
+  self_claimed: "Cadastrado pela própria instituição",
+};
+
+export const CONFIRMATION_LABELS: Record<string, string> = {
+  unconfirmed: "Não confirmado",
+  confirmed: "Recebimento de doações confirmado",
+  needs_update: "Precisa de atualização",
+};
+
+export function formatDate(value: string | null | undefined): string | null {
+  if (!value) return null;
+  return new Date(value).toLocaleDateString("pt-BR");
+}
 
 export async function fetchPoint(id: string): Promise<PointDetail | null> {
   const { data, error } = await supabase
     .from("collection_points")
     .select(
       `id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url,
-       opening_hours, donation_method, curation_status,
-       point_accepted_items ( item_categories ( id, slug, label, kind ) ),
+       opening_hours, donation_method, curation_status, source, confirmation_status, confirmed_at, donation_hours,
+       point_accepted_items ( confirmed_at, item_categories ( id, slug, label, kind ) ),
        point_causes ( causes ( id, slug, label ) ),
-       point_needs ( id, urgency, note, is_active, item_categories ( id, slug, label, kind ) )`,
+       point_needs ( id, urgency, note, is_active, updated_at, item_categories ( id, slug, label, kind ) )`,
     )
     .eq("id", id)
     .maybeSingle();
@@ -115,9 +143,13 @@ export async function fetchPoint(id: string): Promise<PointDetail | null> {
     ...(raw as NearbyPoint),
     distance_km: null,
     curation_status: raw['curation_status'],
+    source: raw['source'],
+    confirmation_status: raw['confirmation_status'],
+    confirmed_at: raw['confirmed_at'],
+    donation_hours: raw['donation_hours'],
     accepted: (raw['point_accepted_items'] ?? [])
-      .map((r: any) => r.item_categories)
-      .filter(Boolean) as ItemCategory[],
+      .filter((r: any) => r.item_categories)
+      .map((r: any) => ({ ...r.item_categories, confirmed_at: r.confirmed_at ?? null })),
     causes: (raw['point_causes'] ?? [])
       .map((r: any) => r.causes)
       .filter(Boolean) as Cause[],
@@ -127,6 +159,7 @@ export async function fetchPoint(id: string): Promise<PointDetail | null> {
         id: n.id,
         urgency: n.urgency,
         note: n.note,
+        updated_at: n.updated_at,
         category: n.item_categories as ItemCategory,
       })),
   };
