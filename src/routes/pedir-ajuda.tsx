@@ -22,6 +22,8 @@ import {
   geocodeAddress,
   getBrowserLocation,
   isCep,
+  isSaoPauloState,
+  isWithinSaoPauloBounds,
   lookupCep,
   suggestAddresses,
   type AddressSuggestion,
@@ -35,7 +37,7 @@ export const Route = createFileRoute("/pedir-ajuda")({
       {
         name: "description",
         content:
-          "Diga onde você está e que tipo de ajuda precisa: o Vem da Gente mostra pontos de apoio próximos e registra seu pedido.",
+          "Consulte locais de apoio no estado de São Paulo e registre um pedido privado para análise administrativa, sem garantia de encaminhamento.",
       },
       {
         property: "og:title",
@@ -43,7 +45,7 @@ export const Route = createFileRoute("/pedir-ajuda")({
       },
       {
         property: "og:description",
-        content: "Pontos de apoio próximos e registro do seu pedido de ajuda, com ou sem conta.",
+        content: "Locais de apoio em São Paulo e registro privado de pedido para análise administrativa.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -120,6 +122,10 @@ function PedirAjudaPage() {
   }, []);
 
   function pickSuggestion(suggestion: AddressSuggestion) {
+    if (!isSaoPauloState(suggestion.state) || !isWithinSaoPauloBounds(suggestion.lat, suggestion.lng)) {
+      toast.error("A atuação atual está restrita ao estado de São Paulo.");
+      return;
+    }
     const label = [suggestion.title, suggestion.subtitle].filter(Boolean).join(" — ");
     setPlace(label);
     setChosenPlace(label);
@@ -157,6 +163,10 @@ function PedirAjudaPage() {
     setBusy(true);
     try {
       const position = await getBrowserLocation();
+      if (!isWithinSaoPauloBounds(position.lat, position.lng)) {
+        toast.error("Sua localização está fora da área de atuação atual: estado de São Paulo.");
+        return;
+      }
       setCoords(position);
       const found = await geocodeAddress(`${position.lat},${position.lng}`).catch(() => null);
       if (found?.city) setCity(found.city);
@@ -193,7 +203,7 @@ function PedirAjudaPage() {
       });
       if (error) throw error;
       setSent(true);
-      toast.success("Pedido registrado. Veja abaixo os pontos de apoio mais próximos.");
+      toast.success("Pedido registrado para consulta administrativa.");
     } catch {
       toast.error("Não conseguimos registrar seu pedido agora. Tente novamente.");
     } finally {
@@ -212,9 +222,8 @@ function PedirAjudaPage() {
         </p>
         <h1 className="mt-3 text-4xl font-semibold">Você não precisa resolver isso sozinho</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Diga o que você precisa e onde está. Mostramos os pontos e instituições mais
-          próximos e registramos seu pedido para as redes de apoio da região. Não é preciso criar
-          conta.
+          Consulte locais publicados no estado de São Paulo e, se desejar, registre um pedido para
+          análise pela equipe administrativa autorizada. Não é preciso criar conta.
         </p>
 
         <form
@@ -245,7 +254,7 @@ function PedirAjudaPage() {
               <div ref={suggestionsBox} className="relative min-w-[16rem] flex-1">
                 <Input
                   id="help-place"
-                  placeholder="CEP, cidade, bairro ou endereço"
+                  placeholder="CEP, município, bairro ou endereço em SP"
                   value={place}
                   maxLength={120}
                   autoComplete="postal-code"
@@ -300,9 +309,14 @@ function PedirAjudaPage() {
               onChange={(event) => setNote(event.target.value)}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Não escreva documentos, senhas ou dados bancários. Seu pedido é visível apenas para
-              você e para a curadoria do Vem da Gente.
+              Não escreva documentos, senhas, dados bancários ou informações de saúde. O pedido é
+              acessível por você, quando estiver conectado, e pela equipe administrativa autorizada.
             </p>
+          </div>
+
+          <div className="border-l-2 border-primary pl-4 text-sm text-muted-foreground">
+            O registro serve para organizar solicitações dentro da plataforma. Não há encaminhamento
+            automático para instituições, acompanhamento individual nem prazo garantido de resposta ou atendimento.
           </div>
 
           <div className="flex flex-wrap items-center gap-3">

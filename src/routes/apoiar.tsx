@@ -58,17 +58,17 @@ function useMensagens(siteUrl: string): [Mensagem, Mensagem, Mensagem] {
     {
       id: "geral",
       label: "Geral",
-      texto: `Conheci o Vem da Gente: uma plataforma que conecta doadores a pontos de coleta, ONGs e redes de apoio reais no Brasil. Quem precisa acha ajuda perto de casa e quem doa sabe onde entregar. Acesse: ${siteUrl}`,
+      texto: `Conheci o Vem da Gente: uma iniciativa independente que reúne instituições, pontos de coleta e redes de apoio no estado de São Paulo. Consulte os locais e confirme diretamente como ajudar: ${siteUrl}`,
     },
     {
       id: "doador",
       label: "Para doadores",
-      texto: `Quer doar roupas, alimentos ou apoio e não sabe onde entregar? O Vem da Gente mostra pontos e instituições perto de você e o que cada um precisa agora. ${siteUrl}`,
+      texto: `Quer doar roupas, alimentos ou outros itens? O Vem da Gente reúne locais publicados no estado de São Paulo. Consulte as informações e confirme diretamente antes de ir: ${siteUrl}`,
     },
     {
       id: "quem-precisa",
       label: "Para quem precisa",
-      texto: `Se você ou alguém perto precisa de ajuda, o Vem da Gente lista pontos de coleta, ONGs e redes de apoio cadastradas no Brasil. Busque por cidade ou categoria: ${siteUrl}`,
+      texto: `Se você procura apoio no estado de São Paulo, o Vem da Gente reúne instituições e redes cadastradas. Consulte por município ou categoria e confirme diretamente: ${siteUrl}`,
     },
   ];
 }
@@ -258,8 +258,8 @@ function ApoiarPage() {
                 <h2 className="text-3xl">Indicar um ponto</h2>
               </div>
               <p className="mt-5 leading-relaxed opacity-90">
-                Conhece uma igreja, ONG, CRAS ou ponto de coleta que deveria aparecer no mapa?
-                Cadastre gratuitamente. A equipe do Vem da Gente cura cada indicação antes de publicar.
+                Conhece uma instituição, serviço ou ponto de coleta no estado de São Paulo que deveria
+                aparecer no mapa? Envie a indicação para análise antes da publicação.
               </p>
               <div className="mt-8">
                 <Button

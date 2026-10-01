@@ -7,17 +7,17 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Vem da Gente — conecte doações a quem precisa de verdade" },
+      { title: "Vem da Gente — locais de doação e apoio em São Paulo" },
       {
         name: "description",
         content:
-          "Encontre pontos de coleta e instituições cadastradas perto de você, veja o que cada um precisa agora e peça ajuda sem burocracia. Buscar não exige conta.",
+          "Consulte instituições, pontos de coleta e redes de apoio no estado de São Paulo. Confirme diretamente com o local antes de ir.",
       },
-      { property: "og:title", content: "Vem da Gente — conecte doações a quem precisa de verdade" },
+      { property: "og:title", content: "Vem da Gente — locais de doação e apoio em São Paulo" },
       {
         property: "og:description",
         content:
-          "Pontos e instituições, necessidades reais e um assistente que responde em português.",
+          "Locais reunidos a partir de dados públicos e indicações da comunidade no estado de São Paulo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -32,15 +32,15 @@ const entradas = [
     eyebrow: "Quero doar",
     title: "Encontrar onde doar",
     description:
-      "Diga o que você tem e onde está. Mostramos pontos e instituições por perto e o que cada um está precisando agora.",
+      "Diga o que você tem e onde está em São Paulo. Consulte os locais publicados e confirme diretamente como ajudar.",
     cta: "Buscar pontos",
   },
   {
     to: "/pedir-ajuda" as const,
     eyebrow: "Preciso de ajuda",
-    title: "Receber apoio perto de mim",
+    title: "Consultar locais de apoio",
     description:
-      "Informe sua região e o tipo de ajuda. Você vê locais de apoio próximos e pode registrar um pedido.",
+      "Informe sua região no estado de São Paulo e o tipo de ajuda para consultar locais e registrar um pedido privado.",
     cta: "Pedir ajuda",
   },
 ];
@@ -48,21 +48,21 @@ const entradas = [
 const passos = [
   {
     numero: "01",
-    titulo: "Veja o que cada ponto precisa",
+    titulo: "Encontre locais na sua região",
     texto:
-      "Roupas, alimentos, apoio. Cada ponto e ONG informa o que está faltando agora, então você doa o que faz diferença hoje.",
+      "Consulte instituições, pontos de coleta e redes de apoio publicados no estado de São Paulo.",
   },
   {
     numero: "02",
-    titulo: "Ache o local mais perto",
+    titulo: "Confira as informações",
     texto:
-      "Use o mapa ou o assistente em português para encontrar pontos e instituições perto de você, ordenados por distância.",
+      "Veja origem, contato e informações cadastradas. Quando houver necessidades informadas, consulte a data de atualização.",
   },
   {
     numero: "03",
-    titulo: "Entregue direto a quem recebe",
+    titulo: "Combine diretamente com o local",
     texto:
-      "Sem taxa e sem intermediário: você leva a doação até o ponto e ela chega em quem realmente precisa.",
+      "Confirme o que é recebido, o horário e a forma de entrega. A plataforma não realiza entregas nem garante atendimento.",
   },
 ];
 
@@ -80,8 +80,9 @@ function Index() {
               <span className="marker-underline">falta</span> em alguém.
             </h1>
             <p className="mt-8 max-w-lg text-lg leading-relaxed md:text-xl">
-              O Vem da Gente reúne pontos de coleta e instituições a partir de dados públicos do
-              Google Maps, mostra o que cada um precisa agora e leva a doação direto a quem a recebe.
+              O Vem da Gente reúne instituições, pontos de coleta e redes de apoio no estado de São
+              Paulo, a partir de dados públicos e indicações da comunidade. Consulte os locais e entre
+              em contato para confirmar como ajudar.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-5">
               <Button
@@ -123,8 +124,8 @@ function Index() {
             </span>
             <h2 className="mt-4 mb-6 text-3xl">Encontrar onde doar</h2>
             <p className="mb-8 text-lg leading-relaxed">
-              Diga o que você tem e onde está. Mostramos pontos e instituições por perto e o que cada
-              um está precisando agora.
+              Diga o que você tem e onde está em São Paulo. Consulte as informações publicadas e
+              confirme diretamente com o local antes de ir.
             </p>
             <div className="mb-8 h-1 w-full bg-foreground" />
             <Link
@@ -139,10 +140,10 @@ function Index() {
             <span className="font-display text-xs uppercase tracking-widest opacity-85">
               Preciso de ajuda
             </span>
-            <h2 className="mt-4 mb-6 text-3xl">Receber apoio perto de mim</h2>
+            <h2 className="mt-4 mb-6 text-3xl">Consultar locais de apoio</h2>
             <p className="mb-8 text-lg leading-relaxed">
-              Informe sua região e o tipo de ajuda. Você vê locais de apoio próximos e pode
-              registrar um pedido sem burocracia.
+              Informe sua região no estado de São Paulo e o tipo de ajuda. O pedido fica disponível
+              apenas para você e para a equipe administrativa autorizada.
             </p>
             <div className="mb-8 h-1 w-full bg-primary-foreground" />
             <Link
