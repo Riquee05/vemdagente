@@ -11,3 +11,4 @@
 
 - Generate point-photo signed URLs only in server functions after verifying publication or admin access, because the storage bucket is private.
 - Enforce the public geographic scope in database policies and server functions, because UI-only filters can be bypassed.
+- Render maps with the Google Maps browser connector while keeping Places and geocoding requests server-side, because browser credentials are rendering-only.
