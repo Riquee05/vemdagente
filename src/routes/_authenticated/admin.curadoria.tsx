@@ -149,6 +149,7 @@ function AdminCuradoria() {
               path={point.photo_url}
               alt={`Foto de ${point.name}`}
               className="h-24 w-24 shrink-0 rounded-lg"
+              adminAccess
             />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">

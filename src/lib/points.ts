@@ -165,15 +165,6 @@ export async function fetchPoint(id: string): Promise<PointDetail | null> {
   };
 }
 
-/** Resolve o caminho salvo no storage para uma URL assinada exibível. */
-export async function resolvePhotoUrl(path: string | null): Promise<string | null> {
-  if (!path) return null;
-  if (path.startsWith("http")) return path;
-  const { data, error } = await supabase.storage.from(PHOTO_BUCKET).createSignedUrl(path, 60 * 60);
-  if (error) return null;
-  return data?.signedUrl ?? null;
-}
-
 export function formatDistance(km: number | null): string | null {
   if (km == null) return null;
   return km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
