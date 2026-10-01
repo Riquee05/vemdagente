@@ -12,3 +12,4 @@
 - [x] Destacar "Sobre o Projeto" no menu principal
 - [x] Pesquisar, deduplicar e cadastrar novo lote de locais documentados em São Paulo
 - [ ] Aplicar o plano de escopo estadual, fichas, transparência e experiência pública
+- [ ] Reconectar Google Maps Platform no novo espaço de trabalho
