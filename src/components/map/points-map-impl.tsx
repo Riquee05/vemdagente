@@ -147,7 +147,6 @@ export default function PointsMapImpl({
         title: point.name,
         zIndex: selectedId === point.id ? 2 : 1,
       };
-      if (selectedId === point.id) markerOptions.animation = window.google.maps.Animation.BOUNCE;
       const marker = new window.google.maps.Marker(markerOptions);
       marker.addListener("click", () => {
         onSelect?.(point.id);
