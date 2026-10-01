@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ export function SuggestCorrection({ pointId }: { pointId: string }) {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
-  async function submit(event: React.FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault();
     if (message.trim().length < 5) {
       toast.error("Descreva a correção em pelo menos algumas palavras.");

@@ -319,7 +319,7 @@ function PedirAjudaPage() {
           <h2 className="text-2xl font-semibold">Apoio perto de você</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {coords
-              ? `Pontos verificados em até ${RADIUS_KM} km da sua localização.`
+              ? `Pontos e instituições em até ${RADIUS_KM} km da sua localização.`
               : "Informe sua localização acima para ver os pontos de apoio mais próximos."}
           </p>
 
