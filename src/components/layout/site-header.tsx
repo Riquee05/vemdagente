@@ -15,6 +15,7 @@ const navItems = [
   { to: "/assistente", label: "Assistente" },
   { to: "/voluntarios", label: "Voluntários" },
   { to: "/apoiar", label: "Apoiar" },
+  { to: "/sobre", label: "Sobre o Projeto" },
 ] as const;
 
 export function SiteHeader() {
