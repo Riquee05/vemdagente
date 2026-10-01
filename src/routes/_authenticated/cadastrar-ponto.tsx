@@ -165,7 +165,7 @@ function CadastrarPontoPage() {
           lat: coords.lat,
           lng: coords.lng,
           photo_url: photoPath,
-          source: "user",
+          source: "manual",
           curation_status: "pending",
           submitted_by: userId,
           claimed_by: userId,

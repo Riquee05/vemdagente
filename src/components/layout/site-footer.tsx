@@ -15,6 +15,11 @@ export function SiteFooter() {
           <p className="font-medium">Para doar</p>
           <ul className="mt-3 space-y-2 text-muted-foreground">
             <li>
+              <Link to="/sobre" className="hover:text-foreground">
+                Sobre o projeto
+              </Link>
+            </li>
+            <li>
               <Link to="/doar" className="hover:text-foreground">
                 Encontrar pontos
               </Link>

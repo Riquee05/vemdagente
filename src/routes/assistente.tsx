@@ -19,7 +19,7 @@ export const Route = createFileRoute("/assistente")({
       {
         name: "description",
         content:
-          "Pergunte em português: onde posso doar roupas infantis? O assistente do Vem da Gente indica pontos reais e verificados perto de você.",
+          "Pergunte em português: onde posso doar roupas infantis? O assistente do Vem da Gente indica pontos e instituições cadastrados perto de você.",
       },
       { property: "og:title", content: "Assistente inteligente de doações | Vem da Gente" },
       {
@@ -106,7 +106,7 @@ function AssistentePage() {
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground">
           Escreva em português como você falaria com alguém: o que quer doar ou precisa receber e
-          onde você está. Respondemos só com pontos reais já aprovados pela curadoria. Sem login.
+          onde você está. Respondemos só com pontos e instituições disponíveis na plataforma. Sem login.
         </p>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
@@ -147,7 +147,7 @@ function AssistentePage() {
 
               {mutation.isPending ? (
                 <div className="max-w-[92%] rounded border-2 border-dashed border-border bg-surface px-4 py-3 text-sm text-muted-foreground">
-                  Procurando pontos verificados…
+                  Procurando pontos e instituições…
                 </div>
               ) : null}
               <div ref={endRef} />

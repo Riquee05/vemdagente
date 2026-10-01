@@ -241,7 +241,7 @@ export const askAssistant = createServerFn({ method: "POST" })
               }${p.phone ? ` — tel ${p.phone}` : ""}${p.opening_hours ? ` — ${p.opening_hours}` : ""}`,
           )
           .join("\n")
-      : "Nenhum ponto verificado encontrado para esse filtro.";
+      : "Nenhum ponto encontrado para esse filtro.";
 
     const history = (data.history ?? [])
       .slice(-6)
@@ -262,7 +262,7 @@ export const askAssistant = createServerFn({ method: "POST" })
         `Pergunta: ${data.message}\n` +
         `Local considerado: ${location?.label ?? "não informado"}\n` +
         `Categoria: ${category?.label ?? "não definida"}\n` +
-        `Raio: ${intent.raio_km} km\n\nPontos verificados encontrados:\n${contexto}`,
+        `Raio: ${intent.raio_km} km\n\nPontos e instituições encontrados:\n${contexto}`,
     });
 
     return {

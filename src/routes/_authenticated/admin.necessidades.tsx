@@ -96,7 +96,7 @@ function AdminNecessidades() {
 
       {points.isSuccess && filtered.length === 0 && (
         <p className="text-sm text-muted-foreground">
-          {search.trim() ? "Nenhum ponto encontrado para esta busca." : "Nenhum ponto verificado cadastrado."}
+          {search.trim() ? "Nenhum ponto encontrado para esta busca." : "Nenhum ponto publicado cadastrado."}
         </p>
       )}
 

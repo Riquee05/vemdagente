@@ -21,16 +21,16 @@ import { fetchCauses, fetchPointIdsByCause, fetchVerifiedPoints } from "@/lib/po
 export const Route = createFileRoute("/pontos")({
   head: () => ({
     meta: [
-      { title: "Pontos de coleta e ONGs verificadas | Vem da Gente" },
+      { title: "Pontos e instituições | Vem da Gente" },
       {
         name: "description",
         content:
-          "Mapa e lista de pontos de coleta e ONGs verificadas pelo Vem da Gente, com o que cada um aceita e o que está precisando agora.",
+          "Mapa e lista de pontos e instituições reunidos pelo Vem da Gente, com o que cada um aceita e o que está precisando agora.",
       },
-      { property: "og:title", content: "Pontos de coleta e ONGs verificadas | Vem da Gente" },
+      { property: "og:title", content: "Pontos e instituições | Vem da Gente" },
       {
         property: "og:description",
-        content: "Pontos curados, com endereço, horários e necessidades atuais.",
+        content: "Pontos e instituições com origem, grau de confirmação, endereço, horários e necessidades atuais.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -76,11 +76,11 @@ function PontosPage() {
     <PageShell>
       <section className="mx-auto w-full max-w-5xl px-4 py-12">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-          Pontos verificados
+          Pontos e instituições
         </p>
-        <h1 className="mt-3 text-4xl font-semibold">Pontos de coleta e ONGs</h1>
+        <h1 className="mt-3 text-4xl font-semibold">Pontos e instituições</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Todos os locais abaixo passaram pela curadoria do Vem da Gente. Filtre por cidade, por causa ou
+          Reunimos locais a partir de dados públicos e indicações da comunidade. Confira os detalhes e entre em contato com a instituição antes de levar sua doação. Filtre por cidade, por causa ou
           navegue pelo mapa.
         </p>
 
@@ -149,7 +149,7 @@ function PontosPage() {
             <p className="text-sm text-muted-foreground">Não foi possível carregar os pontos.</p>
           ) : list.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Nenhum ponto verificado {city ? `em “${city}”` : "ainda"}. Você pode{" "}
+              Nenhum ponto encontrado {city ? `em “${city}”` : "ainda"}. Você pode{" "}
               <Link to="/cadastrar-ponto" className="underline">
                 cadastrar um ponto
               </Link>

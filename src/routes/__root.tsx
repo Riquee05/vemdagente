@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -36,7 +37,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -83,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Plataforma que conecta doadores a pontos de coleta e ONGs verificadas, e ajuda quem precisa a encontrar apoio perto de casa.",
+          "Plataforma que conecta doadores a pontos de coleta e instituições cadastradas, e ajuda quem precisa a encontrar apoio perto de casa.",
       },
       { property: "og:title", content: "Vem da Gente — doações que chegam a quem precisa" },
       {

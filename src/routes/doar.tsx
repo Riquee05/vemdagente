@@ -33,7 +33,7 @@ function DoarPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">Quero doar</p>
         <h1 className="mt-3 text-4xl font-semibold">Encontre onde doar perto de você</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Escolha o que você tem para doar e onde está. Mostramos apenas pontos verificados, com
+          Escolha o que você tem para doar e onde está. Mostramos apenas pontos e instituições cadastrados, com
           endereço, contato e o que cada um está precisando agora. Buscar não exige conta.
         </p>
 
@@ -47,7 +47,7 @@ function DoarPage() {
             {
               step: "02",
               title: "A gente mostra quem precisa perto",
-              text: "Pontos de coleta e ONGs verificados pela nossa curadoria, no mapa e em lista, com endereço e horários.",
+              text: "Pontos e instituições reunidos a partir de dados públicos e indicações da comunidade, no mapa e em lista, com endereço e horários.",
             },
             {
               step: "03",

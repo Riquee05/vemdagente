@@ -51,7 +51,7 @@ export async function fetchCategories(): Promise<ItemCategory[]> {
   return data ?? [];
 }
 
-/** Busca por proximidade — só pontos ativos, verificados e que aceitam o item. */
+/** Busca por proximidade — só pontos ativos, publicados e que aceitam o item. */
 export async function searchNearbyPoints(params: {
   lat: number;
   lng: number;

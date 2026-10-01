@@ -369,7 +369,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
       <div className="space-y-3">
         {!coords ? (
           <p className="text-sm text-muted-foreground">
-            Mostrando pontos verificados na região de São Paulo. Informe sua localização acima para
+            Mostrando pontos e instituições na região de São Paulo. Informe sua localização acima para
             ver os mais próximos de você.
           </p>
         ) : null}
@@ -381,7 +381,7 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
           </p>
         ) : points.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Nenhum ponto verificado nesse raio. Tente aumentar a distância ou trocar a categoria.
+            Nenhum ponto encontrado nesse raio. Tente aumentar a distância ou trocar a categoria.
           </p>
         ) : (
           points.map((point) => (

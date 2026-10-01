@@ -21,6 +21,7 @@ import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
+import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as VoluntariosRouteImport } from './routes/voluntarios'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -95,6 +96,11 @@ const PrivacidadeRoute = PrivacidadeRouteImport.update({
 const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
   id: '/redefinir-senha',
   path: '/redefinir-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VoluntariosRoute = VoluntariosRouteImport.update({
@@ -199,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/pontos': typeof PontosRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/sobre': typeof SobreRoute
   '/voluntarios': typeof VoluntariosRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/pontos': typeof PontosRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/sobre': typeof SobreRoute
   '/voluntarios': typeof VoluntariosRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
@@ -258,6 +266,7 @@ export interface FileRoutesById {
   '/pontos': typeof PontosRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/sobre': typeof SobreRoute
   '/voluntarios': typeof VoluntariosRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -289,6 +298,7 @@ export interface FileRouteTypes {
     | '/pontos'
     | '/privacidade'
     | '/redefinir-senha'
+    | '/sobre'
     | '/voluntarios'
     | '/.well-known/oauth-protected-resource'
     | '/admin'
@@ -318,6 +328,7 @@ export interface FileRouteTypes {
     | '/pontos'
     | '/privacidade'
     | '/redefinir-senha'
+    | '/sobre'
     | '/voluntarios'
     | '/.well-known/oauth-protected-resource'
     | '/cadastrar-ponto'
@@ -347,6 +358,7 @@ export interface FileRouteTypes {
     | '/pontos'
     | '/privacidade'
     | '/redefinir-senha'
+    | '/sobre'
     | '/voluntarios'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
@@ -378,6 +390,7 @@ export interface RootRouteChildren {
   PontosRoute: typeof PontosRouteWithChildren
   PrivacidadeRoute: typeof PrivacidadeRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
+  SobreRoute: typeof SobreRoute
   VoluntariosRoute: typeof VoluntariosRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -467,6 +480,13 @@ declare module '@tanstack/react-router' {
       path: '/redefinir-senha'
       fullPath: '/redefinir-senha'
       preLoaderRoute: typeof RedefinirSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/voluntarios': {
@@ -650,6 +670,7 @@ const rootRouteChildren: RootRouteChildren = {
   PontosRoute: PontosRouteWithChildren,
   PrivacidadeRoute: PrivacidadeRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
+  SobreRoute: SobreRoute,
   VoluntariosRoute: VoluntariosRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,

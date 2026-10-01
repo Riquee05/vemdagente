@@ -304,7 +304,7 @@ function MinhaContaPage() {
                       <p className="text-xs text-muted-foreground">
                         {point.address ?? `${point.city}${point.state ? `, ${point.state}` : ""}`}
                         {" · "}
-                        {point.curation_status === "verified" ? "verificado" : point.curation_status}
+                        {point.curation_status === "verified" ? "publicado" : point.curation_status}
                         {point.is_active ? "" : " · inativo"}
                       </p>
                       <p className="mt-1 text-xs">

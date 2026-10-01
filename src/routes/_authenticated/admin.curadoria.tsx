@@ -48,7 +48,7 @@ function AdminCuradoria() {
       const { data, error } = await supabase
         .from("collection_points")
         .select(
-          "id, name, description, address, city, state, phone, whatsapp, website, opening_hours, photo_url, source, is_active, created_at",
+          "id, name, description, address, city, state, phone, whatsapp, website, opening_hours, donation_hours, photo_url, source, is_active, created_at, confirmation_status, confirmed_at, hidden_reason",
         )
         .eq("curation_status", filter)
         .order("created_at", { ascending: false })
@@ -83,6 +83,28 @@ function AdminCuradoria() {
       queryClient.invalidateQueries({ queryKey: ["verified-points"] });
     },
     onError: () => toast.error("Não conseguimos salvar a decisão."),
+  });
+
+  const confirmReceiving = useMutation({
+    mutationFn: async (input: {
+      id: string;
+      status: "unconfirmed" | "confirmed" | "needs_update";
+    }) => {
+      const { error } = await supabase
+        .from("collection_points")
+        .update({
+          confirmation_status: input.status,
+          confirmed_at: input.status === "confirmed" ? new Date().toISOString() : null,
+        })
+        .eq("id", input.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Status de confirmação atualizado.");
+      queryClient.invalidateQueries({ queryKey: ["curation-queue"] });
+      queryClient.invalidateQueries({ queryKey: ["verified-points"] });
+    },
+    onError: () => toast.error("Não conseguimos atualizar a confirmação."),
   });
 
   const items = queue.data ?? [];
@@ -135,6 +157,13 @@ function AdminCuradoria() {
                   {point.source === "google_maps" ? "Google Maps" : "Cadastro manual"}
                 </Badge>
                 {!point.is_active && <Badge variant="outline">inativo</Badge>}
+                <Badge variant={point.confirmation_status === "confirmed" ? "default" : "outline"}>
+                  {point.confirmation_status === "confirmed"
+                    ? "Doações confirmadas"
+                    : point.confirmation_status === "needs_update"
+                      ? "Precisa atualizar"
+                      : "Não confirmado"}
+                </Badge>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 {point.address ? `${point.address} — ` : ""}
@@ -181,6 +210,26 @@ function AdminCuradoria() {
                     Voltar para a fila
                   </Button>
                 )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={confirmReceiving.isPending}
+                  onClick={() =>
+                    confirmReceiving.mutate({ id: point.id, status: "confirmed" })
+                  }
+                >
+                  Confirmar recebimento
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={confirmReceiving.isPending}
+                  onClick={() =>
+                    confirmReceiving.mutate({ id: point.id, status: "needs_update" })
+                  }
+                >
+                  Marcar desatualizado
+                </Button>
                 <Button asChild size="sm" variant="ghost">
                   <Link to="/pontos/$pointId" params={{ pointId: point.id }}>
                     Ver ficha

@@ -63,32 +63,6 @@ const QUERY_GROUPS: { kind: "doacao" | "apoio"; queries: string[]; cats: string[
   },
 ];
 
-/** Palavras que indicam logística/comércio, não doação — descartadas na importação. */
-const BLOCKED_TERMS = [
-  "shopee",
-  "correios",
-  "mercado livre",
-  "melhor envio",
-  "jadlog",
-  "loggi",
-  "amazon",
-  "sequoia",
-  "total express",
-  "reciclagem",
-  "ferro velho",
-  "sucata",
-  "ecoponto",
-  "entulho",
-  "prefeitura",
-  "santa retirada",
-];
-
-function isRelevant(name: string) {
-  const lower = name.toLowerCase();
-  return !BLOCKED_TERMS.some((term) => lower.includes(term));
-}
-
-
 /** Importa pontos reais do Google Maps (Places API New) — apenas administradores. */
 export const importGooglePoints = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -145,8 +119,7 @@ export const importGooglePoints = createServerFn({ method: "POST" })
 
         const payload = (await response.json()) as { places?: GooglePlace[] };
         for (const place of payload.places ?? []) {
-          const placeName = place.displayName?.text ?? "";
-          if (!place.id || !place.location || !isRelevant(placeName)) continue;
+          if (!place.id || !place.location) continue;
           const entry = found.get(place.id) ?? { place, cats: new Set<string>() };
           group.cats.forEach((slug) => entry.cats.add(slug));
           found.set(place.id, entry);
@@ -192,7 +165,8 @@ export const importGooglePoints = createServerFn({ method: "POST" })
             : null,
         google_place_id: place.id,
         source: "google_maps",
-        curation_status: "verified",
+        curation_status: "pending",
+        confirmation_status: "unconfirmed",
         is_active: true,
       };
     });

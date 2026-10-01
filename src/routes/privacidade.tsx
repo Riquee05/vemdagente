@@ -14,7 +14,7 @@ export const Route = createFileRoute("/privacidade")({
       { property: "og:title", content: "Privacidade e proteção de dados | Vem da Gente" },
       {
         property: "og:description",
-        content: "Nossa política de privacidade, base legal, segurança e direitos do titular.",
+        content: "Nossa política de privacidade, base legal, medidas de proteção e direitos do titular.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -38,11 +38,11 @@ const sections = [
   },
   {
     title: "Quem pode ver seus dados",
-    body: "Somente você e a equipe administrativa autorizada. As regras do banco de dados liberam cada registro exclusivamente ao titular e a administradores verificados no servidor; visitantes não têm acesso a dados pessoais.",
+    body: "O acesso é limitado a você e à equipe administrativa autorizada, conforme a finalidade de cada dado. Visitantes não recebem acesso direto aos dados pessoais da sua conta.",
   },
   {
-    title: "Segurança",
-    body: "Sessões autenticadas com token, verificação de permissão no servidor em toda ação sensível, acesso administrativo isolado em tabela própria (ninguém se promove sozinho), trilha de auditoria imutável das concessões de acesso e chaves de serviço nunca expostas ao navegador.",
+    title: "Medidas de proteção",
+    body: "Usamos autenticação, controle de acesso e registros de atividades administrativas. Nenhum sistema é totalmente invulnerável; revisamos as medidas e restringimos o acesso conforme a necessidade.",
   },
   {
     title: "Seus direitos",
@@ -78,6 +78,10 @@ function PrivacidadePage() {
           Para exercer seus direitos, acesse{" "}
           <Link to="/minha-conta" className="marker-underline font-semibold">
             Minha conta
+          </Link>{" "}
+          ou consulte o contato informado na página{" "}
+          <Link to="/sobre" className="marker-underline font-semibold">
+            Sobre o projeto
           </Link>
           .
         </p>

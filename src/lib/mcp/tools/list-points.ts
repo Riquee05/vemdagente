@@ -7,7 +7,7 @@ export default defineTool({
   name: "list_points",
   title: "Listar pontos por cidade ou nome",
   description:
-    "Lista pontos verificados e ativos da plataforma, com filtro opcional por cidade e por parte do nome.",
+    "Lista pontos e instituições ativos da plataforma, com filtro opcional por cidade e por parte do nome.",
   inputSchema: {
     city: z.string().trim().min(2).optional().describe("Cidade, ex.: São Paulo."),
     search: z.string().trim().min(2).optional().describe("Parte do nome da instituição."),
