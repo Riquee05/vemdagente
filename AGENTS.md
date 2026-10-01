@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Generate point-photo signed URLs only in server functions after verifying publication or admin access, because the storage bucket is private.
