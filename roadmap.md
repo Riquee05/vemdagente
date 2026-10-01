@@ -10,4 +10,4 @@
 - [x] Demais itens do arquivo (linhas 39-49)
 - [x] Sobre o projeto: mini biografia do responsável e inspiração em Mateus 25:40
 - [x] Destacar "Sobre o Projeto" no menu principal
-- [ ] Pesquisar, deduplicar e cadastrar novo lote de locais documentados em São Paulo
+- [x] Pesquisar, deduplicar e cadastrar novo lote de locais documentados em São Paulo
