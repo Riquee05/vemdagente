@@ -19,7 +19,7 @@
       {
         "name": "search_points",
         "title": "Buscar pontos próximos",
-        "description": "Busca pontos de coleta, ONGs e redes de apoio verificados perto de uma coordenada (latitude/longitude), com raio em km.",
+        "description": "Busca pontos de coleta, ONGs e redes de apoio disponíveis perto de uma coordenada (latitude/longitude), com raio em km.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -66,7 +66,7 @@
       {
         "name": "list_points",
         "title": "Listar pontos por cidade ou nome",
-        "description": "Lista pontos verificados e ativos da plataforma, com filtro opcional por cidade e por parte do nome.",
+        "description": "Lista pontos e instituições ativos da plataforma, com filtro opcional por cidade e por parte do nome.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
