@@ -25,12 +25,12 @@ export const Route = createFileRoute("/pontos")({
       {
         name: "description",
         content:
-          "Mapa e lista de pontos e instituições reunidos pelo Vem da Gente, com o que cada um aceita e o que está precisando agora.",
+          "Mapa e lista de locais publicados no estado de São Paulo, com origem, contato e informações para confirmar antes de ir.",
       },
       { property: "og:title", content: "Pontos e instituições | Vem da Gente" },
       {
         property: "og:description",
-        content: "Pontos e instituições com origem, grau de confirmação, endereço, horários e necessidades atuais.",
+        content: "Locais no estado de São Paulo com origem, grau de confirmação, endereço e horários informados.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/pontos")({
   component: PontosLayout,
 });
 
-const DEFAULT_CENTER: [number, number] = [-14.235, -51.9253];
+const DEFAULT_CENTER: [number, number] = [-22.5, -48.6];
 
 function PontosLayout() {
   const matches = useMatches();
@@ -80,7 +80,7 @@ function PontosPage() {
         </p>
         <h1 className="mt-3 text-4xl font-semibold">Pontos e instituições</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Reunimos locais a partir de dados públicos e indicações da comunidade. Confira os detalhes e entre em contato com a instituição antes de levar sua doação. Filtre por cidade, por causa ou
+          Reunimos locais no estado de São Paulo a partir de dados públicos e indicações da comunidade. Confira os detalhes e entre em contato antes de ir. Filtre por município, por causa ou
           navegue pelo mapa.
         </p>
 
@@ -93,7 +93,7 @@ function PontosPage() {
             }}
           >
             <div className="flex-1">
-              <Label htmlFor="cidade">Cidade</Label>
+              <Label htmlFor="cidade">Município em São Paulo</Label>
               <Input
                 id="cidade"
                 className="mt-2"
@@ -126,7 +126,7 @@ function PontosPage() {
         <div className="mt-8">
           <PointsMap
             center={center}
-            zoom={first ? 12 : 4}
+            zoom={first ? 12 : 7}
             fitBounds
             selectedId={selectedId}
             onSelect={setSelectedId}

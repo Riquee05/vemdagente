@@ -7,18 +7,12 @@ export function SiteFooter() {
         <div>
           <p className="font-display text-lg font-semibold">Vem da Gente</p>
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
-            Conectamos quem quer doar com pontos de coleta e ONGs perto de você — e ajudamos quem
-            precisa a encontrar apoio.
+            Facilitamos a descoberta e o contato com locais de doação e apoio no estado de São Paulo.
           </p>
         </div>
         <nav aria-label="Doar" className="text-sm">
           <p className="font-medium">Para doar</p>
           <ul className="mt-3 space-y-2 text-muted-foreground">
-            <li>
-              <Link to="/sobre" className="hover:text-foreground">
-                Sobre o projeto
-              </Link>
-            </li>
             <li>
               <Link to="/doar" className="hover:text-foreground">
                 Encontrar pontos
@@ -39,6 +33,11 @@ export function SiteFooter() {
         <nav aria-label="Ajuda" className="text-sm">
           <p className="font-medium">Preciso de ajuda</p>
           <ul className="mt-3 space-y-2 text-muted-foreground">
+            <li>
+              <Link to="/sobre" className="hover:text-foreground">
+                Sobre o projeto
+              </Link>
+            </li>
             <li>
               <Link to="/pedir-ajuda" className="hover:text-foreground">
                 Registrar pedido
@@ -67,7 +66,7 @@ export function SiteFooter() {
           </ul>
 
           <p className="mt-4 text-xs text-muted-foreground">
-            Plataforma independente que conecta pessoas a instituições e projetos sociais. As
+            Plataforma independente de descoberta e contato. Não realiza entregas nem garante atendimento ou recebimento. As
             doações em dinheiro são feitas pelos canais oficiais de cada instituição — o Vem da Gente
             não recebe, administra ou intermedia valores.
           </p>
