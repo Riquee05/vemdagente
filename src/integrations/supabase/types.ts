@@ -266,6 +266,7 @@ export type Database = {
           is_active: boolean
           lat: number
           lng: number
+          location_type: string | null
           name: string
           opening_hours: string | null
           phone: string | null
@@ -294,6 +295,7 @@ export type Database = {
           is_active?: boolean
           lat: number
           lng: number
+          location_type?: string | null
           name: string
           opening_hours?: string | null
           phone?: string | null
@@ -322,6 +324,7 @@ export type Database = {
           is_active?: boolean
           lat?: number
           lng?: number
+          location_type?: string | null
           name?: string
           opening_hours?: string | null
           phone?: string | null
