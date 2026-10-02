@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const requireAuthMarker = Symbol("require-auth");
+const { requireAuthMarker } = vi.hoisted(() => ({
+  requireAuthMarker: Symbol("require-auth"),
+}));
 
 vi.mock("@/integrations/supabase/auth-middleware", () => ({
   requireSupabaseAuth: requireAuthMarker,
@@ -40,6 +42,10 @@ vi.mock("@tanstack/react-start", () => ({
 
 import { createTeamMember, listTeamMembers } from "@/lib/team.functions";
 
+type MockServerFunction = (args?: { data?: unknown; context?: unknown }) => Promise<unknown>;
+const callListTeamMembers = listTeamMembers as unknown as MockServerFunction;
+const callCreateTeamMember = createTeamMember as unknown as MockServerFunction;
+
 function nonAdminContext() {
   const from = vi.fn();
   const rpc = vi.fn().mockResolvedValue({ data: false });
@@ -57,12 +63,12 @@ describe("autorização administrativa", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("impede usuário não autenticado de listar a equipe", async () => {
-    await expect(listTeamMembers()).rejects.toThrow("Unauthorized");
+    await expect(callListTeamMembers()).rejects.toThrow("Unauthorized");
   });
 
   it("impede usuário não autenticado de criar integrante", async () => {
     await expect(
-      createTeamMember({
+      callCreateTeamMember({
         data: {
           full_name: "Pessoa Teste",
           email: "teste@example.com",
@@ -75,7 +81,7 @@ describe("autorização administrativa", () => {
   it("impede usuário autenticado sem papel administrativo de listar dados", async () => {
     const { context, from, rpc } = nonAdminContext();
 
-    await expect(listTeamMembers({ context })).rejects.toThrow(
+    await expect(callListTeamMembers({ context })).rejects.toThrow(
       "Acesso restrito a administradores.",
     );
     expect(rpc).toHaveBeenCalledWith("is_admin");
@@ -86,7 +92,7 @@ describe("autorização administrativa", () => {
     const { context, from, rpc } = nonAdminContext();
 
     await expect(
-      createTeamMember({
+      callCreateTeamMember({
         context,
         data: {
           full_name: "Pessoa Teste",
