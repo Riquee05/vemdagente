@@ -54,3 +54,5 @@ As mudanças incrementais ficam em `supabase/migrations`. Aplique-as em ordem no
 - Manter segredos no armazenamento seguro do projeto e usar chaves do navegador somente quando publicáveis.
 - Evitar dados pessoais desnecessários; os formulários orientam a não enviar documentos, senhas, dados bancários ou informações de saúde.
 - Dados administrativos e pessoais são protegidos por autenticação, autorização no servidor e políticas de acesso no banco.
+
+O `trustForwardedHost` permanece habilitado no endpoint MCP porque o Lovable opera atrás de um proxy confiável.
