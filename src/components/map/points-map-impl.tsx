@@ -140,6 +140,7 @@ export default function PointsMapImpl({
   useEffect(() => {
     let cancelled = false;
     let clickListener: google.maps.MapsEventListener | null = null;
+    const markers = markersRef.current;
 
     void loadGoogleMaps()
       .then((maps) => {
@@ -169,7 +170,6 @@ export default function PointsMapImpl({
     return () => {
       cancelled = true;
       clickListener?.remove();
-      const markers = markersRef.current;
       markers.forEach(({ marker, listener }) => {
         listener.remove();
         marker.setMap(null);
@@ -195,7 +195,7 @@ export default function PointsMapImpl({
         map,
         position: { lat: point.lat, lng: point.lng },
         title: point.name,
-        zIndex: selectedId === point.id ? 2 : 1,
+        zIndex: 1,
       };
       const marker = new window.google.maps.Marker(markerOptions);
       const listener = marker.addListener("click", () => {
