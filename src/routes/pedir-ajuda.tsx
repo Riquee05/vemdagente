@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
 import {
   geocodeAddress,
   getBrowserLocation,
@@ -28,6 +28,7 @@ import {
   suggestAddresses,
   type AddressSuggestion,
 } from "@/lib/geocode";
+import { submitHelpRequest } from "@/lib/help-requests.functions";
 import { fetchCategories, searchNearbyPoints } from "@/lib/points";
 
 export const Route = createFileRoute("/pedir-ajuda")({
@@ -45,7 +46,8 @@ export const Route = createFileRoute("/pedir-ajuda")({
       },
       {
         property: "og:description",
-        content: "Locais de apoio em São Paulo e registro privado de pedido para análise administrativa.",
+        content:
+          "Locais de apoio em São Paulo e registro privado de pedido para análise administrativa.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -58,6 +60,7 @@ const DEFAULT_CENTER: [number, number] = [-23.5505, -46.6333];
 const RADIUS_KM = 20;
 
 function PedirAjudaPage() {
+  const sendHelpRequest = useServerFn(submitHelpRequest);
   const [place, setPlace] = useState("");
   const [city, setCity] = useState("");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -69,6 +72,7 @@ function PedirAjudaPage() {
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [chosenPlace, setChosenPlace] = useState<string | null>(null);
+  const [website, setWebsite] = useState("");
   const suggestionsBox = useRef<HTMLDivElement>(null);
 
   const categories = useQuery({ queryKey: ["item-categories"], queryFn: fetchCategories });
@@ -122,7 +126,10 @@ function PedirAjudaPage() {
   }, []);
 
   function pickSuggestion(suggestion: AddressSuggestion) {
-    if (!isSaoPauloState(suggestion.state) || !isWithinSaoPauloBounds(suggestion.lat, suggestion.lng)) {
+    if (
+      !isSaoPauloState(suggestion.state) ||
+      !isWithinSaoPauloBounds(suggestion.lat, suggestion.lng)
+    ) {
       toast.error("A atuação atual está restrita ao estado de São Paulo.");
       return;
     }
@@ -196,16 +203,16 @@ function PedirAjudaPage() {
 
     setBusy(true);
     try {
-      const { data: auth } = await supabase.auth.getUser();
-      const { error } = await supabase.from("help_requests").insert({
-        requester_id: auth.user?.id ?? null,
-        category_id: categoryId,
-        city: cleanCity,
-        lat: coords?.lat ?? null,
-        lng: coords?.lng ?? null,
-        note: note.trim().slice(0, 1000) || null,
+      await sendHelpRequest({
+        data: {
+          category_id: categoryId,
+          city: cleanCity,
+          lat: coords?.lat ?? null,
+          lng: coords?.lng ?? null,
+          note,
+          website,
+        },
       });
-      if (error) throw error;
       setSent(true);
       toast.success("Pedido registrado para consulta administrativa.");
     } catch {
@@ -234,6 +241,17 @@ function PedirAjudaPage() {
           onSubmit={submit}
           className="mt-8 space-y-5 rounded-xl border-2 border-border bg-surface p-6"
         >
+          <div className="sr-only" aria-hidden="true">
+            <Label htmlFor="help-website">Não preencha este campo</Label>
+            <Input
+              id="help-website"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(event) => setWebsite(event.target.value)}
+            />
+          </div>
           <div>
             <Label htmlFor="help-category">Que ajuda você precisa *</Label>
             <Select value={categoryId} onValueChange={setCategoryId}>
@@ -320,7 +338,8 @@ function PedirAjudaPage() {
 
           <div className="border-l-2 border-primary pl-4 text-sm text-muted-foreground">
             O registro serve para organizar solicitações dentro da plataforma. Não há encaminhamento
-            automático para instituições, acompanhamento individual nem prazo garantido de resposta ou atendimento.
+            automático para instituições, acompanhamento individual nem prazo garantido de resposta
+            ou atendimento.
           </div>
 
           <div className="flex flex-wrap items-center gap-3">

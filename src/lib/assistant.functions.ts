@@ -1,20 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
-import { z } from "zod";
+import { assistantRequestSchema } from "@/lib/public-submission-schemas";
 
 const MODEL = "gemini-3.1-flash-lite";
 const geminiUrl = (model: string) =>
   `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-
-const askSchema = z.object({
-  message: z.string().trim().min(2).max(600),
-  lat: z.number().min(-90).max(90).nullable().optional(),
-  lng: z.number().min(-180).max(180).nullable().optional(),
-  history: z
-    .array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(2000) }))
-    .max(10)
-    .optional(),
-});
 
 export type AssistantPoint = {
   id: string;
@@ -99,7 +89,9 @@ async function geminiText(args: {
       lastDetail = await res.text().catch(() => "");
 
       if (res.status === 401 || res.status === 403)
-        throw new Error("O assistente está temporariamente indisponível (chave do Gemini inválida ou sem permissão).");
+        throw new Error(
+          "O assistente está temporariamente indisponível (chave do Gemini inválida ou sem permissão).",
+        );
 
       const transient = res.status === 429 || res.status >= 500;
       if (!transient) break; // erro de requisição: tenta próximo modelo sem esperar
@@ -110,10 +102,11 @@ async function geminiText(args: {
   if (lastStatus === 429)
     throw new Error("Muitas perguntas ao mesmo tempo. Tente de novo em alguns segundos.");
   if (lastStatus >= 500)
-    throw new Error("O assistente está com muita procura agora. Tente de novo em alguns instantes.");
+    throw new Error(
+      "O assistente está com muita procura agora. Tente de novo em alguns instantes.",
+    );
   throw new Error(`Falha ao consultar o assistente (${lastStatus}). ${lastDetail.slice(0, 200)}`);
 }
-
 
 type Intent = {
   intencao: "doar" | "receber" | "outro";
@@ -149,7 +142,6 @@ async function extractIntent(
     },
   });
 
-
   try {
     const parsed = JSON.parse(raw) as Intent;
     return {
@@ -183,20 +175,27 @@ async function geocode(query: string) {
 }
 
 export const askAssistant = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => askSchema.parse(data))
+  .inputValidator((data: unknown) => {
+    const parsed = assistantRequestSchema.safeParse(data);
+    if (!parsed.success) throw new Error("Confira sua pergunta e tente novamente.");
+    return parsed.data;
+  })
   .handler(async ({ data }): Promise<AssistantAnswer> => {
+    const { enforceRateLimit, rateLimitConfig } = await import("@/lib/rate-limit.server");
+    await enforceRateLimit("assistant_question", rateLimitConfig("ASSISTANT"));
+
     const supabaseUrl = process.env["SUPABASE_URL"];
     const supabasePublishableKey = process.env["SUPABASE_PUBLISHABLE_KEY"];
 
     if (!supabaseUrl || !supabasePublishableKey) {
-      throw new Error("O assistente está temporariamente indisponível. Tente novamente em instantes.");
+      throw new Error(
+        "O assistente está temporariamente indisponível. Tente novamente em instantes.",
+      );
     }
 
-    const supabase = createClient(
-      supabaseUrl,
-      supabasePublishableKey,
-      { auth: { persistSession: false } },
-    );
+    const supabase = createClient(supabaseUrl, supabasePublishableKey, {
+      auth: { persistSession: false },
+    });
 
     const { data: categories } = await supabase
       .from("item_categories")
@@ -218,7 +217,7 @@ export const askAssistant = createServerFn({ method: "POST" })
     }
 
     const category = intent.categoria_slug
-      ? cats.find((c) => c.slug === intent.categoria_slug) ?? null
+      ? (cats.find((c) => c.slug === intent.categoria_slug) ?? null)
       : null;
 
     let points: AssistantPoint[] = [];

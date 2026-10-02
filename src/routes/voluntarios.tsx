@@ -33,8 +33,33 @@ export const Route = createFileRoute("/voluntarios")({
 });
 
 const estados = [
-  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
-  "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+  "AC",
+  "AL",
+  "AP",
+  "AM",
+  "BA",
+  "CE",
+  "DF",
+  "ES",
+  "GO",
+  "MA",
+  "MT",
+  "MS",
+  "MG",
+  "PA",
+  "PB",
+  "PR",
+  "PE",
+  "PI",
+  "RJ",
+  "RN",
+  "RS",
+  "RO",
+  "RR",
+  "SC",
+  "SP",
+  "SE",
+  "TO",
 ];
 
 function VoluntariosPage() {
@@ -75,11 +100,12 @@ function VoluntariosPage() {
           phone: String(formData.get("phone") ?? ""),
           city: String(formData.get("city") ?? ""),
           state: String(formData.get("state") ?? ""),
-          areas: Array.from(selecaoAreas) as typeof areaOptions[number][],
+          areas: Array.from(selecaoAreas) as (typeof areaOptions)[number][],
           availability: String(formData.get("availability") ?? ""),
           experience: String(formData.get("experience") ?? ""),
           motivation: String(formData.get("motivation") ?? ""),
           heard_from: String(formData.get("heard_from") ?? ""),
+          website: String(formData.get("website") ?? ""),
         },
       });
       setEnviado(true);
@@ -123,6 +149,10 @@ function VoluntariosPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="card-ink -rotate-1 bg-card p-8 md:p-10">
+            <div className="sr-only" aria-hidden="true">
+              <Label htmlFor="volunteer-website">Não preencha este campo</Label>
+              <Input id="volunteer-website" name="website" tabIndex={-1} autoComplete="off" />
+            </div>
             <div className="flex items-center gap-3">
               <span className="flex size-10 -rotate-3 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
                 <HeartHandshake className="size-5" aria-hidden="true" />

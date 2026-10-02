@@ -3,34 +3,25 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
+import { volunteerApplicationSchema, volunteerAreaOptions } from "@/lib/public-submission-schemas";
 
 type VolunteerApplicationInsert = Database["public"]["Tables"]["volunteer_applications"]["Insert"];
 
-const areaOptions = [
-  "verificacao-pontos",
-  "curadoria",
-  "divulgacao",
-  "suporte-usuarios",
-  "tech",
-  "design",
-  "traducao",
-  "outro",
+const areaOptions = volunteerAreaOptions;
+
+function parseVolunteerApplication(input: unknown) {
+  const parsed = volunteerApplicationSchema.safeParse(input);
+  if (!parsed.success) throw new Error("Confira os campos e tente novamente.");
+  return parsed.data;
+}
+
+export const volunteerStages = [
+  "pending",
+  "contacted",
+  "interview",
+  "approved",
+  "declined",
 ] as const;
-
-const submitSchema = z.object({
-  full_name: z.string().trim().min(2, "Nome completo é obrigatório").max(120),
-  email: z.string().trim().email("E-mail inválido").max(255),
-  phone: z.string().trim().max(40).optional(),
-  city: z.string().trim().max(80).optional(),
-  state: z.string().trim().max(10).optional(),
-  areas: z.array(z.enum(areaOptions)).min(1, "Escolha pelo menos uma área de interesse"),
-  availability: z.string().trim().max(500).optional(),
-  experience: z.string().trim().max(1000).optional(),
-  motivation: z.string().trim().max(1000).optional(),
-  heard_from: z.string().trim().max(255).optional(),
-});
-
-export const volunteerStages = ["pending", "contacted", "interview", "approved", "declined"] as const;
 export type VolunteerStage = (typeof volunteerStages)[number];
 
 export const volunteerStageLabels: Record<VolunteerStage, string> = {
@@ -48,11 +39,16 @@ const statusSchema = z.object({
 });
 
 export const submitVolunteerApplication = createServerFn({ method: "POST" })
-  .inputValidator((data) => submitSchema.parse(data))
+  .inputValidator(parseVolunteerApplication)
   .handler(async ({ data }): Promise<{ ok: true }> => {
+    const { enforceRateLimit, rateLimitConfig } = await import("@/lib/rate-limit.server");
+    await enforceRateLimit("volunteer_application", rateLimitConfig("VOLUNTEER"));
+
     const { createClient } = await import("@supabase/supabase-js");
-    const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-    const supabasePublic = createClient<Database>(process.env["SUPABASE_URL"]!, key, {
+    const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+    const url = process.env["SUPABASE_URL"];
+    if (!key || !url) throw new Error("Não foi possível enviar sua inscrição. Tente novamente.");
+    const supabasePublic = createClient<Database>(url, key, {
       auth: { persistSession: false },
       global: {
         fetch: (input, init) => {
@@ -83,7 +79,7 @@ export const submitVolunteerApplication = createServerFn({ method: "POST" })
     const { error } = await supabasePublic.from("volunteer_applications").insert(insert);
 
     if (error) {
-      console.error("Erro ao salvar voluntário:", error);
+      console.error("Erro ao salvar inscrição de voluntário:", error);
       throw new Error("Não foi possível enviar sua inscrição. Tente novamente.");
     }
 
