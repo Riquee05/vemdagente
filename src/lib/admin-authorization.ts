@@ -1,5 +1,5 @@
 type AdminAuthorizationClient = {
-  rpc: (name: "is_admin") => Promise<{ data: boolean | null }>;
+  rpc: (name: "is_admin") => PromiseLike<{ data: boolean | null }>;
 };
 
 export async function requireAdminAuthorization(
