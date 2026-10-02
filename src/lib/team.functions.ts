@@ -185,7 +185,7 @@ export type AdminOverview = {
 export const getAdminOverview = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AdminOverview> => {
-    await assertAdmin(context.supabase);
+    await requireAdminAuthorization(context.userId, context.supabase);
     const sb = context.supabase;
 
     const count = async (
