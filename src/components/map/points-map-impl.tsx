@@ -22,8 +22,10 @@ function loadGoogleMaps(): Promise<GoogleMapsApi> {
   if (window.google?.maps?.Map) return Promise.resolve(window.google.maps);
   if (mapsPromise) return mapsPromise;
 
-  const browserKey = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"] as string | undefined;
-  const trackingId = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID"] as string | undefined;
+  const browserKey = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"] as
+    string | undefined;
+  const trackingId = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID"] as
+    string | undefined;
   if (!browserKey) return Promise.reject(new Error("Google Maps não está conectado."));
 
   mapsPromise = new Promise((resolve, reject) => {
@@ -234,7 +236,8 @@ export default function PointsMapImpl({
     const currentPoints = pointsRef.current;
     const centerKey = `${centerLat}:${centerLng}`;
     const previous = previousViewportRef.current;
-    const centerChanged = previous !== null && (previous.centerKey !== centerKey || previous.zoom !== zoom);
+    const centerChanged =
+      previous !== null && (previous.centerKey !== centerKey || previous.zoom !== zoom);
     const geographyChanged = previous === null || previous.pointsKey !== pointsKey;
     const fitBoundsEnabled = previous === null || (!previous.fitBounds && fitBounds);
 
@@ -263,7 +266,9 @@ export default function PointsMapImpl({
     );
   }
 
-  return <div ref={containerRef} className="h-full w-full" aria-label="Mapa de pontos e instituições" />;
+  return (
+    <div ref={containerRef} className="h-full w-full" aria-label="Mapa de pontos e instituições" />
+  );
 }
 
 declare global {
