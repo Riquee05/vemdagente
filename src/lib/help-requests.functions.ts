@@ -26,7 +26,7 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
     const supabasePublic = createClient<Database>(url, key, {
       auth: { persistSession: false, autoRefreshToken: false, storage: undefined },
       global: {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        ...(token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
         fetch: (input, init) => {
           const headers = new Headers(init?.headers);
           if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) {
@@ -39,14 +39,15 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
     });
 
     const user = token ? (await supabasePublic.auth.getUser(token)).data.user : null;
-    const { error } = await supabasePublic.from("help_requests").insert({
+    const insert: Database["public"]["Tables"]["help_requests"]["Insert"] = {
       requester_id: user?.id ?? null,
       category_id: data.category_id,
       city: data.city,
       lat: data.lat ?? null,
       lng: data.lng ?? null,
       note: data.note ?? null,
-    });
+    };
+    const { error } = await supabasePublic.from("help_requests").insert(insert);
 
     if (error) {
       console.error("Erro ao registrar pedido de ajuda:", error);
