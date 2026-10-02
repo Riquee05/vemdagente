@@ -688,6 +688,30 @@ export type Database = {
         }
         Relationships: []
       }
+      request_rate_limits: {
+        Row: {
+          expires_at: string
+          identifier_hash: string
+          request_count: number
+          scope: string
+          updated_at: string
+        }
+        Insert: {
+          expires_at: string
+          identifier_hash: string
+          request_count?: number
+          scope: string
+          updated_at?: string
+        }
+        Update: {
+          expires_at?: string
+          identifier_hash?: string
+          request_count?: number
+          scope?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       team_members: {
         Row: {
           application_id: string | null
@@ -925,6 +949,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consume_request_rate_limit: {
+        Args: {
+          p_identifier_hash: string
+          p_limit: number
+          p_scope: string
+          p_window_seconds: number
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
