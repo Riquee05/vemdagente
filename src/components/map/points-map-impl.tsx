@@ -243,7 +243,9 @@ export default function PointsMapImpl({
 
     if (fitBounds && currentPoints.length > 0 && (geographyChanged || fitBoundsEnabled)) {
       if (currentPoints.length === 1) {
-        map.setCenter({ lat: currentPoints[0].lat, lng: currentPoints[0].lng });
+        const onlyPoint = currentPoints[0];
+        if (!onlyPoint) return;
+        map.setCenter({ lat: onlyPoint.lat, lng: onlyPoint.lng });
         map.setZoom(zoom);
       } else {
         const bounds = new window.google.maps.LatLngBounds();
