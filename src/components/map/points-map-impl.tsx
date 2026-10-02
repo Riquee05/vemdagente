@@ -205,7 +205,20 @@ export default function PointsMapImpl({
     markersRef.current.forEach(({ marker }, id) => {
       marker.setZIndex(id === selectedId ? 2 : 1);
     });
-  }, [selectedId]);
+
+    if (!selectedId) {
+      infoWindowRef.current?.close();
+      return;
+    }
+
+    const selectedPoint = points.find((point) => point.id === selectedId);
+    const selectedMarker = markersRef.current.get(selectedId)?.marker;
+    const map = mapRef.current;
+    if (selectedPoint && selectedMarker && map && infoWindowRef.current) {
+      infoWindowRef.current.setContent(createInfoContent(selectedPoint));
+      infoWindowRef.current.open({ map, anchor: selectedMarker });
+    }
+  }, [markerKey, points, selectedId]);
 
   useEffect(() => {
     const map = mapRef.current;
