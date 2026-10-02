@@ -355,6 +355,7 @@ export type Database = {
       }
       help_requests: {
         Row: {
+          assigned_to: string | null
           category_id: string
           city: string
           created_at: string
@@ -367,6 +368,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          assigned_to?: string | null
           category_id: string
           city: string
           created_at?: string
@@ -379,6 +381,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          assigned_to?: string | null
           category_id?: string
           city?: string
           created_at?: string
@@ -391,6 +394,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "help_requests_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "help_requests_category_id_fkey"
             columns: ["category_id"]
@@ -712,6 +722,62 @@ export type Database = {
         }
         Relationships: []
       }
+      team_invites: {
+        Row: {
+          attempts: number
+          created_at: string
+          created_by: string | null
+          email: string
+          expires_at: string
+          id: string
+          password_hash: string
+          password_salt: string
+          status: string
+          team_member_id: string
+          updated_at: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string
+          created_by?: string | null
+          email: string
+          expires_at: string
+          id?: string
+          password_hash: string
+          password_salt: string
+          status?: string
+          team_member_id: string
+          updated_at?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          attempts?: number
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          password_hash?: string
+          password_salt?: string
+          status?: string
+          team_member_id?: string
+          updated_at?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_invites_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_members: {
         Row: {
           application_id: string | null
@@ -722,12 +788,15 @@ export type Database = {
           full_name: string
           id: string
           joined_at: string
+          last_activated_at: string | null
           notes: string | null
+          permissions: string[]
           phone: string | null
           role_title: string
           state: string | null
           status: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           application_id?: string | null
@@ -738,12 +807,15 @@ export type Database = {
           full_name: string
           id?: string
           joined_at?: string
+          last_activated_at?: string | null
           notes?: string | null
+          permissions?: string[]
           phone?: string | null
           role_title?: string
           state?: string | null
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           application_id?: string | null
@@ -754,12 +826,15 @@ export type Database = {
           full_name?: string
           id?: string
           joined_at?: string
+          last_activated_at?: string | null
           notes?: string | null
+          permissions?: string[]
           phone?: string | null
           role_title?: string
           state?: string | null
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -965,6 +1040,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_team_permission: {
+        Args: { _permission: string; _user_id?: string }
+        Returns: boolean
+      }
+      is_active_team_member: { Args: { _user_id?: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_owner: { Args: { _user_id?: string }; Returns: boolean }
       search_nearby_points: {
