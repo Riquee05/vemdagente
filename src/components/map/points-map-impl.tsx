@@ -10,6 +10,11 @@ export type MapPoint = {
 
 type GoogleMapsApi = typeof google.maps;
 
+type MarkerRecord = {
+  marker: google.maps.Marker;
+  listener: google.maps.MapsEventListener;
+};
+
 let mapsPromise: Promise<GoogleMapsApi> | null = null;
 
 function loadGoogleMaps(): Promise<GoogleMapsApi> {
@@ -69,6 +74,20 @@ function createInfoContent(point: MapPoint) {
   return content;
 }
 
+function createPointsKey(points: MapPoint[]) {
+  return points
+    .map(({ id, lat, lng }) => `${id}:${lat}:${lng}`)
+    .sort()
+    .join("|");
+}
+
+function createMarkerKey(points: MapPoint[]) {
+  return points
+    .map(({ id, lat, lng, name, subtitle }) => `${id}:${lat}:${lng}:${name}:${subtitle ?? ""}`)
+    .sort()
+    .join("|");
+}
+
 export default function PointsMapImpl({
   center,
   zoom = 13,
@@ -88,10 +107,28 @@ export default function PointsMapImpl({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const markersRef = useRef<Map<string, MarkerRecord>>(new Map());
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
+  const onSelectRef = useRef(onSelect);
+  const onPickRef = useRef(onPick);
+  const previousViewportRef = useRef<{
+    centerKey: string;
+    zoom: number;
+    pointsKey: string;
+    fitBounds: boolean;
+  } | null>(null);
   const [mapReady, setMapReady] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const pointsKey = createPointsKey(points);
+  const markerKey = createMarkerKey(points);
+
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
+
+  useEffect(() => {
+    onPickRef.current = onPick;
+  }, [onPick]);
 
   useEffect(() => {
     let cancelled = false;
@@ -112,12 +149,10 @@ export default function PointsMapImpl({
         mapRef.current = map;
         infoWindowRef.current = new maps.InfoWindow();
         setMapReady(true);
-        if (onPick) {
-          clickListener = map.addListener("click", (event: google.maps.MapMouseEvent) => {
-            const location = event.latLng;
-            if (location) onPick(location.lat(), location.lng());
-          });
-        }
+        clickListener = map.addListener("click", (event: google.maps.MapMouseEvent) => {
+          const location = event.latLng;
+          if (location) onPickRef.current?.(location.lat(), location.lng());
+        });
       })
       .catch((error: unknown) => {
         if (!cancelled) setLoadError(error instanceof Error ? error.message : "Mapa indisponível.");
@@ -126,8 +161,11 @@ export default function PointsMapImpl({
     return () => {
       cancelled = true;
       clickListener?.remove();
-      markersRef.current.forEach((marker) => marker.setMap(null));
-      markersRef.current = [];
+      markersRef.current.forEach(({ marker, listener }) => {
+        listener.remove();
+        marker.setMap(null);
+      });
+      markersRef.current.clear();
       infoWindowRef.current?.close();
       mapRef.current = null;
     };
@@ -137,10 +175,13 @@ export default function PointsMapImpl({
     const map = mapRef.current;
     if (!map || !window.google?.maps) return;
 
-    markersRef.current.forEach((marker) => marker.setMap(null));
-    const bounds = new window.google.maps.LatLngBounds();
+    markersRef.current.forEach(({ marker, listener }) => {
+      listener.remove();
+      marker.setMap(null);
+    });
+    markersRef.current.clear();
 
-    markersRef.current = points.map((point) => {
+    points.forEach((point) => {
       const markerOptions: google.maps.MarkerOptions = {
         map,
         position: { lat: point.lat, lng: point.lng },
@@ -148,25 +189,50 @@ export default function PointsMapImpl({
         zIndex: selectedId === point.id ? 2 : 1,
       };
       const marker = new window.google.maps.Marker(markerOptions);
-      marker.addListener("click", () => {
-        onSelect?.(point.id);
+      const listener = marker.addListener("click", () => {
+        onSelectRef.current?.(point.id);
         const infoWindow = infoWindowRef.current;
         if (infoWindow) {
           infoWindow.setContent(createInfoContent(point));
           infoWindow.open({ map, anchor: marker });
         }
       });
-      bounds.extend(marker.getPosition() ?? { lat: point.lat, lng: point.lng });
-      return marker;
+      markersRef.current.set(point.id, { marker, listener });
     });
+  }, [mapReady, markerKey]);
 
-    if (fitBounds && points.length > 1) {
-      map.fitBounds(bounds, 32);
-    } else {
+  useEffect(() => {
+    markersRef.current.forEach(({ marker }, id) => {
+      marker.setZIndex(id === selectedId ? 2 : 1);
+    });
+  }, [selectedId]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !window.google?.maps) return;
+
+    const centerKey = `${center[0]}:${center[1]}`;
+    const previous = previousViewportRef.current;
+    const centerChanged = previous !== null && (previous.centerKey !== centerKey || previous.zoom !== zoom);
+    const geographyChanged = previous === null || previous.pointsKey !== pointsKey;
+    const fitBoundsEnabled = previous === null || (!previous.fitBounds && fitBounds);
+
+    if (fitBounds && points.length > 0 && (geographyChanged || fitBoundsEnabled)) {
+      if (points.length === 1) {
+        map.setCenter({ lat: points[0].lat, lng: points[0].lng });
+        map.setZoom(zoom);
+      } else {
+        const bounds = new window.google.maps.LatLngBounds();
+        points.forEach((point) => bounds.extend({ lat: point.lat, lng: point.lng }));
+        map.fitBounds(bounds, 32);
+      }
+    } else if (centerChanged) {
       map.setCenter({ lat: center[0], lng: center[1] });
       map.setZoom(zoom);
     }
-  }, [center[0], center[1], fitBounds, mapReady, onSelect, points, selectedId, zoom]);
+
+    previousViewportRef.current = { centerKey, zoom, pointsKey, fitBounds };
+  }, [center[0], center[1], fitBounds, mapReady, pointsKey, zoom]);
 
   if (loadError) {
     return (
