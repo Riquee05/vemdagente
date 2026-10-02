@@ -48,7 +48,7 @@ async function generateTempPassword() {
 
 async function hashPassword(password: string, salt: string) {
   const { pbkdf2Sync } = await import("node:crypto");
-  return pbkdf2Sync(password, salt, 120_000, 32, "sha256").toString("hex");
+  return pbkdf2Sync(password, salt, 100_000, 32, "sha256").toString("hex");
 }
 
 async function safeEqual(a: string, b: string) {
