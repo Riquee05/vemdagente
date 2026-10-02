@@ -1,20 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
-import { z } from "zod";
+import { assistantRequestSchema } from "@/lib/public-submission-schemas";
 
 const MODEL = "gemini-3.1-flash-lite";
 const geminiUrl = (model: string) =>
   `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-
-const askSchema = z.object({
-  message: z.string().trim().min(2).max(600),
-  lat: z.number().min(-90).max(90).nullable().optional(),
-  lng: z.number().min(-180).max(180).nullable().optional(),
-  history: z
-    .array(z.object({ role: z.enum(["user", "assistant"]), content: z.string().max(2000) }))
-    .max(10)
-    .optional(),
-});
 
 export type AssistantPoint = {
   id: string;
@@ -183,8 +173,15 @@ async function geocode(query: string) {
 }
 
 export const askAssistant = createServerFn({ method: "POST" })
-  .inputValidator((data: unknown) => askSchema.parse(data))
+  .inputValidator((data: unknown) => {
+    const parsed = assistantRequestSchema.safeParse(data);
+    if (!parsed.success) throw new Error("Confira sua pergunta e tente novamente.");
+    return parsed.data;
+  })
   .handler(async ({ data }): Promise<AssistantAnswer> => {
+    const { enforceRateLimit, rateLimitConfig } = await import("@/lib/rate-limit.server");
+    await enforceRateLimit("assistant_question", rateLimitConfig("ASSISTANT"));
+
     const supabaseUrl = process.env["SUPABASE_URL"];
     const supabasePublishableKey = process.env["SUPABASE_PUBLISHABLE_KEY"];
 

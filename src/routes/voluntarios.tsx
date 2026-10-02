@@ -80,6 +80,7 @@ function VoluntariosPage() {
           experience: String(formData.get("experience") ?? ""),
           motivation: String(formData.get("motivation") ?? ""),
           heard_from: String(formData.get("heard_from") ?? ""),
+          website: String(formData.get("website") ?? ""),
         },
       });
       setEnviado(true);
@@ -123,6 +124,15 @@ function VoluntariosPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="card-ink -rotate-1 bg-card p-8 md:p-10">
+            <div className="sr-only" aria-hidden="true">
+              <Label htmlFor="volunteer-website">Não preencha este campo</Label>
+              <Input
+                id="volunteer-website"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
             <div className="flex items-center gap-3">
               <span className="flex size-10 -rotate-3 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
                 <HeartHandshake className="size-5" aria-hidden="true" />
