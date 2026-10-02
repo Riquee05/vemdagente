@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAdminAuthorization } from "@/lib/admin-authorization";
 
 export const teamStatuses = ["active", "paused", "inactive"] as const;
 export type TeamStatus = (typeof teamStatuses)[number];
@@ -24,15 +25,10 @@ const memberSchema = z.object({
   notes: z.string().trim().max(2000).optional(),
 });
 
-async function assertAdmin(supabase: any) {
-  const { data } = await supabase.rpc("is_admin");
-  if (!data) throw new Error("Acesso restrito a administradores.");
-}
-
 export const listTeamMembers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context.supabase);
+    await requireAdminAuthorization(context.userId, context.supabase);
 
     const { data, error } = await context.supabase
       .from("team_members")
@@ -50,7 +46,7 @@ export const createTeamMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => memberSchema.parse(data))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase);
+    await requireAdminAuthorization(context.userId, context.supabase);
 
     const { error } = await context.supabase.from("team_members").insert({
       full_name: data.full_name,
@@ -89,7 +85,7 @@ export const updateTeamMember = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase);
+    await requireAdminAuthorization(context.userId, context.supabase);
 
     const patch: Partial<{ role_title: string; status: string; notes: string; phone: string }> = {};
     if (data.role_title !== undefined) patch.role_title = data.role_title;
@@ -109,7 +105,7 @@ export const removeTeamMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase);
+    await requireAdminAuthorization(context.userId, context.supabase);
     const { error } = await context.supabase.from("team_members").delete().eq("id", data.id);
     if (error) throw new Error("Não foi possível remover a pessoa do time.");
     return { ok: true };
@@ -122,7 +118,7 @@ export const promoteApplicationToTeam = createServerFn({ method: "POST" })
     z.object({ application_id: z.string().uuid(), role_title: z.string().trim().max(120).optional() }).parse(data),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context.supabase);
+    await requireAdminAuthorization(context.userId, context.supabase);
 
     const { data: app, error: appError } = await context.supabase
       .from("volunteer_applications")

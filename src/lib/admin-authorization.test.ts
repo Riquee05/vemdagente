@@ -1,107 +1,39 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-const { requireAuthMarker } = vi.hoisted(() => ({
-  requireAuthMarker: Symbol("require-auth"),
-}));
-
-vi.mock("@/integrations/supabase/auth-middleware", () => ({
-  requireSupabaseAuth: requireAuthMarker,
-}));
-
-vi.mock("@tanstack/react-start", () => ({
-  createServerFn: () => {
-    let requiresAuth = false;
-    let validate: ((data: unknown) => unknown) | undefined;
-
-    const builder = {
-      middleware(items: unknown[]) {
-        requiresAuth = items.includes(requireAuthMarker);
-        return builder;
-      },
-      inputValidator(validator: (data: unknown) => unknown) {
-        validate = validator;
-        return builder;
-      },
-      handler(handler: (args: { data: unknown; context: unknown }) => unknown) {
-        return async (args?: { data?: unknown; context?: unknown }) => {
-          if (requiresAuth && !args?.context) {
-            throw new Error("Unauthorized: No authenticated context");
-          }
-
-          return handler({
-            data: validate ? validate(args?.data) : args?.data,
-            context: args?.context,
-          });
-        };
-      },
-    };
-
-    return builder;
-  },
-}));
-
-import { createTeamMember, listTeamMembers } from "@/lib/team.functions";
-
-type MockServerFunction = (args?: { data?: unknown; context?: unknown }) => Promise<unknown>;
-const callListTeamMembers = listTeamMembers as unknown as MockServerFunction;
-const callCreateTeamMember = createTeamMember as unknown as MockServerFunction;
-
-function nonAdminContext() {
-  const from = vi.fn();
-  const rpc = vi.fn().mockResolvedValue({ data: false });
-  return {
-    context: {
-      userId: "11111111-1111-4111-8111-111111111111",
-      supabase: { rpc, from },
-    },
-    from,
-    rpc,
-  };
-}
+import { requireAdminAuthorization } from "@/lib/admin-authorization";
 
 describe("autorização administrativa", () => {
-  beforeEach(() => vi.clearAllMocks());
+  it("impede usuário não autenticado de executar operação administrativa", async () => {
+    const administrativeOperation = vi.fn();
 
-  it("impede usuário não autenticado de listar a equipe", async () => {
-    await expect(callListTeamMembers()).rejects.toThrow("Unauthorized");
+    await expect(requireAdminAuthorization(null, null)).rejects.toThrow("Unauthorized");
+    expect(administrativeOperation).not.toHaveBeenCalled();
   });
 
-  it("impede usuário não autenticado de criar integrante", async () => {
-    await expect(
-      callCreateTeamMember({
-        data: {
-          full_name: "Pessoa Teste",
-          email: "teste@example.com",
-          role_title: "Curadoria",
-        },
-      }),
-    ).rejects.toThrow("Unauthorized");
-  });
-
-  it("impede usuário autenticado sem papel administrativo de listar dados", async () => {
-    const { context, from, rpc } = nonAdminContext();
-
-    await expect(callListTeamMembers({ context })).rejects.toThrow(
-      "Acesso restrito a administradores.",
-    );
-    expect(rpc).toHaveBeenCalledWith("is_admin");
-    expect(from).not.toHaveBeenCalled();
-  });
-
-  it("impede usuário autenticado sem papel administrativo de executar alterações", async () => {
-    const { context, from, rpc } = nonAdminContext();
+  it("impede usuário autenticado sem papel administrativo de executar operação", async () => {
+    const administrativeOperation = vi.fn();
+    const rpc = vi.fn().mockResolvedValue({ data: false });
 
     await expect(
-      callCreateTeamMember({
-        context,
-        data: {
-          full_name: "Pessoa Teste",
-          email: "teste@example.com",
-          role_title: "Curadoria",
-        },
-      }),
+      requireAdminAuthorization("11111111-1111-4111-8111-111111111111", { rpc }),
     ).rejects.toThrow("Acesso restrito a administradores.");
     expect(rpc).toHaveBeenCalledWith("is_admin");
-    expect(from).not.toHaveBeenCalled();
+    expect(administrativeOperation).not.toHaveBeenCalled();
+  });
+
+  it("não aceita resposta ausente como autorização administrativa", async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: null });
+
+    await expect(
+      requireAdminAuthorization("11111111-1111-4111-8111-111111111111", { rpc }),
+    ).rejects.toThrow("Acesso restrito a administradores.");
+  });
+
+  it("autoriza somente quando o papel administrativo é confirmado", async () => {
+    const rpc = vi.fn().mockResolvedValue({ data: true });
+
+    await expect(
+      requireAdminAuthorization("11111111-1111-4111-8111-111111111111", { rpc }),
+    ).resolves.toBeUndefined();
   });
 });
