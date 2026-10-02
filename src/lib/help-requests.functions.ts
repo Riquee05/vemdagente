@@ -19,7 +19,8 @@ export const submitHelpRequest = createServerFn({ method: "POST" })
 
     const url = process.env["SUPABASE_URL"];
     const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
-    if (!url || !key) throw new Error("Não foi possível registrar seu pedido agora. Tente novamente.");
+    if (!url || !key)
+      throw new Error("Não foi possível registrar seu pedido agora. Tente novamente.");
 
     const authHeader = getRequest().headers.get("authorization");
     const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;

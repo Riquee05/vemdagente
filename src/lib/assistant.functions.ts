@@ -89,7 +89,9 @@ async function geminiText(args: {
       lastDetail = await res.text().catch(() => "");
 
       if (res.status === 401 || res.status === 403)
-        throw new Error("O assistente está temporariamente indisponível (chave do Gemini inválida ou sem permissão).");
+        throw new Error(
+          "O assistente está temporariamente indisponível (chave do Gemini inválida ou sem permissão).",
+        );
 
       const transient = res.status === 429 || res.status >= 500;
       if (!transient) break; // erro de requisição: tenta próximo modelo sem esperar
@@ -100,10 +102,11 @@ async function geminiText(args: {
   if (lastStatus === 429)
     throw new Error("Muitas perguntas ao mesmo tempo. Tente de novo em alguns segundos.");
   if (lastStatus >= 500)
-    throw new Error("O assistente está com muita procura agora. Tente de novo em alguns instantes.");
+    throw new Error(
+      "O assistente está com muita procura agora. Tente de novo em alguns instantes.",
+    );
   throw new Error(`Falha ao consultar o assistente (${lastStatus}). ${lastDetail.slice(0, 200)}`);
 }
-
 
 type Intent = {
   intencao: "doar" | "receber" | "outro";
@@ -138,7 +141,6 @@ async function extractIntent(
       required: ["intencao", "raio_km"],
     },
   });
-
 
   try {
     const parsed = JSON.parse(raw) as Intent;
@@ -186,14 +188,14 @@ export const askAssistant = createServerFn({ method: "POST" })
     const supabasePublishableKey = process.env["SUPABASE_PUBLISHABLE_KEY"];
 
     if (!supabaseUrl || !supabasePublishableKey) {
-      throw new Error("O assistente está temporariamente indisponível. Tente novamente em instantes.");
+      throw new Error(
+        "O assistente está temporariamente indisponível. Tente novamente em instantes.",
+      );
     }
 
-    const supabase = createClient(
-      supabaseUrl,
-      supabasePublishableKey,
-      { auth: { persistSession: false } },
-    );
+    const supabase = createClient(supabaseUrl, supabasePublishableKey, {
+      auth: { persistSession: false },
+    });
 
     const { data: categories } = await supabase
       .from("item_categories")
@@ -215,7 +217,7 @@ export const askAssistant = createServerFn({ method: "POST" })
     }
 
     const category = intent.categoria_slug
-      ? cats.find((c) => c.slug === intent.categoria_slug) ?? null
+      ? (cats.find((c) => c.slug === intent.categoria_slug) ?? null)
       : null;
 
     let points: AssistantPoint[] = [];

@@ -7,14 +7,13 @@ const normalizedRequired = (minimum: number, maximum: number, message: string) =
   z.preprocess(collapseSpaces, z.string().min(minimum, message).max(maximum));
 
 const normalizedOptional = (maximum: number) =>
-  z.preprocess(collapseSpaces, z.string().max(maximum).optional()).transform((value) =>
-    value ? value : undefined,
-  );
+  z
+    .preprocess(collapseSpaces, z.string().max(maximum).optional())
+    .transform((value) => (value ? value : undefined));
 
-const honeypot = z.preprocess(collapseSpaces, z.string().max(200).optional()).refine(
-  (value) => !value,
-  "Não foi possível enviar. Tente novamente.",
-);
+const honeypot = z
+  .preprocess(collapseSpaces, z.string().max(200).optional())
+  .refine((value) => !value, "Não foi possível enviar. Tente novamente.");
 
 export const volunteerAreaOptions = [
   "verificacao-pontos",
@@ -36,7 +35,11 @@ export const volunteerApplicationSchema = z
     state: z
       .preprocess(
         (value) => (typeof value === "string" ? value.trim().toUpperCase() : value),
-        z.string().regex(/^$|^[A-Z]{2}$/, "Informe um estado válido.").max(2).optional(),
+        z
+          .string()
+          .regex(/^$|^[A-Z]{2}$/, "Informe um estado válido.")
+          .max(2)
+          .optional(),
       )
       .transform((value) => (value ? value : undefined)),
     areas: z.array(z.enum(volunteerAreaOptions)).min(1).max(volunteerAreaOptions.length),

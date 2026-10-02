@@ -46,7 +46,8 @@ export const Route = createFileRoute("/pedir-ajuda")({
       },
       {
         property: "og:description",
-        content: "Locais de apoio em São Paulo e registro privado de pedido para análise administrativa.",
+        content:
+          "Locais de apoio em São Paulo e registro privado de pedido para análise administrativa.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -125,7 +126,10 @@ function PedirAjudaPage() {
   }, []);
 
   function pickSuggestion(suggestion: AddressSuggestion) {
-    if (!isSaoPauloState(suggestion.state) || !isWithinSaoPauloBounds(suggestion.lat, suggestion.lng)) {
+    if (
+      !isSaoPauloState(suggestion.state) ||
+      !isWithinSaoPauloBounds(suggestion.lat, suggestion.lng)
+    ) {
       toast.error("A atuação atual está restrita ao estado de São Paulo.");
       return;
     }
@@ -199,14 +203,16 @@ function PedirAjudaPage() {
 
     setBusy(true);
     try {
-      await sendHelpRequest({ data: {
-        category_id: categoryId,
-        city: cleanCity,
-        lat: coords?.lat ?? null,
-        lng: coords?.lng ?? null,
-        note,
-        website,
-      } });
+      await sendHelpRequest({
+        data: {
+          category_id: categoryId,
+          city: cleanCity,
+          lat: coords?.lat ?? null,
+          lng: coords?.lng ?? null,
+          note,
+          website,
+        },
+      });
       setSent(true);
       toast.success("Pedido registrado para consulta administrativa.");
     } catch {
@@ -332,7 +338,8 @@ function PedirAjudaPage() {
 
           <div className="border-l-2 border-primary pl-4 text-sm text-muted-foreground">
             O registro serve para organizar solicitações dentro da plataforma. Não há encaminhamento
-            automático para instituições, acompanhamento individual nem prazo garantido de resposta ou atendimento.
+            automático para instituições, acompanhamento individual nem prazo garantido de resposta
+            ou atendimento.
           </div>
 
           <div className="flex flex-wrap items-center gap-3">

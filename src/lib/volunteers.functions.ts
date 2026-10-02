@@ -3,10 +3,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
-import {
-  volunteerApplicationSchema,
-  volunteerAreaOptions,
-} from "@/lib/public-submission-schemas";
+import { volunteerApplicationSchema, volunteerAreaOptions } from "@/lib/public-submission-schemas";
 
 type VolunteerApplicationInsert = Database["public"]["Tables"]["volunteer_applications"]["Insert"];
 
@@ -18,7 +15,13 @@ function parseVolunteerApplication(input: unknown) {
   return parsed.data;
 }
 
-export const volunteerStages = ["pending", "contacted", "interview", "approved", "declined"] as const;
+export const volunteerStages = [
+  "pending",
+  "contacted",
+  "interview",
+  "approved",
+  "declined",
+] as const;
 export type VolunteerStage = (typeof volunteerStages)[number];
 
 export const volunteerStageLabels: Record<VolunteerStage, string> = {
