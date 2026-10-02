@@ -111,6 +111,8 @@ export default function PointsMapImpl({
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const onSelectRef = useRef(onSelect);
   const onPickRef = useRef(onPick);
+  const pointsRef = useRef(points);
+  const initialViewportRef = useRef({ center, zoom });
   const previousViewportRef = useRef<{
     centerKey: string;
     zoom: number;
@@ -121,6 +123,9 @@ export default function PointsMapImpl({
   const [loadError, setLoadError] = useState<string | null>(null);
   const pointsKey = createPointsKey(points);
   const markerKey = createMarkerKey(points);
+  const centerLat = center[0];
+  const centerLng = center[1];
+  pointsRef.current = points;
 
   useEffect(() => {
     onSelectRef.current = onSelect;
@@ -137,9 +142,10 @@ export default function PointsMapImpl({
     void loadGoogleMaps()
       .then((maps) => {
         if (cancelled || !containerRef.current) return;
+        const initialViewport = initialViewportRef.current;
         const map = new maps.Map(containerRef.current, {
-          center: { lat: center[0], lng: center[1] },
-          zoom,
+          center: { lat: initialViewport.center[0], lng: initialViewport.center[1] },
+          zoom: initialViewport.zoom,
           clickableIcons: false,
           fullscreenControl: false,
           mapTypeControl: false,
@@ -161,11 +167,12 @@ export default function PointsMapImpl({
     return () => {
       cancelled = true;
       clickListener?.remove();
-      markersRef.current.forEach(({ marker, listener }) => {
+      const markers = markersRef.current;
+      markers.forEach(({ marker, listener }) => {
         listener.remove();
         marker.setMap(null);
       });
-      markersRef.current.clear();
+      markers.clear();
       infoWindowRef.current?.close();
       mapRef.current = null;
     };
@@ -181,7 +188,7 @@ export default function PointsMapImpl({
     });
     markersRef.current.clear();
 
-    points.forEach((point) => {
+    pointsRef.current.forEach((point) => {
       const markerOptions: google.maps.MarkerOptions = {
         map,
         position: { lat: point.lat, lng: point.lng },
@@ -211,41 +218,42 @@ export default function PointsMapImpl({
       return;
     }
 
-    const selectedPoint = points.find((point) => point.id === selectedId);
+    const selectedPoint = pointsRef.current.find((point) => point.id === selectedId);
     const selectedMarker = markersRef.current.get(selectedId)?.marker;
     const map = mapRef.current;
     if (selectedPoint && selectedMarker && map && infoWindowRef.current) {
       infoWindowRef.current.setContent(createInfoContent(selectedPoint));
       infoWindowRef.current.open({ map, anchor: selectedMarker });
     }
-  }, [markerKey, points, selectedId]);
+  }, [markerKey, selectedId]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !window.google?.maps) return;
 
-    const centerKey = `${center[0]}:${center[1]}`;
+    const currentPoints = pointsRef.current;
+    const centerKey = `${centerLat}:${centerLng}`;
     const previous = previousViewportRef.current;
     const centerChanged = previous !== null && (previous.centerKey !== centerKey || previous.zoom !== zoom);
     const geographyChanged = previous === null || previous.pointsKey !== pointsKey;
     const fitBoundsEnabled = previous === null || (!previous.fitBounds && fitBounds);
 
-    if (fitBounds && points.length > 0 && (geographyChanged || fitBoundsEnabled)) {
-      if (points.length === 1) {
-        map.setCenter({ lat: points[0].lat, lng: points[0].lng });
+    if (fitBounds && currentPoints.length > 0 && (geographyChanged || fitBoundsEnabled)) {
+      if (currentPoints.length === 1) {
+        map.setCenter({ lat: currentPoints[0].lat, lng: currentPoints[0].lng });
         map.setZoom(zoom);
       } else {
         const bounds = new window.google.maps.LatLngBounds();
-        points.forEach((point) => bounds.extend({ lat: point.lat, lng: point.lng }));
+        currentPoints.forEach((point) => bounds.extend({ lat: point.lat, lng: point.lng }));
         map.fitBounds(bounds, 32);
       }
     } else if (centerChanged) {
-      map.setCenter({ lat: center[0], lng: center[1] });
+      map.setCenter({ lat: centerLat, lng: centerLng });
       map.setZoom(zoom);
     }
 
     previousViewportRef.current = { centerKey, zoom, pointsKey, fitBounds };
-  }, [center[0], center[1], fitBounds, mapReady, pointsKey, zoom]);
+  }, [centerLat, centerLng, fitBounds, mapReady, pointsKey, zoom]);
 
   if (loadError) {
     return (
