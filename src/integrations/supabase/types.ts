@@ -1040,11 +1040,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      has_team_permission: {
-        Args: { _permission: string; _user_id?: string }
-        Returns: boolean
-      }
-      is_active_team_member: { Args: { _user_id?: string }; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
       is_owner: { Args: { _user_id?: string }; Returns: boolean }
       search_nearby_points: {
