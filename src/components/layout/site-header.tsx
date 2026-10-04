@@ -32,6 +32,20 @@ export function SiteHeader() {
     },
   });
 
+  const collaborator = useQuery({
+    queryKey: ["header-is-collaborator", user?.id ?? null],
+    enabled: Boolean(user) && admin.data !== true,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("team_members")
+        .select("id")
+        .eq("user_id", user?.id ?? "")
+        .eq("status", "active")
+        .maybeSingle();
+      return Boolean(data);
+    },
+  });
+
   return (
     <header className="sticky top-0 z-40 border-b-2 border-foreground bg-background/92 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
@@ -58,6 +72,11 @@ export function SiteHeader() {
           {!loading && user && admin.data === true && (
             <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
               <Link to="/admin">Admin</Link>
+            </Button>
+          )}
+          {!loading && user && admin.data !== true && collaborator.data === true && (
+            <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
+              <Link to="/colaborador">Colaborador</Link>
             </Button>
           )}
           {!loading && (
@@ -92,6 +111,15 @@ export function SiteHeader() {
                     className="mt-2 border-2 border-foreground px-3 py-2 text-sm font-semibold uppercase tracking-wide"
                   >
                     Painel administrador
+                  </Link>
+                )}
+                {!loading && user && admin.data !== true && collaborator.data === true && (
+                  <Link
+                    to="/colaborador"
+                    onClick={() => setOpen(false)}
+                    className="mt-2 border-2 border-foreground px-3 py-2 text-sm font-semibold uppercase tracking-wide"
+                  >
+                    Painel do colaborador
                   </Link>
                 )}
                 <Link

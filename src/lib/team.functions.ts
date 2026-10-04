@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireAdminAuthorization } from "@/lib/admin-authorization";
+import { teamPermissions } from "@/lib/collaborator-authorization";
 
 export const teamStatuses = ["active", "paused", "inactive"] as const;
 export type TeamStatus = (typeof teamStatuses)[number];
@@ -23,6 +24,11 @@ const memberSchema = z.object({
   state: z.string().trim().max(10).optional(),
   status: z.enum(teamStatuses).optional(),
   notes: z.string().trim().max(2000).optional(),
+});
+
+const accessSchema = z.object({
+  id: z.string().uuid(),
+  permissions: z.array(z.enum(teamPermissions)).max(teamPermissions.length),
 });
 
 export const listTeamMembers = createServerFn({ method: "GET" })
@@ -99,6 +105,28 @@ export const updateTeamMember = createServerFn({ method: "POST" })
       throw new Error("Não foi possível atualizar a pessoa do time.");
     }
     return { ok: true };
+  });
+
+export const updateTeamMemberPermissions = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => accessSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    await requireAdminAuthorization(context.userId, context.supabase);
+    const { error } = await context.supabase
+      .from("team_members")
+      .update({ permissions: data.permissions })
+      .eq("id", data.id);
+    if (error) throw new Error("Não foi possível atualizar as permissões.");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("admin_audit_log").insert({
+      actor_id: context.userId,
+      action: "team_permissions_updated",
+      entity: "team_members",
+      entity_id: data.id,
+      details: { permissions: data.permissions },
+    });
+    return { ok: true as const };
   });
 
 export const removeTeamMember = createServerFn({ method: "POST" })
