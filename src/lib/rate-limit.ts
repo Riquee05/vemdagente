@@ -1,4 +1,8 @@
-export type RateLimitScope = "help_request" | "volunteer_application" | "assistant_question";
+export type RateLimitScope =
+  | "help_request"
+  | "volunteer_application"
+  | "assistant_question"
+  | "team_invite_activation";
 
 export type RateLimitConfig = { limit: number; windowSeconds: number };
 

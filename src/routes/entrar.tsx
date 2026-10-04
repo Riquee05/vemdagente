@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { lovable } from "@/integrations/lovable/index";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/entrar")({
   head: () => ({
@@ -44,6 +45,21 @@ function EntrarPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
 
+  async function accountDestination() {
+    const [{ data: isAdmin }, { data: member }] = await Promise.all([
+      supabase.rpc("is_admin"),
+      supabase
+        .from("team_members")
+        .select("id")
+        .eq("user_id", user?.id ?? "")
+        .eq("status", "active")
+        .maybeSingle(),
+    ]);
+    if (isAdmin === true) return "/admin" as const;
+    if (member) return "/colaborador" as const;
+    return "/minha-conta" as const;
+  }
+
   useEffect(() => {
     const recovering =
       typeof window !== "undefined" &&
@@ -55,7 +71,7 @@ function EntrarPage() {
         window.location.replace(next);
         return;
       }
-      navigate({ to: "/minha-conta", replace: true });
+      void accountDestination().then((to) => navigate({ to, replace: true }));
     }
   }, [loading, user, navigate]);
 

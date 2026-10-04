@@ -15,3 +15,4 @@
 - Enforce the public geographic scope in database policies and server functions, because UI-only filters can be bypassed.
 - Render maps with the Google Maps browser connector while keeping Places and geocoding requests server-side, because browser credentials are rendering-only.
 - Persist public-action rate limits by keyed request hash in the database, because server instances are stateless and raw IP addresses must not be stored.
+- Keep collaborator access separate from administration and enforce every permission in server functions and RLS, because hidden navigation is not authorization.
