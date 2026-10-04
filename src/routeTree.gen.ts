@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as ApoiarRouteImport } from './routes/apoiar'
 import { Route as AssistenteRouteImport } from './routes/assistente'
 import { Route as AtivarAdminRouteImport } from './routes/ativar-admin'
+import { Route as AtivarColaboradorRouteImport } from './routes/ativar-colaborador'
 import { Route as DoarRouteImport } from './routes/doar'
 import { Route as EntrarRouteImport } from './routes/entrar'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -61,6 +62,11 @@ const AssistenteRoute = AssistenteRouteImport.update({
 const AtivarAdminRoute = AtivarAdminRouteImport.update({
   id: '/ativar-admin',
   path: '/ativar-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtivarColaboradorRoute = AtivarColaboradorRouteImport.update({
+  id: '/ativar-colaborador',
+  path: '/ativar-colaborador',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DoarRoute = DoarRouteImport.update({
@@ -198,6 +204,7 @@ export interface FileRoutesByFullPath {
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
   '/ativar-admin': typeof AtivarAdminRoute
+  '/ativar-colaborador': typeof AtivarColaboradorRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
   '/mcp': typeof McpRoute
@@ -228,6 +235,7 @@ export interface FileRoutesByTo {
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
   '/ativar-admin': typeof AtivarAdminRoute
+  '/ativar-colaborador': typeof AtivarColaboradorRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
   '/mcp': typeof McpRoute
@@ -259,6 +267,7 @@ export interface FileRoutesById {
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
   '/ativar-admin': typeof AtivarAdminRoute
+  '/ativar-colaborador': typeof AtivarColaboradorRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
   '/mcp': typeof McpRoute
@@ -291,6 +300,7 @@ export interface FileRouteTypes {
     | '/apoiar'
     | '/assistente'
     | '/ativar-admin'
+    | '/ativar-colaborador'
     | '/doar'
     | '/entrar'
     | '/mcp'
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/apoiar'
     | '/assistente'
     | '/ativar-admin'
+    | '/ativar-colaborador'
     | '/doar'
     | '/entrar'
     | '/mcp'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/apoiar'
     | '/assistente'
     | '/ativar-admin'
+    | '/ativar-colaborador'
     | '/doar'
     | '/entrar'
     | '/mcp'
@@ -383,6 +395,7 @@ export interface RootRouteChildren {
   ApoiarRoute: typeof ApoiarRoute
   AssistenteRoute: typeof AssistenteRoute
   AtivarAdminRoute: typeof AtivarAdminRoute
+  AtivarColaboradorRoute: typeof AtivarColaboradorRoute
   DoarRoute: typeof DoarRoute
   EntrarRoute: typeof EntrarRoute
   McpRoute: typeof McpRoute
@@ -431,6 +444,13 @@ declare module '@tanstack/react-router' {
       path: '/ativar-admin'
       fullPath: '/ativar-admin'
       preLoaderRoute: typeof AtivarAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ativar-colaborador': {
+      id: '/ativar-colaborador'
+      path: '/ativar-colaborador'
+      fullPath: '/ativar-colaborador'
+      preLoaderRoute: typeof AtivarColaboradorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/doar': {
@@ -663,6 +683,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApoiarRoute: ApoiarRoute,
   AssistenteRoute: AssistenteRoute,
   AtivarAdminRoute: AtivarAdminRoute,
+  AtivarColaboradorRoute: AtivarColaboradorRoute,
   DoarRoute: DoarRoute,
   EntrarRoute: EntrarRoute,
   McpRoute: McpRoute,
