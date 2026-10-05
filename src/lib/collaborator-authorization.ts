@@ -19,6 +19,8 @@ export type ActiveTeamMember = {
   last_activated_at: string | null;
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 type AccessClient = {
   from: (table: "team_members" | "user_roles") => any;
 };

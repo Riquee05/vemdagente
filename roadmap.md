@@ -13,3 +13,4 @@
 - [x] Pesquisar, deduplicar e cadastrar novo lote de locais documentados em São Paulo
 - [x] Aplicar o plano de escopo estadual, fichas, transparência e experiência pública
 - [x] Criar Painel do Colaborador separado, com convites, permissões e tarefas atribuídas
+- [ ] Reconectar Google Maps Platform — autorização recusada; aguarda nova tentativa do usuário

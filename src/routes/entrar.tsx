@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -62,7 +62,7 @@ function EntrarPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
 
-  async function accountDestination() {
+  const accountDestination = useCallback(async () => {
     const [{ data: isAdmin }, { data: member }] = await Promise.all([
       supabase.rpc("is_admin"),
       supabase
@@ -75,7 +75,7 @@ function EntrarPage() {
     if (isAdmin === true) return "/admin" as const;
     if (member) return "/colaborador" as const;
     return "/minha-conta" as const;
-  }
+  }, [user?.id]);
 
   useEffect(() => {
     const recovering =
@@ -90,7 +90,7 @@ function EntrarPage() {
       }
       void accountDestination().then((to) => navigate({ to, replace: true }));
     }
-  }, [loading, user, navigate]);
+  }, [accountDestination, loading, user, navigate]);
 
   async function signInWithGoogle() {
     setBusy(true);

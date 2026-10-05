@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { requireActiveTeamMember, requireTeamPermission } from "./collaborator-authorization";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 function client(role: boolean, member: Record<string, unknown> | null) {
   return {
     from: vi.fn((table: string) => {

@@ -5,6 +5,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireAdminAuthorization } from "@/lib/admin-authorization";
 import { assertStepUp } from "@/lib/admin-2fa.functions";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const INVITE_DAYS = 7;
 const MAX_ATTEMPTS = 5;
 

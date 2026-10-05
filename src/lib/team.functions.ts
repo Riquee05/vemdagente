@@ -6,6 +6,8 @@ import { requireAdminAuthorization } from "@/lib/admin-authorization";
 import { assertStepUp } from "@/lib/admin-2fa.functions";
 import { teamPermissions } from "@/lib/collaborator-authorization";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export const teamStatuses = ["active", "paused", "inactive"] as const;
 export type TeamStatus = (typeof teamStatuses)[number];
 
@@ -54,7 +56,6 @@ export const createTeamMember = createServerFn({ method: "POST" })
   .inputValidator((data) => memberSchema.parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminAuthorization(context.userId, context.supabase);
-    await assertStepUp(context.userId);
 
     const { error } = await context.supabase.from("team_members").insert({
       full_name: data.full_name,
@@ -114,6 +115,7 @@ export const updateTeamMemberPermissions = createServerFn({ method: "POST" })
   .inputValidator((data) => accessSchema.parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminAuthorization(context.userId, context.supabase);
+    await assertStepUp(context.userId);
     const { error } = await context.supabase
       .from("team_members")
       .update({ permissions: data.permissions })
