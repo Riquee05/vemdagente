@@ -13,7 +13,12 @@ async function admin() {
   return supabaseAdmin as any;
 }
 
-async function audit(actorId: string | null, action: string, entityId: string | null, details?: Record<string, unknown>) {
+async function audit(
+  actorId: string | null,
+  action: string,
+  entityId: string | null,
+  details?: Record<string, unknown>,
+) {
   const db = await admin();
   await db.from("admin_audit_log").insert({
     actor_id: actorId,
@@ -70,9 +75,14 @@ export const createTeamInvite = createServerFn({ method: "POST" })
       .select("id, email, full_name, status")
       .eq("id", data.team_member_id)
       .maybeSingle();
-    if (!member || member.status !== "active") throw new Error("Ative o membro antes de liberar acesso.");
+    if (!member || member.status !== "active")
+      throw new Error("Ative o membro antes de liberar acesso.");
 
-    await db.from("team_invites").update({ status: "revoked" }).eq("team_member_id", member.id).eq("status", "pending");
+    await db
+      .from("team_invites")
+      .update({ status: "revoked" })
+      .eq("team_member_id", member.id)
+      .eq("status", "pending");
     const password = await generateTempPassword();
     const { randomBytes } = await import("node:crypto");
     const salt = randomBytes(16).toString("hex");
@@ -90,7 +100,10 @@ export const createTeamInvite = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error || !row) throw new Error("Não foi possível gerar o convite.");
-    await audit(context.userId, "team_invite_created", row.id, { team_member_id: member.id, expires_at: expiresAt });
+    await audit(context.userId, "team_invite_created", row.id, {
+      team_member_id: member.id,
+      expires_at: expiresAt,
+    });
     return { id: row.id as string, email: member.email as string, password, expires_at: expiresAt };
   });
 
@@ -101,7 +114,11 @@ export const revokeTeamInvite = createServerFn({ method: "POST" })
     await requireAdminAuthorization(context.userId, context.supabase);
     await assertStepUp(context.userId);
     const db = await admin();
-    const { error } = await db.from("team_invites").update({ status: "revoked" }).eq("id", data.id).eq("status", "pending");
+    const { error } = await db
+      .from("team_invites")
+      .update({ status: "revoked" })
+      .eq("id", data.id)
+      .eq("status", "pending");
     if (error) throw new Error("Não foi possível revogar o convite.");
     await audit(context.userId, "team_invite_revoked", data.id);
     return { ok: true as const };
@@ -134,7 +151,9 @@ export const redeemTeamInvite = createServerFn({ method: "POST" })
     const db = await admin();
     const { data: invite } = await db
       .from("team_invites")
-      .select("id, team_member_id, password_hash, password_salt, status, attempts, expires_at, created_by")
+      .select(
+        "id, team_member_id, password_hash, password_salt, status, attempts, expires_at, created_by",
+      )
       .eq("status", "pending")
       .ilike("email", email)
       .maybeSingle();
@@ -150,34 +169,57 @@ export const redeemTeamInvite = createServerFn({ method: "POST" })
       invite.password_hash,
     );
     if (!valid) {
-      await db.from("team_invites").update({ attempts: invite.attempts + 1 }).eq("id", invite.id);
+      await db
+        .from("team_invites")
+        .update({ attempts: invite.attempts + 1 })
+        .eq("id", invite.id);
       await audit(null, "team_invite_failed", invite.id, { reason: "invalid" });
       throw genericError;
     }
 
-    const { data: member } = await db.from("team_members").select("id, status, email").eq("id", invite.team_member_id).maybeSingle();
-    if (!member || member.status !== "active" || String(member.email).toLowerCase() !== email) throw genericError;
+    const { data: member } = await db
+      .from("team_members")
+      .select("id, status, email")
+      .eq("id", invite.team_member_id)
+      .maybeSingle();
+    if (!member || member.status !== "active" || String(member.email).toLowerCase() !== email)
+      throw genericError;
 
     let userId = await findUserByEmail(db, email);
     if (userId) {
-      const { error } = await db.auth.admin.updateUserById(userId, { password: data.new_password, email_confirm: true });
+      const { error } = await db.auth.admin.updateUserById(userId, {
+        password: data.new_password,
+        email_confirm: true,
+      });
       if (error) throw new Error("Não foi possível concluir a ativação agora.");
     } else {
-      const { data: created, error } = await db.auth.admin.createUser({ email, password: data.new_password, email_confirm: true });
+      const { data: created, error } = await db.auth.admin.createUser({
+        email,
+        password: data.new_password,
+        email_confirm: true,
+      });
       if (error || !created?.user) throw new Error("Não foi possível concluir a ativação agora.");
       userId = created.user.id as string;
     }
 
-    const { error: roleError } = await db.from("user_roles").upsert(
-      { user_id: userId, role: "volunteer", granted_by: invite.created_by ?? null },
-      { onConflict: "user_id,role" },
-    );
+    const { error: roleError } = await db
+      .from("user_roles")
+      .upsert(
+        { user_id: userId, role: "volunteer", granted_by: invite.created_by ?? null },
+        { onConflict: "user_id,role" },
+      );
     if (roleError) throw new Error("Não foi possível concluir a ativação agora.");
 
     const activatedAt = new Date().toISOString();
-    const { error: memberError } = await db.from("team_members").update({ user_id: userId, last_activated_at: activatedAt }).eq("id", member.id);
+    const { error: memberError } = await db
+      .from("team_members")
+      .update({ user_id: userId, last_activated_at: activatedAt })
+      .eq("id", member.id);
     if (memberError) throw new Error("Não foi possível concluir a ativação agora.");
-    await db.from("team_invites").update({ status: "used", used_by: userId, used_at: activatedAt, attempts: 0 }).eq("id", invite.id);
+    await db
+      .from("team_invites")
+      .update({ status: "used", used_by: userId, used_at: activatedAt, attempts: 0 })
+      .eq("id", invite.id);
     await audit(userId, "team_invite_redeemed", invite.id, { team_member_id: member.id });
     return { ok: true as const, email };
   });
