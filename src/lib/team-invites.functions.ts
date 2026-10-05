@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireAdminAuthorization } from "@/lib/admin-authorization";
+import { assertStepUp } from "@/lib/admin-2fa.functions";
 
 const INVITE_DAYS = 7;
 const MAX_ATTEMPTS = 5;
@@ -62,6 +63,7 @@ export const createTeamInvite = createServerFn({ method: "POST" })
   .inputValidator((data) => z.object({ team_member_id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminAuthorization(context.userId, context.supabase);
+    await assertStepUp(context.userId);
     const db = await admin();
     const { data: member } = await db
       .from("team_members")
@@ -97,6 +99,7 @@ export const revokeTeamInvite = createServerFn({ method: "POST" })
   .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
   .handler(async ({ data, context }) => {
     await requireAdminAuthorization(context.userId, context.supabase);
+    await assertStepUp(context.userId);
     const db = await admin();
     const { error } = await db.from("team_invites").update({ status: "revoked" }).eq("id", data.id).eq("status", "pending");
     if (error) throw new Error("Não foi possível revogar o convite.");
@@ -131,7 +134,7 @@ export const redeemTeamInvite = createServerFn({ method: "POST" })
     const db = await admin();
     const { data: invite } = await db
       .from("team_invites")
-      .select("id, team_member_id, password_hash, password_salt, status, attempts, expires_at")
+      .select("id, team_member_id, password_hash, password_salt, status, attempts, expires_at, created_by")
       .eq("status", "pending")
       .ilike("email", email)
       .maybeSingle();

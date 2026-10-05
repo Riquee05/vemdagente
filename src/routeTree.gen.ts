@@ -27,6 +27,7 @@ import { Route as VoluntariosRouteImport } from './routes/voluntarios'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCadastrarPontoRouteImport } from './routes/_authenticated/cadastrar-ponto'
+import { Route as AuthenticatedColaboradorRouteImport } from './routes/_authenticated/colaborador'
 import { Route as AuthenticatedMinhaContaRouteImport } from './routes/_authenticated/minha-conta'
 import { Route as PontosPointIdRouteImport } from './routes/pontos.$pointId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -131,6 +132,12 @@ const AuthenticatedCadastrarPontoRoute =
     path: '/cadastrar-ponto',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedColaboradorRoute =
+  AuthenticatedColaboradorRouteImport.update({
+    id: '/colaborador',
+    path: '/colaborador',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMinhaContaRoute = AuthenticatedMinhaContaRouteImport.update({
   id: '/minha-conta',
   path: '/minha-conta',
@@ -217,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
+  '/colaborador': typeof AuthenticatedColaboradorRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -247,6 +255,7 @@ export interface FileRoutesByTo {
   '/voluntarios': typeof VoluntariosRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
+  '/colaborador': typeof AuthenticatedColaboradorRoute
   '/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -280,6 +289,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/cadastrar-ponto': typeof AuthenticatedCadastrarPontoRoute
+  '/_authenticated/colaborador': typeof AuthenticatedColaboradorRoute
   '/_authenticated/minha-conta': typeof AuthenticatedMinhaContaRoute
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin'
     | '/cadastrar-ponto'
+    | '/colaborador'
     | '/minha-conta'
     | '/pontos/$pointId'
     | '/.lovable/oauth/consent'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/voluntarios'
     | '/.well-known/oauth-protected-resource'
     | '/cadastrar-ponto'
+    | '/colaborador'
     | '/minha-conta'
     | '/pontos/$pointId'
     | '/.lovable/oauth/consent'
@@ -375,6 +387,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
     | '/_authenticated/cadastrar-ponto'
+    | '/_authenticated/colaborador'
     | '/_authenticated/minha-conta'
     | '/pontos/$pointId'
     | '/.lovable/oauth/consent'
@@ -537,6 +550,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCadastrarPontoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/colaborador': {
+      id: '/_authenticated/colaborador'
+      path: '/colaborador'
+      fullPath: '/colaborador'
+      preLoaderRoute: typeof AuthenticatedColaboradorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/minha-conta': {
       id: '/_authenticated/minha-conta'
       path: '/minha-conta'
@@ -654,12 +674,14 @@ const AuthenticatedAdminRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedCadastrarPontoRoute: typeof AuthenticatedCadastrarPontoRoute
+  AuthenticatedColaboradorRoute: typeof AuthenticatedColaboradorRoute
   AuthenticatedMinhaContaRoute: typeof AuthenticatedMinhaContaRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedCadastrarPontoRoute: AuthenticatedCadastrarPontoRoute,
+  AuthenticatedColaboradorRoute: AuthenticatedColaboradorRoute,
   AuthenticatedMinhaContaRoute: AuthenticatedMinhaContaRoute,
 }
 
