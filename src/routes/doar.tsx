@@ -23,10 +23,18 @@ export const Route = createFileRoute("/doar")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  validateSearch: (search: Record<string, unknown>): { categoria?: string | undefined; local?: string | undefined } => ({
+    categoria:
+      typeof search["categoria"] === "string" && /^[0-9a-f-]{36}$/i.test(search["categoria"])
+        ? search["categoria"]
+        : undefined,
+    local: typeof search["local"] === "string" ? search["local"].slice(0, 120) : undefined,
+  }),
   component: DoarPage,
 });
 
 function DoarPage() {
+  const { categoria, local } = Route.useSearch();
   return (
     <PageShell>
       <section className="mx-auto w-full max-w-5xl px-4 py-12">
@@ -67,7 +75,7 @@ function DoarPage() {
         </ol>
 
         <div className="mt-10">
-          <PointSearch kindHint="donate" />
+          <PointSearch kindHint="donate" initialCategoryId={categoria} initialQuery={local} />
         </div>
 
         <div className="mt-12 rounded-xl border border-border bg-surface p-6">

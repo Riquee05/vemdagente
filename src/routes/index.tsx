@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImage from "@/assets/hero-doaaqui.jpg";
 import { PageShell } from "@/components/layout/page-shell";
+import { QuickDonateSearch } from "@/components/points/quick-donate-search";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -84,7 +85,8 @@ function Index() {
               Paulo, a partir de dados públicos e indicações da comunidade. Consulte os locais e entre
               em contato para confirmar como ajudar.
             </p>
-            <div className="mt-10 flex flex-wrap items-center gap-5">
+            <QuickDonateSearch />
+            <div className="mt-8 flex flex-wrap items-center gap-5">
               <Button
                 asChild
                 size="lg"
