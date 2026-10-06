@@ -42,15 +42,17 @@ export function PointSearch({
   kindHint,
   initialCategoryId,
   initialQuery,
+  initialCauseId,
 }: {
   kindHint: "donate" | "help";
   initialCategoryId?: string | undefined;
   initialQuery?: string | undefined;
+  initialCauseId?: string | undefined;
 }) {
   const [query, setQuery] = useState(initialQuery?.slice(0, 120) ?? "");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [categoryId, setCategoryId] = useState<string>(initialCategoryId || "all");
-  const [causeIds, setCauseIds] = useState<string[]>([]);
+  const [causeIds, setCauseIds] = useState<string[]>(initialCauseId ? [initialCauseId] : []);
   const [neighborhood, setNeighborhood] = useState<string>("all");
   const [radiusKm, setRadiusKm] = useState(10);
   const [selectedId, setSelectedId] = useState<string | null>(null);
