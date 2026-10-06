@@ -38,10 +38,18 @@ const DEFAULT_CENTER: [number, number] = [-23.5505, -46.6333];
 const RADIUS_OPTIONS = [5, 10, 20, 50];
 
 /** Busca de pontos por localização + categoria. Não exige login. */
-export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
-  const [query, setQuery] = useState("");
+export function PointSearch({
+  kindHint,
+  initialCategoryId,
+  initialQuery,
+}: {
+  kindHint: "donate" | "help";
+  initialCategoryId?: string;
+  initialQuery?: string;
+}) {
+  const [query, setQuery] = useState(initialQuery?.slice(0, 120) ?? "");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [categoryId, setCategoryId] = useState<string>("all");
+  const [categoryId, setCategoryId] = useState<string>(initialCategoryId || "all");
   const [causeIds, setCauseIds] = useState<string[]>([]);
   const [neighborhood, setNeighborhood] = useState<string>("all");
   const [radiusKm, setRadiusKm] = useState(10);
@@ -150,11 +158,15 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
 
   async function searchByAddress(event: React.FormEvent) {
     event.preventDefault();
+    await runAddressSearch(query);
+  }
+
+  async function runAddressSearch(term: string) {
     setLocating(true);
     setShowSuggestions(false);
     try {
-      if (isCep(query)) {
-        const byCep = await lookupCep(query);
+      if (isCep(term)) {
+        const byCep = await lookupCep(term);
         if (!byCep) {
           toast.error("CEP não encontrado no estado de São Paulo.");
           return;
@@ -163,19 +175,29 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
         toast.success(`${byCep.title} — ${byCep.subtitle}`);
         return;
       }
-      const found = await geocodeAddress(query);
+      const found = await geocodeAddress(term);
       if (!found) {
         toast.error("Não encontramos esse endereço no estado de São Paulo.");
         return;
       }
+      setChosenLabel(term);
       setCoords({ lat: found.lat, lng: found.lng });
     } catch {
       toast.error("Busca de endereço indisponível agora.");
     } finally {
       setLocating(false);
     }
-
   }
+
+  // Busca vinda da página inicial: executa uma única vez ao abrir.
+  const initialRan = useRef(false);
+  useEffect(() => {
+    if (initialRan.current) return;
+    initialRan.current = true;
+    const term = initialQuery?.trim().slice(0, 120);
+    if (term && term.length >= 3) void runAddressSearch(term);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const allowedIds = causeIds.length === 0 ? null : new Set(causePointIds.data ?? []);
   const byCause = (results.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
