@@ -23,12 +23,12 @@ export const Route = createFileRoute("/doar")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>): { categoria?: string; local?: string } => ({
+  validateSearch: (search: Record<string, unknown>): { categoria?: string | undefined; local?: string | undefined } => ({
     categoria:
-      typeof search.categoria === "string" && /^[0-9a-f-]{36}$/i.test(search.categoria)
-        ? search.categoria
+      typeof search["categoria"] === "string" && /^[0-9a-f-]{36}$/i.test(search["categoria"])
+        ? search["categoria"]
         : undefined,
-    local: typeof search.local === "string" ? search.local.slice(0, 120) : undefined,
+    local: typeof search["local"] === "string" ? search["local"].slice(0, 120) : undefined,
   }),
   component: DoarPage,
 });

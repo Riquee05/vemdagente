@@ -44,8 +44,8 @@ export function PointSearch({
   initialQuery,
 }: {
   kindHint: "donate" | "help";
-  initialCategoryId?: string;
-  initialQuery?: string;
+  initialCategoryId?: string | undefined;
+  initialQuery?: string | undefined;
 }) {
   const [query, setQuery] = useState(initialQuery?.slice(0, 120) ?? "");
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
