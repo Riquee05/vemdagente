@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImage from "@/assets/hero-doaaqui.jpg";
 import { PageShell } from "@/components/layout/page-shell";
+import { ImpactStats } from "@/components/home/impact-stats";
 import { QuickDonateSearch } from "@/components/points/quick-donate-search";
 import { Button } from "@/components/ui/button";
 
@@ -118,7 +119,9 @@ function Index() {
         </div>
       </section>
 
-      <section className="border-y-2 border-foreground bg-surface">
+      <ImpactStats />
+
+      <section className="border-b-2 border-foreground bg-surface">
         <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:grid-cols-2">
           <div className="card-ink -rotate-1 bg-card p-10 transition-transform hover:rotate-0">
             <span className="font-display text-xs uppercase tracking-widest text-primary">
