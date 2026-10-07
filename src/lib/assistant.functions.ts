@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { assistantRequestSchema } from "@/lib/public-submission-schemas";
+import { assistantFallbackReply } from "@/lib/assistant-fallback";
 
 const MODEL = "gemini-3.1-flash-lite";
 const geminiUrl = (model: string) =>
@@ -55,7 +56,6 @@ async function geminiText(args: {
     generationConfig: {
       temperature: 0.4,
       maxOutputTokens: 800,
-      thinkingConfig: { thinkingLevel: "low" },
       ...(args.jsonSchema
         ? { responseMimeType: "application/json", responseSchema: args.jsonSchema }
         : {}),
@@ -220,7 +220,18 @@ export const askAssistant = createServerFn({ method: "POST" })
     const cats = categories ?? [];
 
     const signal = AbortSignal.timeout(25000);
-    const intent = await extractIntent(data.message, cats, signal);
+    let intent: Intent;
+    try {
+      intent = await extractIntent(data.message, cats, signal);
+    } catch {
+      // Do not guess the requested location/category when interpretation fails.
+      return {
+        reply: assistantFallbackReply([]),
+        points: [],
+        location: null,
+        categoryLabel: null,
+      };
+    }
 
     let location: { label: string; lat: number; lng: number } | null = null;
     if (intent.local) location = await geocode(intent.local, signal);
@@ -284,12 +295,10 @@ export const askAssistant = createServerFn({ method: "POST" })
         `Local considerado: ${location?.label ?? "não informado"}\n` +
         `Categoria: ${category?.label ?? "não definida"}\n` +
         `Raio: ${intent.raio_km} km\n\nPontos e instituições encontrados:\n${contexto}`,
-    });
+    }).catch(() => assistantFallbackReply(points));
 
     return {
-      reply:
-        reply ||
-        "Não consegui montar uma resposta agora. Tente reformular a pergunta informando a cidade e o que quer doar.",
+      reply: reply || assistantFallbackReply(points),
       points,
       location,
       categoryLabel: category?.label ?? null,
