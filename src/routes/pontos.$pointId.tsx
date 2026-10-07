@@ -1,3 +1,4 @@
+import { TerritoryInfo } from "@/components/points/territory-info";
 import { DonationPlanning } from "@/components/points/donation-planning";
 import { Campaigns } from "@/components/points/campaigns";
 import { PointActions } from "@/components/points/point-actions";
@@ -327,6 +328,7 @@ function PointDetailPage() {
               )}
             </div>
 
+            {data.city === "São Paulo" && <TerritoryInfo pointId={data.id} />}
             <DonationPlanning
               pointId={data.id}
               categories={data.accepted.map((category) => category.label)}

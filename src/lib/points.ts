@@ -104,10 +104,15 @@ export async function fetchVerifiedPointsPage(params: {
   accessibility?: AccessibilityField | "";
   needsOnly?: boolean;
   delivery?: DeliveryField | "";
+  zone?: string;
   favoriteIds?: string[];
 }): Promise<{ points: NearbyPoint[]; total: number; limited?: boolean }> {
   const extraFilters = Boolean(
-    params.delivery || params.accessibility || params.needsOnly || params.favoriteIds,
+    params.zone ||
+    params.delivery ||
+    params.accessibility ||
+    params.needsOnly ||
+    params.favoriteIds,
   );
   if (params.favoriteIds?.length === 0) return { points: [], total: 0 };
   if (params.location && !extraFilters) {
@@ -142,6 +147,7 @@ export async function fetchVerifiedPointsPage(params: {
   const fields =
     "id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url, opening_hours, donation_method, confirmation_status, confirmed_at";
   const relations = [
+    params.zone ? "point_territory!inner(zone)" : "",
     params.delivery ? `point_delivery!inner(${params.delivery})` : "",
     params.causeId !== "all" ? "point_causes!inner(cause_id)" : "",
     params.accessibility ? `point_accessibility!inner(${params.accessibility})` : "",
@@ -158,6 +164,7 @@ export async function fetchVerifiedPointsPage(params: {
   const neighborhood = (params.neighborhood ?? "").trim().replace(/[%_\\]/g, "");
   if (neighborhood) query = query.ilike("address", `%${neighborhood}%`);
   if (params.causeId !== "all") query = query.eq("point_causes.cause_id", params.causeId);
+  if (params.zone) query = query.eq("point_territory.zone", params.zone).eq("city", "São Paulo");
   if (params.delivery) query = query.eq(`point_delivery.${params.delivery}`, "yes");
   if (params.accessibility) query = query.eq(`point_accessibility.${params.accessibility}`, "yes");
   if (params.needsOnly)
@@ -180,7 +187,7 @@ export async function fetchVerifiedPointsPage(params: {
   const { data, count, error } = await query;
   if (error) {
     if (
-      (params.delivery || params.accessibility) &&
+      (params.zone || params.delivery || params.accessibility) &&
       ["42P01", "PGRST200", "PGRST205"].includes(error.code)
     )
       throw new Error(

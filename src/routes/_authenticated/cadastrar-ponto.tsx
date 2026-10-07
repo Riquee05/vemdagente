@@ -18,7 +18,7 @@ import {
   isCep,
   isSaoPauloState,
   isWithinSaoPauloBounds,
-  lookupCep,
+  lookupCepAddress,
 } from "@/lib/geocode";
 import { fetchCategories, fetchCauses, PHOTO_BUCKET } from "@/lib/points";
 
@@ -99,19 +99,33 @@ function CadastrarPontoPage() {
   async function locateAddress() {
     // CEP no campo de endereço preenche rua, cidade e UF automaticamente.
     if (isCep(form.address)) {
-      const byCep = await lookupCep(form.address);
+      setCoords(null);
+      const byCep = await lookupCepAddress(form.address);
       if (!byCep) {
         toast.error("CEP não encontrado no estado de São Paulo.");
         return;
       }
-      setCoords({ lat: byCep.lat, lng: byCep.lng });
+      setCoords(null);
       setForm((previous) => ({
         ...previous,
-        address: byCep.title,
+        address: [byCep.title, byCep.neighborhood].filter(Boolean).join(" — "),
         city: byCep.city || previous.city,
         state: byCep.state ? byCep.state.slice(0, 2).toUpperCase() : previous.state,
       }));
-      toast.success("Endereço preenchido pelo CEP. Ajuste o pino se precisar.");
+      toast.success("Endereço preenchido pelo CEP. Informe o número e confirme a posição no mapa.");
+      try {
+        const geo = await geocodeAddress([byCep.title, byCep.city, "SP", "Brasil"].join(", "));
+        if (geo) setCoords({ lat: geo.lat, lng: geo.lng });
+        else
+          toast.info("Endereço preenchido. Selecione a posição no mapa antes de salvar.", {
+            duration: 12000,
+          });
+      } catch {
+        toast.info(
+          "Endereço preenchido. O mapa está indisponível; tente localizar novamente ou selecione o pino.",
+          { duration: 12000 },
+        );
+      }
       return;
     }
 

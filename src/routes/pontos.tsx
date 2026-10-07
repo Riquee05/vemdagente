@@ -79,6 +79,7 @@ function PontosPage() {
   const { cidade: city, causa: causeId, pagina: page, bairro: neighborhood } = Route.useSearch();
   const { acessibilidade: accessibility, necessidades: needsOnly } = Route.useSearch();
   const navigate = Route.useNavigate();
+  const [zone, setZone] = useState("");
   const [delivery, setDelivery] = useState<DeliveryField | "">("");
   const [cityInput, setCityInput] = useState(city);
   const [neighborhoodInput, setNeighborhoodInput] = useState(neighborhood);
@@ -140,6 +141,7 @@ function PontosPage() {
       location,
       accessibility,
       needsOnly,
+      zone,
       delivery,
     ],
     queryFn: ({ signal }) =>
@@ -153,6 +155,7 @@ function PontosPage() {
         accessibility: accessibility as AccessibilityField | "",
         needsOnly,
         delivery,
+        zone,
       }),
   });
   const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
@@ -276,6 +279,29 @@ function PontosPage() {
         </div>
 
         <div className="mt-5 space-y-3 max-w-2xl">
+          <label htmlFor="zone-filter" className="block font-semibold">
+            Zona confirmada da capital
+          </label>
+          <select
+            id="zone-filter"
+            value={zone}
+            className="w-full rounded border border-input bg-background p-3"
+            onChange={(e) => {
+              setZone(e.target.value);
+              updateFilters(city, causeId, 1);
+            }}
+          >
+            <option value="">Todas as regiões</option>
+            {["Sul", "Norte", "Leste", "Oeste", "Centro"].map((z) => (
+              <option key={z} value={z}>
+                {z}
+              </option>
+            ))}
+          </select>
+          <p className="text-sm text-muted-foreground">
+            Inclui somente instituições da cidade de São Paulo com classificação territorial
+            revisada. Locais não classificados não aparecem neste filtro.
+          </p>
           <label htmlFor="delivery-filter" className="block font-semibold">
             Entrega e agendamento confirmados
           </label>
@@ -477,7 +503,8 @@ function PontosPage() {
               {points.data?.limited
                 ? "Nenhum local atende aos filtros entre os 200 mais próximos. Diminua o raio ou desative a proximidade para buscar em toda a cidade. "
                 : ""}
-              {delivery ||
+              {zone ||
+              delivery ||
               neighborhood ||
               needsOnly ||
               accessibility ||
@@ -501,11 +528,12 @@ function PontosPage() {
                       Ampliar para 50 km
                     </Button>
                   ) : null}
-                  {delivery || needsOnly || accessibility || causeId !== "all" ? (
+                  {zone || delivery || needsOnly || accessibility || causeId !== "all" ? (
                     <Button
                       variant="outline"
                       onClick={() => {
                         setDelivery("");
+                        setZone("");
                         void navigate({
                           search: {
                             cidade: city,

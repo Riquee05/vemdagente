@@ -27,8 +27,8 @@ export function InstitutionAccessRequest({ pointId }: { pointId: string }) {
     <details className="mt-4 rounded-lg border border-border p-4">
       <summary className="cursor-pointer font-semibold">Representa esta instituição?</summary>
       <p className="mt-3 text-sm text-muted-foreground">
-        Solicite acesso para atualizar as necessidades. A administração vai confirmar seu vínculo
-        antes de liberar a gestão.
+        Solicite acesso para atualizar necessidades e propor mudanças de contato e horários. A
+        administração vai confirmar seu vínculo antes de liberar a gestão.
       </p>
       {!user ? (
         <Button asChild className="mt-3">
@@ -73,6 +73,13 @@ export function InstitutionAccessRequest({ pointId }: { pointId: string }) {
             {submit.isPending ? "Enviando…" : "Solicitar revisão do acesso"}
           </Button>
         </AccessibleForm>
+      )}
+      {submit.isError && (
+        <p role="alert" className="mt-3">
+          {submit.error instanceof Error
+            ? submit.error.message
+            : "Não foi possível enviar. Tente novamente; seu texto foi preservado."}
+        </p>
       )}
     </details>
   );

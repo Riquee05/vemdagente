@@ -22,7 +22,7 @@ export function ImpactStats() {
       value: points.data != null ? `+${points.data}` : "…",
       label: "locais publicados no mapa de São Paulo",
     },
-    { value: "5", label: "regiões cobertas: Centro, Norte, Sul, Leste e Oeste" },
+    { value: "SP", label: "busca de locais publicados no estado de São Paulo" },
     { value: "100%", label: "comunitário, sem intermediar dinheiro ou entregas" },
   ];
 

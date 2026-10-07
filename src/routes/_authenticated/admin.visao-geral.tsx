@@ -1,3 +1,4 @@
+import { TerritoryCounts } from "@/components/admin/point-territory";
 import { ProjectHealth } from "@/components/admin/project-health";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -35,6 +36,7 @@ function AdminVisaoGeral() {
   return (
     <div className="space-y-10">
       <ProjectHealth />
+      <TerritoryCounts />
       <section>
         <h2 className="font-display text-xl uppercase tracking-tight">Pontos e redes</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

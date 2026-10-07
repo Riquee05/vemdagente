@@ -6,6 +6,15 @@ export type GeocodeResult = {
   lng: number;
 };
 
+export type CepAddress = {
+  neighborhood: string;
+  title: string;
+  subtitle: string;
+  city: string;
+  state: string;
+  cep: string;
+};
+
 export type AddressSuggestion = {
   id: string;
   /** Linha principal: rua ou nome do lugar. */
@@ -54,40 +63,37 @@ type ViaCepResponse = {
   erro?: boolean | string;
 };
 
-/** Busca endereço a partir de um CEP (ViaCEP) e geocodifica para lat/lng. */
-export async function lookupCep(cep: string): Promise<AddressSuggestion | null> {
+/** Resolve postal data independently of map availability. */
+export async function lookupCepAddress(cep: string): Promise<CepAddress | null> {
   const digits = cep.replace(/\D/g, "");
   if (digits.length !== 8) return null;
-
-  const response = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+  const response = await fetch(`https://viacep.com.br/ws/${digits}/json/`, {
+    signal: AbortSignal.timeout(10000),
+  });
   if (!response.ok) throw new Error("Consulta de CEP indisponível. Tente novamente mais tarde.");
   const data = (await response.json()) as ViaCepResponse;
   if (data.erro || !data.localidade || !isSaoPauloState(data.uf)) return null;
-
-  // A neighborhood appended to the street can make a valid address fail to match.
-  const parts = [data.logradouro, data.localidade, data.uf, "Brasil"].filter(Boolean);
-  const geo = await geocodeAddress(parts.join(", "));
-  if (!geo)
-    throw new Error(
-      `CEP válido: ${parts.slice(0, -1).join(", ")}. Não conseguimos localizar o endereço no mapa. Digite a rua e ajuste o pino.`,
-    );
-
   return {
-    id: `cep-${digits}`,
+    neighborhood: data.bairro || "",
     title: data.logradouro || data.localidade,
-    subtitle: [
-      data.bairro,
-      `${data.localidade}${data.uf ? ` - ${data.uf}` : ""}`,
-      formatCep(digits),
-    ]
+    city: data.localidade,
+    state: "SP",
+    cep: formatCep(digits),
+    subtitle: [data.bairro, `${data.localidade} - SP`, formatCep(digits)]
       .filter(Boolean)
       .join(" · "),
-    cep: formatCep(digits),
-    city: data.localidade,
-    state: data.uf ?? null,
-    lat: geo.lat,
-    lng: geo.lng,
   };
+}
+
+export async function lookupCep(cep: string): Promise<AddressSuggestion | null> {
+  const data = await lookupCepAddress(cep);
+  if (!data) return null;
+  const geo = await geocodeAddress([data.title, data.city, data.state, "Brasil"].join(", "));
+  if (!geo)
+    throw new Error(
+      `CEP válido: ${data.title}, ${data.city}. Não conseguimos localizar o endereço no mapa. Digite a rua e ajuste o pino.`,
+    );
+  return { ...data, id: `cep-${cep.replace(/\D/g, "")}`, lat: geo.lat, lng: geo.lng };
 }
 
 /** Sugestões de endereço (rua + bairro + cidade + CEP) para autocomplete. */

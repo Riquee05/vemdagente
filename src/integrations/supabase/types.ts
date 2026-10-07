@@ -14,6 +14,13 @@ export type Database = {
   }
   public: {
     Tables: {
+      point_territory: {
+        Row: {point_id:string;district:string;zone:string;source:string;confirmed_at:string;confirmed_by:string|null};
+        Insert: {point_id:string;district:string;zone:string;source:string;confirmed_at?:string;confirmed_by?:string|null};
+        Update: {point_id?:string;district?:string;zone?:string;source?:string;confirmed_at?:string;confirmed_by?:string|null};
+        Relationships: [];
+      };
+
       admin_audit_log: {
         Row: {
           action: string

@@ -54,6 +54,20 @@ beforeEach(() => {
   result.error = null;
 });
 describe("busca pública paginada", () => {
+  it("limits regional results to published capital institutions classified in the database", async () => {
+    await fetchVerifiedPointsPage({ city: "", causeId: "all", page: 1, zone: "Sul" });
+    for (const args of [
+      ["city", "São Paulo"],
+      ["state", "SP"],
+      ["is_active", true],
+      ["curation_status", "verified"],
+      ["point_territory.zone", "Sul"],
+    ])
+      expect(calls).toContainEqual({ method: "eq", args });
+    expect(String(calls.find((call) => call.method === "select")?.args[0])).toContain(
+      "point_territory!inner",
+    );
+  });
   it("consulta somente a página solicitada com ordenação estável e escopo público", async () => {
     result.count = 80;
     const page = await fetchVerifiedPointsPage({ city: "", causeId: "all", page: 2 });

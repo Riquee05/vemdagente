@@ -1,3 +1,5 @@
+import { ConfirmationRequest } from "@/components/admin/confirmation-request";
+import { PointTerritory } from "@/components/admin/point-territory";
 import { DuplicateAlerts, PointHistory } from "@/components/admin/curation-insights";
 import { PointDeliveryEditor } from "@/components/admin/point-delivery-editor";
 import { pointReviewReason } from "@/lib/point-freshness";
@@ -248,9 +250,11 @@ function AdminCuradoria() {
                   .filter(Boolean)
                   .join(" · ") || "Sem contato informado"}
               </p>
+              <ConfirmationRequest name={point.name} />
               <PointAccessibilityEditor pointId={point.id} />
               <PointDeliveryEditor pointId={point.id} />
               <PointHistory pointId={point.id} />
+              {point.city === "São Paulo" && <PointTerritory pointId={point.id} />}
               <div className="mt-3 flex flex-wrap gap-2">
                 {filter !== "verified" && (
                   <Button

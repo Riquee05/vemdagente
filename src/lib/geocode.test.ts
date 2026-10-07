@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { lookupCep } from "./geocode";
+import { lookupCep, lookupCepAddress } from "./geocode";
 afterEach(() => vi.unstubAllGlobals());
 const address = {
   logradouro: "Rua Exemplo",
@@ -8,6 +8,17 @@ const address = {
   uf: "SP",
 };
 describe("CEP lookup", () => {
+  it("fills postal fields without consulting the map", async () => {
+    const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => address });
+    vi.stubGlobal("fetch", fetch);
+    expect(await lookupCepAddress("04811200")).toMatchObject({
+      title: "Rua Exemplo",
+      city: "São Paulo",
+      state: "SP",
+      cep: "04811-200",
+    });
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
   it("does not report a valid CEP as missing when map lookup fails", async () => {
     vi.stubGlobal(
       "fetch",

@@ -43,3 +43,15 @@ Teste com pessoas com deficiência antes de declarar os fluxos acessíveis. Regi
 7. Teste preferências de movimento reduzido e alto contraste. Peça a uma pessoa usuária de leitor de tela que conclua a busca e identifique onde doar sem orientação.
 
 Testes automáticos e de compilação não substituem esta avaliação. Este roteiro não constitui uma execução de TalkBack.
+
+## Classificação regional e confirmação
+
+A migração `20261007190000_point_territory.sql` cria a classificação revisada por distrito e zona. Ela não preenche instituições automaticamente: em Curadoria, confira a fonte territorial, informe distrito/zona/fonte e confirme. A classificação é exclusiva da cidade de São Paulo. Visão geral conta apenas instituições publicadas, ativas e classificadas, mostrando separadamente as que faltam classificar. A busca pública por zona usa esses dados; municípios do interior não recebem zonas da capital.
+
+Na Curadoria, “Solicitar confirmação da ficha” prepara um texto que o administrador pode copiar, revisar e enviar pelo contato oficial. Nenhuma mensagem é enviada automaticamente e copiar não marca a ficha como confirmada. Responsáveis solicitam vínculo pela ficha e, após aprovação, propõem mudanças e gerenciam necessidades em Minha conta. Erros preservam o texto e permanecem visíveis no pedido de acesso.
+
+No cadastro, o CEP preenche o endereço independentemente da geocodificação. Coordenadas anteriores são descartadas ao consultar um novo CEP válido; informe o número e confirme o pino. O CEP não identifica o número do imóvel nem comprova a zona.
+
+## Conferência desta rodada
+
+Conferida a lista pública e o filtro por Interlagos no site publicado. As verificações de cadastro, criação de campanha e aprovação administrativa dependem de sessão autenticada; não foram executadas no banco de produção nesta rodada. Execute o roteiro acima após publicar e registre os resultados reais. TalkBack e avaliação por pessoas com deficiência continuam pendentes.
