@@ -49,6 +49,14 @@ const permissionLabels: Record<TeamPermission, string> = {
   content_management: "Conteúdo institucional",
 };
 
+type TeamInviteSummary = {
+  id: string;
+  email: string;
+  status: string;
+  attempts: number;
+  expires_at: string;
+};
+
 function AdminTime() {
   const queryClient = useQueryClient();
   const fetchTeam = useServerFn(listTeamMembers);
@@ -75,7 +83,10 @@ function AdminTime() {
   } | null>(null);
 
   const team = useQuery({ queryKey: ["team-members"], queryFn: () => fetchTeam() });
-  const invites = useQuery({ queryKey: ["team-invites"], queryFn: () => fetchInvites() });
+  const invites = useQuery({
+    queryKey: ["team-invites"],
+    queryFn: async () => (await fetchInvites()) as TeamInviteSummary[],
+  });
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["team-members"] });

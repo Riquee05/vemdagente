@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 
 import heroImage from "@/assets/hero-doaaqui.jpg";
 import { PageShell } from "@/components/layout/page-shell";
+import { CauseChips } from "@/components/home/cause-chips";
+import { ImpactStats } from "@/components/home/impact-stats";
+import { QuickDonateSearch } from "@/components/points/quick-donate-search";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
@@ -84,7 +87,8 @@ function Index() {
               Paulo, a partir de dados públicos e indicações da comunidade. Consulte os locais e
               entre em contato para confirmar como ajudar.
             </p>
-            <div className="mt-10 flex flex-wrap items-center gap-5">
+            <QuickDonateSearch />
+            <div className="mt-8 flex flex-wrap items-center gap-5">
               <Button
                 asChild
                 size="lg"
@@ -115,6 +119,10 @@ function Index() {
           </div>
         </div>
       </section>
+
+      <ImpactStats />
+
+      <CauseChips />
 
       <section className="border-y-2 border-foreground bg-surface">
         <div className="mx-auto grid w-full max-w-6xl gap-12 px-4 py-20 md:grid-cols-2">
@@ -152,6 +160,34 @@ function Index() {
             >
               Registrar pedido &rarr;
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-6xl px-4 pt-24">
+        <h2 className="text-4xl">Faça parte da rede</h2>
+        <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
+          O mapa cresce com a ajuda de quem conhece o próprio bairro.
+        </p>
+        <div className="mt-10 grid gap-8 md:grid-cols-2">
+          <div className="card-ink rotate-1 bg-secondary p-8 text-secondary-foreground transition-transform hover:rotate-0">
+            <h3 className="text-2xl">Conhece uma instituição séria no seu bairro?</h3>
+            <p className="mt-4 text-lg leading-relaxed">
+              Indique um ponto de coleta ou instituição. A curadoria revisa antes de publicar no
+              mapa.
+            </p>
+            <Button asChild className="card-ink-primary mt-6 font-display uppercase">
+              <Link to="/cadastrar-ponto">Indicar um ponto</Link>
+            </Button>
+          </div>
+          <div className="card-ink -rotate-1 bg-card p-8 transition-transform hover:rotate-0">
+            <h3 className="text-2xl">Quer ajudar na curadoria e verificação?</h3>
+            <p className="mt-4 text-lg leading-relaxed">
+              Seja voluntário: ajude a confirmar informações dos locais e manter o mapa atualizado.
+            </p>
+            <Button asChild variant="outline" className="card-ink mt-6 font-display uppercase">
+              <Link to="/voluntarios">Quero ser voluntário</Link>
+            </Button>
           </div>
         </div>
       </section>
