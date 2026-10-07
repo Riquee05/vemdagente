@@ -55,3 +55,7 @@ No cadastro, o CEP preenche o endereço independentemente da geocodificação. C
 ## Conferência desta rodada
 
 Conferida a lista pública e o filtro por Interlagos no site publicado. As verificações de cadastro, criação de campanha e aprovação administrativa dependem de sessão autenticada; não foram executadas no banco de produção nesta rodada. Execute o roteiro acima após publicar e registre os resultados reais. TalkBack e avaliação por pessoas com deficiência continuam pendentes.
+
+## Mapa sem chave do Google
+
+O mapa público usa Leaflet 1.9.4. Satélite padrão: EOX Sentinel-2 cloudless 2025 (CC BY-NC-SA 4.0), autorizado para uso não comercial com atribuição visível. Fonte/licença: https://cloudless.eox.at/license-non-commercial. Reavaliar licença antes de monetização. Imagens de 10 m, ampliadas acima do zoom 14; não são imagens em tempo real nem identificação de fachadas. A alternativa Ruas usa https://tile.openstreetmap.org com atribuição e política https://operations.osmfoundation.org/policies/tiles/. Sem download offline, prefetch ou remoção de créditos. Ambos são serviços públicos sem SLA e podem limitar tráfego. Mapas são carregados apenas quando o usuário os mostra. Falhas deixam lista textual disponível e botão de troca/repetição. Importações administrativas do Google continuam server-side e dependem do conector; esta mudança substitui somente a renderização.

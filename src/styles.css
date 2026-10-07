@@ -266,3 +266,65 @@ nav a {
     position: relative !important;
   }
 }
+
+/* Map controls remain inside the isolated map stacking context. */
+.vdg-leaflet-map {
+  background: #27352b;
+  font-family: inherit;
+}
+.vdg-leaflet-map .leaflet-control-attribution {
+  max-width: 100%;
+  padding: 3px 6px;
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: normal;
+  background: rgba(255, 255, 255, 0.95);
+  color: #222;
+}
+.vdg-leaflet-map .leaflet-control-attribution a {
+  color: #174b6c;
+}
+.vdg-leaflet-map .leaflet-popup-content {
+  color: #222;
+  overflow-wrap: anywhere;
+}
+.vdg-map-pin,
+.vdg-map-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: #a3411c;
+  box-shadow: 0 1px 5px #0009;
+}
+.vdg-map-pin::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
+.vdg-map-pin-selected {
+  background: #174b6c;
+  outline: 3px solid #f4c66b;
+}
+.vdg-map-cluster {
+  background: #342018;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+}
+.vdg-map-layer-button {
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.vdg-map-layer-button[aria-pressed="true"] {
+  background: #342018;
+  color: white;
+}

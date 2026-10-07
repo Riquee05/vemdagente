@@ -26,6 +26,10 @@ export const Route = createFileRoute("/privacidade")({
 
 const sections = [
   {
+    title: "Mapas de terceiros",
+    body: "Ao mostrar o mapa, seu navegador solicita imagens à EOX (satélite) ou ao OpenStreetMap (ruas). Esses serviços recebem dados técnicos da conexão, como IP e a área do mapa visualizada. Não enviamos o texto dos pedidos de ajuda nem dados da sua conta para esses serviços.",
+  },
+  {
     title: "Relatos da comunidade",
     body: "Ao enviar um relato, você autoriza a publicação do texto, da avaliação, do nome público escolhido e da cidade, se informada. O conteúdo fica privado enquanto aguarda revisão e só é publicado após aprovação. Use um apelido se preferir e evite dados pessoais de terceiros. Para retirar o consentimento, corrigir ou solicitar exclusão, escreva para Vemdagente.contato@gmail.com. Relatos não são vinculados automaticamente à conta e não são excluídos ao apagar a conta.",
   },

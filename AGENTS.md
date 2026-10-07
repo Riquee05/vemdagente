@@ -13,6 +13,6 @@
 
 - Generate point-photo signed URLs only in server functions after verifying publication or admin access, because the storage bucket is private.
 - Enforce the public geographic scope in database policies and server functions, because UI-only filters can be bypassed.
-- Render maps with the Google Maps browser connector while keeping Places and geocoding requests server-side, because browser credentials are rendering-only.
+- Render maps with Leaflet, EOX satellite imagery and OpenStreetMap street tiles. Keep attribution visible and respect provider usage policies. Keep Places imports and geocoding requests server-side.
 - Persist public-action rate limits by keyed request hash in the database, because server instances are stateless and raw IP addresses must not be stored.
 - Keep collaborator access separate from administration and enforce every permission in server functions and RLS, because hidden navigation is not authorization.
