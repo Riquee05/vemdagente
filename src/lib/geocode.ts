@@ -200,17 +200,59 @@ export async function geocodeAddress(query: string): Promise<GeocodeResult | nul
     : null;
 }
 
-/** Localização do navegador. */
+/** Localização validada; falhas devem manter a busca manual disponível. */
 export function getBrowserLocation(): Promise<{ lat: number; lng: number }> {
   return new Promise((resolve, reject) => {
+    const manual = " Você pode buscar por CEP, cidade ou bairro.";
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      reject(new Error("Geolocalização não disponível neste navegador."));
+      reject(new Error("Localização indisponível neste navegador." + manual));
       return;
     }
-    navigator.geolocation.getCurrentPosition(
-      (position) => resolve({ lat: position.coords.latitude, lng: position.coords.longitude }),
-      () => reject(new Error("Não conseguimos acessar sua localização.")),
-      { timeout: 10000 },
+    const timeout = setTimeout(
+      () => reject(new Error("A localização demorou para responder." + manual)),
+      12000,
     );
+    const fail = (message: string) => {
+      clearTimeout(timeout);
+      reject(new Error(message + manual));
+    };
+    try {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          try {
+            const lat = position.coords.latitude,
+              lng = position.coords.longitude;
+            if (
+              !Number.isFinite(lat) ||
+              !Number.isFinite(lng) ||
+              Math.abs(lat) > 90 ||
+              Math.abs(lng) > 180
+            ) {
+              fail("O navegador retornou uma localização inválida.");
+              return;
+            }
+            if (!isWithinSaoPauloBounds(lat, lng)) {
+              fail("Sua localização está fora da área atendida: estado de São Paulo.");
+              return;
+            }
+            clearTimeout(timeout);
+            resolve({ lat, lng });
+          } catch {
+            fail("Não foi possível ler a localização do navegador.");
+          }
+        },
+        (error) =>
+          fail(
+            error.code === 1
+              ? "O acesso à localização foi bloqueado. Permita o acesso nas configurações do site."
+              : error.code === 3
+                ? "A localização demorou para responder."
+                : "O dispositivo não conseguiu determinar sua localização.",
+          ),
+        { timeout: 10000, maximumAge: 60000, enableHighAccuracy: false },
+      );
+    } catch {
+      fail("Não foi possível iniciar a localização neste navegador.");
+    }
   });
 }

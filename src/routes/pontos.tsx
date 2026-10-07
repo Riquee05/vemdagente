@@ -1,3 +1,4 @@
+import { getBrowserLocation } from "@/lib/geocode";
 import { deliveryFields, type DeliveryField } from "@/lib/donation-planning";
 import { accessibilityFields, type AccessibilityField } from "@/lib/accessibility";
 import { AccessibleForm } from "@/components/accessibility/accessible-form";
@@ -105,31 +106,22 @@ function PontosPage() {
         necessidades: needsOnly,
       },
     });
-  const findNearby = () => {
-    if (!navigator.geolocation) {
-      setLocationError("Seu navegador não oferece localização. Use município e bairro.");
-      return;
-    }
+  const findNearby = async () => {
     setLocating(true);
     setLocationError("");
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-          radiusKm: 15,
-        });
-        updateFilters("", causeId, 1, "");
-        setLocating(false);
-      },
-      () => {
-        setLocating(false);
-        setLocationError(
-          "Não foi possível obter sua localização. Permita o acesso no navegador ou busque por município e bairro.",
-        );
-      },
-      { timeout: 10000, maximumAge: 60000, enableHighAccuracy: false },
-    );
+    try {
+      const position = await getBrowserLocation();
+      setLocation({ ...position, radiusKm: 15 });
+      updateFilters("", causeId, 1, "");
+    } catch (error) {
+      setLocationError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível localizar. Use município e bairro.",
+      );
+    } finally {
+      setLocating(false);
+    }
   };
   const points = useQuery({
     queryKey: [
