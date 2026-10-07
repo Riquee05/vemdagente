@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AcessibilidadeRouteImport } from './routes/acessibilidade'
 import { Route as ApoiarRouteImport } from './routes/apoiar'
 import { Route as AssistenteRouteImport } from './routes/assistente'
 import { Route as AtivarAdminRouteImport } from './routes/ativar-admin'
@@ -50,6 +51,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcessibilidadeRoute = AcessibilidadeRouteImport.update({
+  id: '/acessibilidade',
+  path: '/acessibilidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApoiarRoute = ApoiarRouteImport.update({
@@ -221,6 +227,7 @@ const AuthenticatedAdminVoluntariosRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/acessibilidade': typeof AcessibilidadeRoute
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
   '/ativar-admin': typeof AtivarAdminRoute
@@ -255,6 +262,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/acessibilidade': typeof AcessibilidadeRoute
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
   '/ativar-admin': typeof AtivarAdminRoute
@@ -290,6 +298,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/acessibilidade': typeof AcessibilidadeRoute
   '/apoiar': typeof ApoiarRoute
   '/assistente': typeof AssistenteRoute
   '/ativar-admin': typeof AtivarAdminRoute
@@ -326,6 +335,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/acessibilidade'
     | '/apoiar'
     | '/assistente'
     | '/ativar-admin'
@@ -360,6 +370,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/acessibilidade'
     | '/apoiar'
     | '/assistente'
     | '/ativar-admin'
@@ -394,6 +405,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/acessibilidade'
     | '/apoiar'
     | '/assistente'
     | '/ativar-admin'
@@ -430,6 +442,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AcessibilidadeRoute: typeof AcessibilidadeRoute
   ApoiarRoute: typeof ApoiarRoute
   AssistenteRoute: typeof AssistenteRoute
   AtivarAdminRoute: typeof AtivarAdminRoute
@@ -462,6 +475,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/acessibilidade': {
+      id: '/acessibilidade'
+      path: '/acessibilidade'
+      fullPath: '/acessibilidade'
+      preLoaderRoute: typeof AcessibilidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/apoiar': {
@@ -744,6 +764,7 @@ const PontosRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AcessibilidadeRoute: AcessibilidadeRoute,
   ApoiarRoute: ApoiarRoute,
   AssistenteRoute: AssistenteRoute,
   AtivarAdminRoute: AtivarAdminRoute,

@@ -6,7 +6,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       className="toaster group"
+      duration={Infinity}
+      closeButton
+      containerAriaLabel="Avisos do site"
       toastOptions={{
+        closeButtonAriaLabel: "Fechar aviso",
         classNames: {
           toast:
             "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",

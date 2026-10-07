@@ -1,3 +1,4 @@
+import { PointAccessibilityEditor } from "@/components/admin/point-accessibility-editor";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -208,6 +209,7 @@ function AdminCuradoria() {
                   .filter(Boolean)
                   .join(" · ") || "Sem contato informado"}
               </p>
+              <PointAccessibilityEditor pointId={point.id} />
               <div className="mt-3 flex flex-wrap gap-2">
                 {filter !== "verified" && (
                   <Button

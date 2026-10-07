@@ -35,8 +35,8 @@ export function PointCard({
         className="h-20 w-20 shrink-0 rounded-lg"
       />
       <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="truncate text-base font-semibold">{point.name}</h3>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <h3 className="break-words text-base font-semibold">{point.name}</h3>
           {distance ? <Badge variant="secondary">{distance}</Badge> : null}
         </div>
         <p className="mt-1 text-sm text-muted-foreground">

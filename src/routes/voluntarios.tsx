@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { Check, HeartHandshake, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -137,7 +138,7 @@ function VoluntariosPage() {
 
       <section className="mx-auto w-full max-w-3xl px-4 py-20">
         {enviado ? (
-          <div className="card-ink -rotate-1 bg-card p-10 text-center">
+          <div role="status" className="card-ink -rotate-1 bg-card p-10 text-center">
             <span className="mx-auto flex size-14 -rotate-3 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
               <Check className="size-7" aria-hidden="true" />
             </span>
@@ -148,7 +149,10 @@ function VoluntariosPage() {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="card-ink -rotate-1 bg-card p-8 md:p-10">
+          <AccessibleForm
+            onSubmit={handleSubmit}
+            className="card-ink -rotate-1 bg-card p-8 md:p-10"
+          >
             <div className="sr-only" aria-hidden="true">
               <Label htmlFor="volunteer-website">Não preencha este campo</Label>
               <Input id="volunteer-website" name="website" tabIndex={-1} autoComplete="off" />
@@ -230,12 +234,19 @@ function VoluntariosPage() {
               </div>
 
               <div className="space-y-3">
-                <Label>Áreas de interesse *</Label>
-                <div className="flex flex-wrap gap-2">
+                <p id="volunteer-areas-label" className="text-sm font-medium">
+                  Áreas de interesse *
+                </p>
+                <div
+                  role="group"
+                  aria-labelledby="volunteer-areas-label"
+                  className="flex flex-wrap gap-2"
+                >
                   {areaOptions.map((area) => (
                     <button
                       key={area}
                       type="button"
+                      aria-pressed={selecaoAreas.has(area)}
                       onClick={() => toggleArea(area)}
                       className={`rounded-none border-2 px-3 py-2 text-sm font-semibold transition-colors ${
                         selecaoAreas.has(area)
@@ -322,7 +333,7 @@ function VoluntariosPage() {
                 )}
               </Button>
             </div>
-          </form>
+          </AccessibleForm>
         )}
       </section>
     </PageShell>

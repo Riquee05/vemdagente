@@ -6,8 +6,13 @@ import { SiteHeader } from "@/components/layout/site-header";
 export function PageShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col">
+      <a href="#conteudo-principal" className="skip-link">
+        Pular para o conteúdo principal
+      </a>
       <SiteHeader />
-      <main className="flex-1">{children}</main>
+      <main id="conteudo-principal" tabIndex={-1} className="min-w-0 flex-1">
+        {children}
+      </main>
       <SiteFooter />
     </div>
   );

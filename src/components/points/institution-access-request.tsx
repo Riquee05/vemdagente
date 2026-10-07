@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { Link } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
@@ -39,7 +40,7 @@ export function InstitutionAccessRequest({ pointId }: { pointId: string }) {
           Minha conta.
         </p>
       ) : (
-        <form
+        <AccessibleForm
           className="mt-4 space-y-3"
           onSubmit={(event) => {
             event.preventDefault();
@@ -71,7 +72,7 @@ export function InstitutionAccessRequest({ pointId }: { pointId: string }) {
           <Button disabled={submit.isPending} type="submit">
             {submit.isPending ? "Enviando…" : "Solicitar revisão do acesso"}
           </Button>
-        </form>
+        </AccessibleForm>
       )}
     </details>
   );

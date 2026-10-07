@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -89,7 +90,7 @@ function StepUpForm({ email, onDone }: { email: string | null; onDone: () => voi
         painel. A liberação vale por 2 horas.
       </p>
 
-      <form
+      <AccessibleForm
         className="mt-5 space-y-3"
         onSubmit={(event) => {
           event.preventDefault();
@@ -108,7 +109,7 @@ function StepUpForm({ email, onDone }: { email: string | null; onDone: () => voi
         <Button type="submit" disabled={password.length < 6 || confirm.isPending}>
           {confirm.isPending ? "Verificando..." : "Liberar painel"}
         </Button>
-      </form>
+      </AccessibleForm>
 
       <div className="mt-6 border-t-2 border-dashed border-foreground/20 pt-5">
         {showSetPassword ? (

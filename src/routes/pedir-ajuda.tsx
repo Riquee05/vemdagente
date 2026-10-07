@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -237,7 +238,7 @@ function PedirAjudaPage() {
           análise pela equipe administrativa autorizada. Não é preciso criar conta.
         </p>
 
-        <form
+        <AccessibleForm
           onSubmit={submit}
           className="mt-8 space-y-5 rounded-xl border-2 border-border bg-surface p-6"
         >
@@ -350,7 +351,7 @@ function PedirAjudaPage() {
               <Link to="/assistente">Falar com o assistente</Link>
             </Button>
           </div>
-        </form>
+        </AccessibleForm>
 
         <div className="mt-12">
           <h2 className="text-2xl font-semibold">Apoio perto de você</h2>

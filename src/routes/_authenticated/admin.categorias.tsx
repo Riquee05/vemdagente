@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -102,7 +103,7 @@ function CausesManager() {
         </p>
       </div>
 
-      <form
+      <AccessibleForm
         className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-surface p-6"
         onSubmit={(event) => {
           event.preventDefault();
@@ -123,7 +124,7 @@ function CausesManager() {
         <Button type="submit" disabled={create.isPending}>
           Adicionar causa
         </Button>
-      </form>
+      </AccessibleForm>
 
       {causes.isLoading && <Skeleton className="h-32 w-full" />}
       <ul className="space-y-3">
@@ -133,7 +134,7 @@ function CausesManager() {
             className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-4"
           >
             {editingId === cause.id ? (
-              <form
+              <AccessibleForm
                 className="flex flex-1 flex-wrap items-center gap-2"
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -158,7 +159,7 @@ function CausesManager() {
                 >
                   Cancelar
                 </Button>
-              </form>
+              </AccessibleForm>
             ) : (
               <>
                 <div>
@@ -269,7 +270,7 @@ function AdminCategorias() {
           </p>
         </div>
 
-        <form
+        <AccessibleForm
           className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-surface p-6"
           onSubmit={(event) => {
             event.preventDefault();
@@ -290,7 +291,7 @@ function AdminCategorias() {
           <Button type="submit" disabled={create.isPending}>
             Adicionar
           </Button>
-        </form>
+        </AccessibleForm>
 
         {categories.isLoading && <Skeleton className="h-32 w-full" />}
         <ul className="space-y-3">
@@ -300,7 +301,7 @@ function AdminCategorias() {
               className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-4"
             >
               {editingId === category.id ? (
-                <form
+                <AccessibleForm
                   className="flex flex-1 flex-wrap items-center gap-2"
                   onSubmit={(event) => {
                     event.preventDefault();
@@ -325,7 +326,7 @@ function AdminCategorias() {
                   >
                     Cancelar
                   </Button>
-                </form>
+                </AccessibleForm>
               ) : (
                 <>
                   <div>

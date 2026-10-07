@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -34,7 +35,7 @@ export function QuickDonateSearch() {
   }
 
   return (
-    <form
+    <AccessibleForm
       onSubmit={submit}
       className="card-ink mt-10 grid max-w-2xl gap-4 bg-card p-5 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
     >
@@ -71,6 +72,6 @@ export function QuickDonateSearch() {
       <Button type="submit" className="card-ink-primary font-display uppercase">
         Buscar pontos
       </Button>
-    </form>
+    </AccessibleForm>
   );
 }

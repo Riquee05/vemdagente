@@ -74,18 +74,18 @@
   --card-foreground: oklch(0.29 0.038 40);
   --popover: oklch(0.995 0.008 70);
   --popover-foreground: oklch(0.29 0.038 40);
-  --primary: oklch(0.588 0.148 38);
+  --primary: #974120;
   --primary-foreground: oklch(0.99 0.012 75);
   --secondary: oklch(0.925 0.038 72);
   --secondary-foreground: oklch(0.36 0.06 42);
   --muted: oklch(0.945 0.026 70);
-  --muted-foreground: oklch(0.53 0.036 48);
-  --accent: oklch(0.712 0.132 62);
-  --accent-foreground: oklch(0.28 0.05 40);
+  --muted-foreground: #66584c;
+  --accent: #875118;
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.548 0.196 25);
   --destructive-foreground: oklch(0.99 0.012 75);
-  --border: oklch(0.892 0.031 68);
-  --input: oklch(0.892 0.031 68);
+  --border: #89796c;
+  --input: #89796c;
   --ring: oklch(0.588 0.148 38);
   --chart-1: oklch(0.588 0.148 38);
   --chart-2: oklch(0.712 0.132 62);
@@ -120,9 +120,9 @@
   --accent: oklch(0.78 0.115 68);
   --accent-foreground: oklch(0.2 0.03 40);
   --destructive: oklch(0.66 0.17 25);
-  --destructive-foreground: oklch(0.98 0.012 75);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
+  --destructive-foreground: #1f1510;
+  --border: #95867a;
+  --input: #95867a;
   --ring: oklch(0.735 0.126 46);
   --sidebar: oklch(0.262 0.03 42);
   --sidebar-foreground: oklch(0.955 0.018 72);
@@ -163,21 +163,14 @@
 }
 
 @utility text-gradient-brand {
-  background-image: linear-gradient(
-    100deg,
-    var(--color-primary) 0%,
-    var(--color-accent) 100%
-  );
+  background-image: linear-gradient(100deg, var(--color-primary) 0%, var(--color-accent) 100%);
   background-clip: text;
   color: transparent;
 }
 
 @utility bg-brand-veil {
-  background-image: radial-gradient(
-      120% 90% at 12% 0%,
-      oklch(0.588 0.148 38 / 0.16) 0%,
-      transparent 60%
-    ),
+  background-image:
+    radial-gradient(120% 90% at 12% 0%, oklch(0.588 0.148 38 / 0.16) 0%, transparent 60%),
     radial-gradient(90% 80% at 95% 10%, oklch(0.782 0.13 78 / 0.18) 0%, transparent 55%);
 }
 
@@ -201,4 +194,75 @@
     color-mix(in oklab, var(--color-accent) 65%, transparent) 0.35em,
     transparent 0.35em
   );
+}
+
+/* Accessibility: native zoom, keyboard focus and reduced motion. */
+html {
+  scroll-padding-top: 6rem;
+}
+body {
+  overflow-wrap: anywhere;
+}
+:where(button, a, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--foreground) !important;
+  outline-offset: 4px;
+  scroll-margin-block: 6rem;
+}
+:where(input, textarea, select) {
+  scroll-margin-top: 6rem;
+}
+:where(input[type="checkbox"], input[type="radio"]) {
+  min-width: 24px;
+  min-height: 24px;
+  accent-color: var(--primary);
+}
+:where(summary, nav a) {
+  min-height: 44px;
+}
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  top: 0.5rem;
+  left: 0.5rem;
+  transform: translateY(-200%);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--foreground);
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (forced-colors: active) {
+  :where(button, input, textarea, select) {
+    border: 1px solid ButtonText;
+  }
+  :focus-visible {
+    outline-color: Highlight !important;
+  }
+}
+
+:where(button, [role="button"], select) {
+  min-height: 44px;
+  min-width: 44px;
+}
+nav a {
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  header {
+    position: relative !important;
+  }
 }

@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -64,7 +65,7 @@ function ActivateCollaborator() {
           Use o e-mail cadastrado no time e a senha temporária recebida. Depois, crie sua senha
           definitiva.
         </p>
-        <form
+        <AccessibleForm
           className="card-ink mt-8 space-y-4 p-6"
           onSubmit={(event) => {
             event.preventDefault();
@@ -133,7 +134,7 @@ function ActivateCollaborator() {
             </Link>
             .
           </p>
-        </form>
+        </AccessibleForm>
       </section>
     </PageShell>
   );

@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -68,7 +69,7 @@ function RedefinirSenhaPage() {
             <CardDescription>Use pelo menos 8 caracteres.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={save} className="space-y-3">
+            <AccessibleForm onSubmit={save} className="space-y-3">
               <div className="space-y-1.5">
                 <Label htmlFor="new-password">Senha</Label>
                 <Input
@@ -96,7 +97,7 @@ function RedefinirSenhaPage() {
               <Button type="submit" className="w-full" disabled={busy}>
                 {busy ? "Salvando..." : "Salvar nova senha"}
               </Button>
-            </form>
+            </AccessibleForm>
           </CardContent>
         </Card>
       </section>

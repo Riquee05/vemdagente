@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -56,7 +57,7 @@ export function SetPasswordForm({ onDone, submitLabel = "Salvar senha" }: Props)
   }
 
   return (
-    <form className="space-y-3" onSubmit={save}>
+    <AccessibleForm className="space-y-3" onSubmit={save}>
       {needsCurrent ? (
         <div className="space-y-1.5">
           <Label htmlFor="current-password">Senha atual</Label>
@@ -99,6 +100,6 @@ export function SetPasswordForm({ onDone, submitLabel = "Salvar senha" }: Props)
       <Button type="submit" disabled={busy}>
         {busy ? "Salvando..." : submitLabel}
       </Button>
-    </form>
+    </AccessibleForm>
   );
 }

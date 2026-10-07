@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -174,7 +175,7 @@ function AdminTime() {
         <p className="mt-1 text-sm text-muted-foreground">
           Use para cadastrar colaboradores direto, sem passar por uma candidatura.
         </p>
-        <form
+        <AccessibleForm
           className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5"
           onSubmit={(event) => {
             event.preventDefault();
@@ -236,7 +237,7 @@ function AdminTime() {
               {creator.isPending ? "Adicionando..." : "Adicionar ao time"}
             </Button>
           </div>
-        </form>
+        </AccessibleForm>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -375,7 +376,8 @@ function AdminTime() {
                       remover.mutate(member.id);
                   }}
                 >
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-4" aria-hidden="true" />
+                  <span className="sr-only">Remover {member.full_name} da equipe</span>
                 </Button>
               </div>
             </div>

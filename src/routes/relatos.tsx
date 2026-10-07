@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -115,7 +116,7 @@ function RelatosPage() {
               aprovado pela administração.
             </p>
           ) : (
-            <form
+            <AccessibleForm
               className="mt-6 space-y-4"
               onSubmit={(event) => {
                 event.preventDefault();
@@ -208,15 +209,15 @@ function RelatosPage() {
                   .
                 </span>
               </label>
-              <Button
-                type="submit"
-                disabled={
-                  submit.isPending || !consent || story.trim().length < 30 || name.trim().length < 2
-                }
-              >
+              {submit.isError && (
+                <p role="alert" className="rounded-lg border border-destructive p-3">
+                  {submit.error.message} Seus dados continuam no formulário.
+                </p>
+              )}
+              <Button type="submit" disabled={submit.isPending}>
                 {submit.isPending ? "Enviando…" : "Enviar para revisão"}
               </Button>
-            </form>
+            </AccessibleForm>
           )}
         </div>
       </section>

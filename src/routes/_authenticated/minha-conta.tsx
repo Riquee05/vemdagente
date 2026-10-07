@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 
@@ -208,7 +209,7 @@ function MinhaContaPage() {
             )}
 
             {profileQuery.isSuccess && profileQuery.data.profile && (
-              <form
+              <AccessibleForm
                 className="space-y-5"
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -263,7 +264,7 @@ function MinhaContaPage() {
                     Sair da conta
                   </Button>
                 </div>
-              </form>
+              </AccessibleForm>
             )}
           </CardContent>
         </Card>

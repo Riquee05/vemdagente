@@ -1,3 +1,4 @@
+import { AccessibilityInfo } from "@/components/points/accessibility-info";
 import { whatsappLink } from "@/lib/contact-links";
 import { InstitutionAccessRequest } from "@/components/points/institution-access-request";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -322,6 +323,7 @@ function PointDetailPage() {
               )}
             </div>
 
+            <AccessibilityInfo pointId={data.id} />
             <InstitutionAccessRequest pointId={data.id} />
             <div className="mt-6">
               <SuggestCorrection pointId={data.id} />

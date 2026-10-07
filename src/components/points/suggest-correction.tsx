@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -54,7 +55,10 @@ export function SuggestCorrection({ pointId }: { pointId: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-3 rounded-lg border border-border bg-surface p-4">
+    <AccessibleForm
+      onSubmit={submit}
+      className="space-y-3 rounded-lg border border-border bg-surface p-4"
+    >
       <label className="block text-sm font-medium" htmlFor="correction-message">
         O que está errado ou desatualizado?
       </label>
@@ -84,6 +88,6 @@ export function SuggestCorrection({ pointId }: { pointId: string }) {
           Cancelar
         </Button>
       </div>
-    </form>
+    </AccessibleForm>
   );
 }

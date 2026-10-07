@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -145,7 +146,7 @@ function AboutPage() {
         )}
 
         {admin.data && (
-          <form
+          <AccessibleForm
             className="mt-12 space-y-4 border-t border-border pt-8"
             onSubmit={(event) => {
               event.preventDefault();
@@ -198,7 +199,7 @@ function AboutPage() {
             <Button type="submit" disabled={save.isPending}>
               {save.isPending ? "Salvando…" : "Salvar"}
             </Button>
-          </form>
+          </AccessibleForm>
         )}
       </main>
     </PageShell>

@@ -228,6 +228,7 @@ export default function PointsMapImpl({
           position: bounds.getCenter(),
           label: String(group.length),
           title: `${group.length} locais — ampliar para visualizar`,
+          optimized: false,
         });
         const listener = marker.addListener("click", () => {
           map.fitBounds(bounds, 32);
@@ -239,6 +240,7 @@ export default function PointsMapImpl({
         map,
         position: { lat: point.lat, lng: point.lng },
         title: point.name,
+        optimized: false,
         zIndex: 1,
       };
       const marker = new window.google.maps.Marker(markerOptions);

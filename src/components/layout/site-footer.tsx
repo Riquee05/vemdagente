@@ -60,6 +60,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/acessibilidade" className="hover:text-foreground">
+                Acessibilidade
+              </Link>
+            </li>
+            <li>
               <Link to="/privacidade" className="hover:text-foreground">
                 Privacidade e LGPD
               </Link>

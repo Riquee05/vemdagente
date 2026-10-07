@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -237,7 +238,7 @@ export function PointSearch({
   return (
     <div className="space-y-6">
       {/* z-10 garante que os filtros fiquem sempre acima do mapa */}
-      <form
+      <AccessibleForm
         onSubmit={searchByAddress}
         className="relative z-10 grid gap-4 md:grid-cols-[1.4fr_auto]"
       >
@@ -289,7 +290,7 @@ export function PointSearch({
             Usar minha localização
           </Button>
         </div>
-      </form>
+      </AccessibleForm>
 
       <div className="relative z-10 grid gap-4 sm:grid-cols-3">
         <div>

@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import {
   createFileRoute,
   Link,
@@ -152,7 +153,7 @@ function PontosPage() {
         </p>
 
         <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
-          <form
+          <AccessibleForm
             className="flex flex-wrap items-end gap-2"
             onSubmit={(event) => {
               event.preventDefault();
@@ -191,7 +192,7 @@ function PontosPage() {
                 Limpar
               </Button>
             ) : null}
-          </form>
+          </AccessibleForm>
           <div>
             <Label htmlFor="causa">Causa</Label>
             <Select value={causeId} onValueChange={(value) => updateFilters(city, value)}>
@@ -264,6 +265,9 @@ function PontosPage() {
         <p className="mt-4 text-sm text-muted-foreground">
           O mapa mostra os locais desta página. Use a paginação para ver os demais.
         </p>
+        <a href="#lista-de-pontos" className="mt-4 inline-block min-h-11 py-3 underline">
+          Ir direto para a lista de instituições
+        </a>
         <div className="mt-8">
           <PointsMap
             center={center}
@@ -283,7 +287,12 @@ function PontosPage() {
 
         <MoneyNotice className="mt-8" />
 
-        <div className="mt-8 space-y-3">
+        <div
+          id="lista-de-pontos"
+          tabIndex={-1}
+          aria-label="Lista de instituições e endereços"
+          className="mt-8 space-y-3"
+        >
           {points.isPending ? (
             <p className="text-sm text-muted-foreground">Carregando pontos…</p>
           ) : points.isError ? (

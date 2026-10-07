@@ -49,12 +49,14 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b-2 border-foreground bg-background/92 backdrop-blur-md">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2">
+      <div className="mx-auto flex min-h-16 w-full max-w-6xl items-center justify-between gap-3 px-4 py-2">
+        <Link to="/" className="flex min-w-0 items-center gap-2">
           <span className="flex size-9 -rotate-3 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
             <HeartHandshake className="size-5" aria-hidden="true" />
           </span>
-          <span className="font-display text-lg tracking-tight">Vem da Gente</span>
+          <span className="min-w-0 break-words font-display text-lg tracking-tight">
+            Vem da Gente
+          </span>
         </Link>
 
         <nav aria-label="Navegação principal" className="hidden items-center gap-1 xl:flex">
@@ -94,10 +96,10 @@ export function SiteHeader() {
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="xl:hidden" aria-label="Abrir menu">
-                <Menu className="size-5" />
+                <Menu className="size-5" aria-hidden="true" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72">
+            <SheetContent side="right" className="w-72 max-w-[90vw] overflow-y-auto">
               <SheetTitle className="font-display">Vem da Gente</SheetTitle>
               <nav aria-label="Navegação" className="mt-6 flex flex-col gap-1">
                 {navItems.map((item) => (

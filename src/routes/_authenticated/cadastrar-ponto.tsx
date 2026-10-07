@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -233,7 +234,7 @@ function CadastrarPontoPage() {
           antes de publicar. A atuação atual está restrita ao estado de São Paulo.
         </p>
 
-        <form onSubmit={submit} className="mt-8 space-y-6">
+        <AccessibleForm onSubmit={submit} className="mt-8 space-y-6">
           <div>
             <Label htmlFor="location_type">Tipo de local *</Label>
             <select
@@ -439,7 +440,7 @@ function CadastrarPontoPage() {
           <Button type="submit" disabled={busy}>
             {busy ? "Enviando…" : "Enviar para curadoria"}
           </Button>
-        </form>
+        </AccessibleForm>
       </section>
     </PageShell>
   );

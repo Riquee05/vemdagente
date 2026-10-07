@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
@@ -155,7 +156,7 @@ function AssistentePage() {
               <div ref={endRef} />
             </div>
 
-            <form
+            <AccessibleForm
               className="mt-5 space-y-3"
               onSubmit={(event) => {
                 event.preventDefault();
@@ -183,7 +184,7 @@ function AssistentePage() {
                   {coords ? "Localização ativa" : "Usar minha localização"}
                 </Button>
               </div>
-            </form>
+            </AccessibleForm>
           </div>
 
           <div className="space-y-4">

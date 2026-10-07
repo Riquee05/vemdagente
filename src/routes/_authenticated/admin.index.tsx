@@ -1,3 +1,4 @@
+import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -89,7 +90,7 @@ function AdminPontos() {
           e instituições de caridade da cidade informada — com endereço, telefone, horários, foto e
           as categorias que cada local costuma receber.
         </p>
-        <form
+        <AccessibleForm
           className="mt-4 flex flex-wrap items-end gap-3"
           onSubmit={(event) => {
             event.preventDefault();
@@ -129,7 +130,7 @@ function AdminPontos() {
           <Button type="submit" disabled={importer.isPending}>
             {importer.isPending ? "Importando..." : "Importar"}
           </Button>
-        </form>
+        </AccessibleForm>
       </div>
 
       <div>
