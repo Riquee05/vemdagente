@@ -39,6 +39,7 @@ import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminComunidadeRouteImport } from './routes/_authenticated/admin.comunidade'
 import { Route as AuthenticatedAdminCuradoriaRouteImport } from './routes/_authenticated/admin.curadoria'
 import { Route as AuthenticatedAdminNecessidadesRouteImport } from './routes/_authenticated/admin.necessidades'
+import { Route as AuthenticatedAdminPedidosRouteImport } from './routes/_authenticated/admin.pedidos'
 import { Route as AuthenticatedAdminSegurancaRouteImport } from './routes/_authenticated/admin.seguranca'
 import { Route as AuthenticatedAdminTimeRouteImport } from './routes/_authenticated/admin.time'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
@@ -201,6 +202,12 @@ const AuthenticatedAdminNecessidadesRoute =
     path: '/necessidades',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminPedidosRoute =
+  AuthenticatedAdminPedidosRouteImport.update({
+    id: '/pedidos',
+    path: '/pedidos',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminSegurancaRoute =
   AuthenticatedAdminSegurancaRouteImport.update({
     id: '/seguranca',
@@ -260,6 +267,7 @@ export interface FileRoutesByFullPath {
   '/admin/comunidade': typeof AuthenticatedAdminComunidadeRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/admin/necessidades': typeof AuthenticatedAdminNecessidadesRoute
+  '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
   '/admin/time': typeof AuthenticatedAdminTimeRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
@@ -295,6 +303,7 @@ export interface FileRoutesByTo {
   '/admin/comunidade': typeof AuthenticatedAdminComunidadeRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/admin/necessidades': typeof AuthenticatedAdminNecessidadesRoute
+  '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
   '/admin/time': typeof AuthenticatedAdminTimeRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
@@ -333,6 +342,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/comunidade': typeof AuthenticatedAdminComunidadeRoute
   '/_authenticated/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/_authenticated/admin/necessidades': typeof AuthenticatedAdminNecessidadesRoute
+  '/_authenticated/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/_authenticated/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
   '/_authenticated/admin/time': typeof AuthenticatedAdminTimeRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
@@ -371,6 +381,7 @@ export interface FileRouteTypes {
     | '/admin/comunidade'
     | '/admin/curadoria'
     | '/admin/necessidades'
+    | '/admin/pedidos'
     | '/admin/seguranca'
     | '/admin/time'
     | '/admin/usuarios'
@@ -406,6 +417,7 @@ export interface FileRouteTypes {
     | '/admin/comunidade'
     | '/admin/curadoria'
     | '/admin/necessidades'
+    | '/admin/pedidos'
     | '/admin/seguranca'
     | '/admin/time'
     | '/admin/usuarios'
@@ -443,6 +455,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/comunidade'
     | '/_authenticated/admin/curadoria'
     | '/_authenticated/admin/necessidades'
+    | '/_authenticated/admin/pedidos'
     | '/_authenticated/admin/seguranca'
     | '/_authenticated/admin/time'
     | '/_authenticated/admin/usuarios'
@@ -686,6 +699,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminNecessidadesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/pedidos': {
+      id: '/_authenticated/admin/pedidos'
+      path: '/pedidos'
+      fullPath: '/admin/pedidos'
+      preLoaderRoute: typeof AuthenticatedAdminPedidosRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/seguranca': {
       id: '/_authenticated/admin/seguranca'
       path: '/seguranca'
@@ -729,6 +749,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminComunidadeRoute: typeof AuthenticatedAdminComunidadeRoute
   AuthenticatedAdminCuradoriaRoute: typeof AuthenticatedAdminCuradoriaRoute
   AuthenticatedAdminNecessidadesRoute: typeof AuthenticatedAdminNecessidadesRoute
+  AuthenticatedAdminPedidosRoute: typeof AuthenticatedAdminPedidosRoute
   AuthenticatedAdminSegurancaRoute: typeof AuthenticatedAdminSegurancaRoute
   AuthenticatedAdminTimeRoute: typeof AuthenticatedAdminTimeRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
@@ -742,6 +763,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminComunidadeRoute: AuthenticatedAdminComunidadeRoute,
   AuthenticatedAdminCuradoriaRoute: AuthenticatedAdminCuradoriaRoute,
   AuthenticatedAdminNecessidadesRoute: AuthenticatedAdminNecessidadesRoute,
+  AuthenticatedAdminPedidosRoute: AuthenticatedAdminPedidosRoute,
   AuthenticatedAdminSegurancaRoute: AuthenticatedAdminSegurancaRoute,
   AuthenticatedAdminTimeRoute: AuthenticatedAdminTimeRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,

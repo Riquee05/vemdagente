@@ -53,6 +53,12 @@ function AdminVisaoGeral() {
           <Stat label="Total recebidos" value={data.helpRequests.total} />
           <Stat label="Em aberto" value={data.helpRequests.open} tone="text-accent" />
         </div>
+        <Link
+          to="/admin/pedidos"
+          className="mt-3 inline-block font-semibold text-primary underline"
+        >
+          Abrir pedidos de ajuda
+        </Link>
       </section>
 
       <section>

@@ -33,6 +33,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 const tabs = [
+  { to: "/admin/pedidos", label: "Pedidos de ajuda", exact: false, counter: null },
   { to: "/admin/visao-geral", label: "Visão geral", exact: false, counter: null },
   { to: "/admin", label: "Pontos", exact: true, counter: null },
   { to: "/admin/necessidades", label: "Necessidades", exact: false, counter: null },
