@@ -86,6 +86,17 @@ function CadastrarPontoPage() {
   }
 
   async function locateFromAddress() {
+    try {
+      await locateAddress();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Busca de endereço indisponível. Tente novamente.",
+        { duration: 12000 },
+      );
+    }
+  }
+
+  async function locateAddress() {
     // CEP no campo de endereço preenche rua, cidade e UF automaticamente.
     if (isCep(form.address)) {
       const byCep = await lookupCep(form.address);

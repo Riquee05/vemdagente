@@ -60,13 +60,17 @@ export async function lookupCep(cep: string): Promise<AddressSuggestion | null> 
   if (digits.length !== 8) return null;
 
   const response = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
-  if (!response.ok) return null;
+  if (!response.ok) throw new Error("Consulta de CEP indisponível. Tente novamente mais tarde.");
   const data = (await response.json()) as ViaCepResponse;
-  if (data.erro || !data.localidade) return null;
+  if (data.erro || !data.localidade || !isSaoPauloState(data.uf)) return null;
 
-  const parts = [data.logradouro, data.bairro, data.localidade, data.uf].filter(Boolean);
-  const geo = await geocodeAddress(parts.join(", ") || `${data.localidade}, ${data.uf}`);
-  if (!geo) return null;
+  // A neighborhood appended to the street can make a valid address fail to match.
+  const parts = [data.logradouro, data.localidade, data.uf, "Brasil"].filter(Boolean);
+  const geo = await geocodeAddress(parts.join(", "));
+  if (!geo)
+    throw new Error(
+      `CEP válido: ${parts.slice(0, -1).join(", ")}. Não conseguimos localizar o endereço no mapa. Digite a rua e ajuste o pino.`,
+    );
 
   return {
     id: `cep-${digits}`,
@@ -163,7 +167,10 @@ export async function geocodeAddress(query: string): Promise<GeocodeResult | nul
   url.searchParams.set("bounded", "1");
 
   const response = await fetch(url.toString(), { headers: { Accept: "application/json" } });
-  if (!response.ok) return null;
+  if (!response.ok)
+    throw new Error(
+      "Serviço de localização indisponível. Tente novamente ou ajuste o pino no mapa.",
+    );
 
   const results = (await response.json()) as Array<{
     display_name: string;
