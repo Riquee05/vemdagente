@@ -108,7 +108,7 @@ export async function fetchVerifiedPointsPage(params: {
         p_radius: params.location.radiusKm,
         p_city: params.city,
         p_neighborhood: params.neighborhood ?? "",
-        p_cause: params.causeId === "all" ? null : params.causeId,
+        p_cause: (params.causeId === "all" ? null : params.causeId) as string,
         p_page: params.page,
       })
       .abortSignal(params.signal ?? new AbortController().signal);
