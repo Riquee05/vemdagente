@@ -1,3 +1,4 @@
+import { CircleCheck, CircleAlert, Info, TriangleAlert, LoaderCircle, X } from "lucide-react";
 import { Toaster as Sonner } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
@@ -5,18 +6,37 @@ type ToasterProps = React.ComponentProps<typeof Sonner>;
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
-      className="toaster group"
+      className="vdg-notifications"
+      position="top-center"
+      offset={{ top: "max(20px, env(safe-area-inset-top))" }}
+      mobileOffset={{
+        top: "calc(env(safe-area-inset-top, 0px) + 12px)",
+        left: "12px",
+        right: "12px",
+      }}
       duration={Infinity}
       closeButton
-      containerAriaLabel="Avisos do site"
+      visibleToasts={2}
+      gap={12}
+      containerAriaLabel="Avisos do Vem da Gente"
+      icons={{
+        success: <CircleCheck aria-hidden="true" />,
+        error: <CircleAlert aria-hidden="true" />,
+        warning: <TriangleAlert aria-hidden="true" />,
+        info: <Info aria-hidden="true" />,
+        loading: <LoaderCircle aria-hidden="true" className="animate-spin" />,
+        close: <X aria-hidden="true" />,
+      }}
       toastOptions={{
         closeButtonAriaLabel: "Fechar aviso",
         classNames: {
-          toast:
-            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
-          description: "group-[.toast]:text-muted-foreground",
-          actionButton: "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-          cancelButton: "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          toast: "vdg-notice",
+          title: "vdg-notice-title",
+          description: "vdg-notice-description",
+          icon: "vdg-notice-icon",
+          closeButton: "vdg-notice-close",
+          actionButton: "vdg-notice-action",
+          cancelButton: "vdg-notice-cancel",
         },
       }}
       {...props}

@@ -328,3 +328,83 @@ nav a {
   background: #342018;
   color: white;
 }
+
+/* Notificações globais: identidade do Vem da Gente, incluindo ações e carregamento. */
+[data-sonner-toaster].vdg-notifications [data-sonner-toast].vdg-notice {
+  --notice-accent: #e6b675;
+  background: #3d251d;
+  color: #fff8ed;
+  border: 1px solid #986c50;
+  border-inline-start: 5px solid var(--notice-accent);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgb(61 37 29 / 24%);
+  padding: 18px 58px 18px 16px;
+  gap: 12px;
+  font-family: var(--font-sans);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+[data-sonner-toaster].vdg-notifications .vdg-notice[data-type="success"] { --notice-accent: #bcd5a7; }
+[data-sonner-toaster].vdg-notifications .vdg-notice[data-type="error"] { --notice-accent: #ffb4a5; }
+[data-sonner-toaster].vdg-notifications .vdg-notice[data-type="warning"] { --notice-accent: #ffd180; }
+[data-sonner-toaster].vdg-notifications .vdg-notice[data-type="info"] { --notice-accent: #bad9e8; }
+[data-sonner-toaster].vdg-notifications .vdg-notice-title {
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+[data-sonner-toaster].vdg-notifications .vdg-notice-description {
+  color: #edddd0;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+[data-sonner-toaster].vdg-notifications [data-content] { min-width: 120px; flex: 1; }
+[data-sonner-toaster].vdg-notifications .vdg-notice-icon {
+  color: var(--notice-accent);
+  margin: 1px 0 0;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+[data-sonner-toaster].vdg-notifications .vdg-notice-icon svg { width: 22px; height: 22px; }
+[data-sonner-toaster].vdg-notifications [data-sonner-toast] .vdg-notice-close {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  left: auto;
+  transform: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #fff8ed;
+}
+[data-sonner-toaster].vdg-notifications [data-sonner-toast] .vdg-notice-close:hover {
+  background: #5d3c2d;
+  color: #ffffff;
+}
+[data-sonner-toaster].vdg-notifications .vdg-notice-close svg { width: 18px; height: 18px; }
+[data-sonner-toaster].vdg-notifications .vdg-notice-action,
+[data-sonner-toaster].vdg-notifications .vdg-notice-cancel {
+  min-height: 44px;
+  height: auto;
+  white-space: normal;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 4px 0 0;
+  background: #fff0d9;
+  color: #3d251d;
+  font-weight: 650;
+}
+[data-sonner-toaster].vdg-notifications .vdg-notice-cancel { background: #5d3c2d; color: #fff8ed; }
+[data-sonner-toaster].vdg-notifications button:focus-visible {
+  outline: 3px solid #ffd180;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-sonner-toaster].vdg-notifications .animate-spin { animation: none; }
+}
