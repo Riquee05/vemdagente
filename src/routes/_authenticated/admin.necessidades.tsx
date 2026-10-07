@@ -6,13 +6,7 @@ import { PointNeedsEditor } from "@/components/points/point-needs-editor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -55,8 +49,9 @@ function AdminNecessidades() {
         address: point.address,
         curation_status: point.curation_status,
         is_active: point.is_active,
-        needs_count: (point.point_needs as { id: string; is_active: boolean }[]).filter((n) => n.is_active)
-          .length,
+        needs_count: (point.point_needs as { id: string; is_active: boolean }[]).filter(
+          (n) => n.is_active,
+        ).length,
       })) as PointRow[];
     },
   });
@@ -96,7 +91,9 @@ function AdminNecessidades() {
 
       {points.isSuccess && filtered.length === 0 && (
         <p className="text-sm text-muted-foreground">
-          {search.trim() ? "Nenhum ponto encontrado para esta busca." : "Nenhum ponto publicado cadastrado."}
+          {search.trim()
+            ? "Nenhum ponto encontrado para esta busca."
+            : "Nenhum ponto publicado cadastrado."}
         </p>
       )}
 

@@ -13,7 +13,9 @@ export const Route = createFileRoute("/_authenticated/admin/visao-geral")({
 function Stat({ label, value, tone }: { label: string; value: number; tone?: string }) {
   return (
     <div className="card-ink bg-card p-4">
-      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </p>
       <p className={`mt-2 font-display text-3xl ${tone ?? ""}`}>{value}</p>
     </div>
   );
@@ -53,10 +55,17 @@ function AdminVisaoGeral() {
         <h2 className="font-display text-xl uppercase tracking-tight">Voluntários no pipeline</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {volunteerStages.map((stage) => (
-            <Stat key={stage} label={volunteerStageLabels[stage]} value={data.volunteers[stage] ?? 0} />
+            <Stat
+              key={stage}
+              label={volunteerStageLabels[stage]}
+              value={data.volunteers[stage] ?? 0}
+            />
           ))}
         </div>
-        <Link to="/admin/voluntarios" className="mt-3 inline-block text-sm font-semibold text-primary underline">
+        <Link
+          to="/admin/voluntarios"
+          className="mt-3 inline-block text-sm font-semibold text-primary underline"
+        >
           Abrir pipeline de candidaturas
         </Link>
       </section>
@@ -67,7 +76,10 @@ function AdminVisaoGeral() {
           <Stat label="Colaboradores ativos" value={data.team.active} tone="text-primary" />
           <Stat label="Total no time" value={data.team.total} />
         </div>
-        <Link to="/admin/time" className="mt-3 inline-block text-sm font-semibold text-primary underline">
+        <Link
+          to="/admin/time"
+          className="mt-3 inline-block text-sm font-semibold text-primary underline"
+        >
           Ver o time
         </Link>
       </section>
@@ -76,7 +88,9 @@ function AdminVisaoGeral() {
         <div className="card-ink bg-surface p-5">
           <h3 className="font-display text-lg uppercase tracking-tight">Últimos pontos</h3>
           <ul className="mt-3 space-y-2 text-sm">
-            {data.recentPoints.length === 0 && <li className="text-muted-foreground">Nada ainda.</li>}
+            {data.recentPoints.length === 0 && (
+              <li className="text-muted-foreground">Nada ainda.</li>
+            )}
             {data.recentPoints.map((p) => (
               <li key={p.id} className="flex justify-between gap-3 border-b border-border/60 pb-2">
                 <span className="truncate">{p.name}</span>

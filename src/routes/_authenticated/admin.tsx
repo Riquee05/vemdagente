@@ -11,11 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  adminStepUpStatus,
-  endAdminStepUp,
-  verifyAdminPassword,
-} from "@/lib/admin-2fa.functions";
+import { adminStepUpStatus, endAdminStepUp, verifyAdminPassword } from "@/lib/admin-2fa.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -80,7 +76,6 @@ function StepUpForm({ email, onDone }: { email: string | null; onDone: () => voi
     onError: (e: Error) => toast.error(e.message || "Não foi possível confirmar a senha."),
   });
 
-
   return (
     <div className="card-ink mt-8 max-w-lg p-6">
       <span className="inline-flex size-10 items-center justify-center border-2 border-foreground bg-primary text-primary-foreground">
@@ -89,8 +84,8 @@ function StepUpForm({ email, onDone }: { email: string | null; onDone: () => voi
       <h2 className="mt-4 font-display text-xl">Confirme que é você</h2>
       <p className="mt-2 text-sm text-muted-foreground">
         Por segurança, digite a senha da conta{" "}
-        <strong className="text-foreground">{email ?? "administrativa"}</strong> para abrir o painel.
-        A liberação vale por 2 horas.
+        <strong className="text-foreground">{email ?? "administrativa"}</strong> para abrir o
+        painel. A liberação vale por 2 horas.
       </p>
 
       <form
@@ -214,8 +209,8 @@ function AdminLayout() {
           <div className="card-ink mt-8 max-w-lg p-6">
             <h2 className="font-display text-xl">Acesso restrito</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Esta área é exclusiva da equipe autorizada do Vem da Gente. O acesso é concedido apenas
-              pelo dono da plataforma — não é possível liberá-lo por conta própria.
+              Esta área é exclusiva da equipe autorizada do Vem da Gente. O acesso é concedido
+              apenas pelo dono da plataforma — não é possível liberá-lo por conta própria.
             </p>
             <Button asChild variant="outline" className="mt-4">
               <Link to="/">Voltar ao início</Link>
@@ -247,7 +242,9 @@ function AdminLayout() {
                   >
                     {tab.label}
                     {typeof count === "number" && count > 0 && (
-                      <span className="border border-current px-1.5 text-[10px] font-bold">{count}</span>
+                      <span className="border border-current px-1.5 text-[10px] font-bold">
+                        {count}
+                      </span>
                     )}
                   </Link>
                 );

@@ -29,8 +29,15 @@ function loadGoogleMaps(): Promise<GoogleMapsApi> {
   if (!browserKey) return Promise.reject(new Error("Google Maps não está conectado."));
 
   mapsPromise = new Promise((resolve, reject) => {
+    const timeout = window.setTimeout(() => {
+      cleanup();
+      script.remove();
+      mapsPromise = null;
+      reject(new Error("O mapa demorou para carregar. Tente novamente."));
+    }, 15000);
     const callbackName = "initVemDaGenteMap";
     const cleanup = () => {
+      window.clearTimeout(timeout);
       delete window.initVemDaGenteMap;
     };
 
@@ -121,6 +128,8 @@ export default function PointsMapImpl({
     pointsKey: string;
     fitBounds: boolean;
   } | null>(null);
+  const [retry, setRetry] = useState(0);
+  const [mapZoom, setMapZoom] = useState(zoom);
   const [mapReady, setMapReady] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const pointsKey = createPointsKey(points);
@@ -139,6 +148,9 @@ export default function PointsMapImpl({
 
   useEffect(() => {
     let cancelled = false;
+    setLoadError(null);
+    setMapReady(false);
+    let zoomListener: google.maps.MapsEventListener | null = null;
     let clickListener: google.maps.MapsEventListener | null = null;
     const markers = markersRef.current;
 
@@ -156,6 +168,9 @@ export default function PointsMapImpl({
           styles: [{ featureType: "poi", stylers: [{ visibility: "off" }] }],
         });
         mapRef.current = map;
+        zoomListener = map.addListener("zoom_changed", () =>
+          setMapZoom(map.getZoom() ?? initialViewport.zoom),
+        );
         infoWindowRef.current = new maps.InfoWindow();
         setMapReady(true);
         clickListener = map.addListener("click", (event: google.maps.MapMouseEvent) => {
@@ -170,6 +185,7 @@ export default function PointsMapImpl({
     return () => {
       cancelled = true;
       clickListener?.remove();
+      zoomListener?.remove();
       markers.forEach(({ marker, listener }) => {
         listener.remove();
         marker.setMap(null);
@@ -177,8 +193,9 @@ export default function PointsMapImpl({
       markers.clear();
       infoWindowRef.current?.close();
       mapRef.current = null;
+      previousViewportRef.current = null;
     };
-  }, []);
+  }, [retry]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -190,7 +207,34 @@ export default function PointsMapImpl({
     });
     markersRef.current.clear();
 
+    const cells = new Map<string, MapPoint[]>();
+    const cellSize = ((360 / Math.pow(2, mapZoom)) * 64) / 256;
     pointsRef.current.forEach((point) => {
+      const latitude = (Math.max(-85, Math.min(85, point.lat)) * Math.PI) / 180;
+      const mercatorY = (Math.log(Math.tan(Math.PI / 4 + latitude / 2)) * 180) / Math.PI;
+      const key =
+        point.id === selectedId || mapZoom >= 17
+          ? point.id
+          : `${Math.floor(point.lng / cellSize)}:${Math.floor(mercatorY / cellSize)}`;
+      cells.set(key, [...(cells.get(key) ?? []), point]);
+    });
+    cells.forEach((group) => {
+      const point = group[0]!;
+      if (group.length > 1) {
+        const bounds = new window.google.maps.LatLngBounds();
+        group.forEach((item) => bounds.extend({ lat: item.lat, lng: item.lng }));
+        const marker = new window.google.maps.Marker({
+          map,
+          position: bounds.getCenter(),
+          label: String(group.length),
+          title: `${group.length} locais — ampliar para visualizar`,
+        });
+        const listener = marker.addListener("click", () => {
+          map.fitBounds(bounds, 32);
+        });
+        markersRef.current.set(`cluster:${point.id}`, { marker, listener });
+        return;
+      }
       const markerOptions: google.maps.MarkerOptions = {
         map,
         position: { lat: point.lat, lng: point.lng },
@@ -208,7 +252,7 @@ export default function PointsMapImpl({
       });
       markersRef.current.set(point.id, { marker, listener });
     });
-  }, [mapReady, markerKey]);
+  }, [mapReady, markerKey, mapZoom, selectedId]);
 
   useEffect(() => {
     markersRef.current.forEach(({ marker }, id) => {
@@ -227,7 +271,7 @@ export default function PointsMapImpl({
       infoWindowRef.current.setContent(createInfoContent(selectedPoint));
       infoWindowRef.current.open({ map, anchor: selectedMarker });
     }
-  }, [markerKey, selectedId]);
+  }, [mapReady, markerKey, mapZoom, selectedId]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -263,7 +307,16 @@ export default function PointsMapImpl({
   if (loadError) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-surface px-6 text-center text-sm text-muted-foreground">
-        {loadError}
+        <div role="alert">
+          {loadError}
+          <button
+            type="button"
+            className="mx-auto mt-3 block underline"
+            onClick={() => setRetry((value) => value + 1)}
+          >
+            Tentar novamente
+          </button>
+        </div>
       </div>
     );
   }

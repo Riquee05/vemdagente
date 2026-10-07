@@ -7,7 +7,8 @@ export function SiteFooter() {
         <div>
           <p className="font-display text-lg font-semibold">Vem da Gente</p>
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
-            Facilitamos a descoberta e o contato com locais de doação e apoio no estado de São Paulo.
+            Facilitamos a descoberta e o contato com locais de doação e apoio no estado de São
+            Paulo.
           </p>
         </div>
         <nav aria-label="Doar" className="text-sm">
@@ -66,9 +67,9 @@ export function SiteFooter() {
           </ul>
 
           <p className="mt-4 text-xs text-muted-foreground">
-            Plataforma independente de descoberta e contato. Não realiza entregas nem garante atendimento ou recebimento. As
-            doações em dinheiro são feitas pelos canais oficiais de cada instituição — o Vem da Gente
-            não recebe, administra ou intermedia valores.
+            Plataforma independente de descoberta e contato. Não realiza entregas nem garante
+            atendimento ou recebimento. As doações em dinheiro são feitas pelos canais oficiais de
+            cada instituição — o Vem da Gente não recebe, administra ou intermedia valores.
           </p>
         </nav>
       </div>

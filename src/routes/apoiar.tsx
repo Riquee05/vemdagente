@@ -79,8 +79,7 @@ const shareButtons = [
     label: "WhatsApp",
     icon: MessageCircle,
     color: "bg-[#25D366]",
-    makeUrl: (text: string, _siteUrl: string) =>
-      `https://wa.me/?text=${encodeURIComponent(text)}`,
+    makeUrl: (text: string, _siteUrl: string) => `https://wa.me/?text=${encodeURIComponent(text)}`,
   },
   {
     id: "facebook",
@@ -242,7 +241,9 @@ function ApoiarPage() {
                     aria-label={`Compartilhar no ${btn.label}`}
                   >
                     <Icon className="size-5" />
-                    <span className="text-xs font-semibold uppercase tracking-wide">{btn.label}</span>
+                    <span className="text-xs font-semibold uppercase tracking-wide">
+                      {btn.label}
+                    </span>
                   </a>
                 );
               })}
@@ -258,8 +259,8 @@ function ApoiarPage() {
                 <h2 className="text-3xl">Indicar um ponto</h2>
               </div>
               <p className="mt-5 leading-relaxed opacity-90">
-                Conhece uma instituição, serviço ou ponto de coleta no estado de São Paulo que deveria
-                aparecer no mapa? Envie a indicação para análise antes da publicação.
+                Conhece uma instituição, serviço ou ponto de coleta no estado de São Paulo que
+                deveria aparecer no mapa? Envie a indicação para análise antes da publicação.
               </p>
               <div className="mt-8">
                 <Button

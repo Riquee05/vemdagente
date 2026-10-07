@@ -21,13 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -55,7 +49,6 @@ const roleLabels = {
 } as const;
 
 type Role = keyof typeof roleLabels;
-
 
 function MinhaContaPage() {
   const navigate = useNavigate();
@@ -98,8 +91,9 @@ function MinhaContaPage() {
         address: point.address,
         curation_status: point.curation_status,
         is_active: point.is_active,
-        needs_count: (point.point_needs as { id: string; is_active: boolean }[]).filter((n) => n.is_active)
-          .length,
+        needs_count: (point.point_needs as { id: string; is_active: boolean }[]).filter(
+          (n) => n.is_active,
+        ).length,
       }));
     },
   });
@@ -161,7 +155,6 @@ function MinhaContaPage() {
     },
     onError: (e: Error) => toast.error(e.message || "Não conseguimos excluir a conta."),
   });
-
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -257,11 +250,10 @@ function MinhaContaPage() {
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
-                    Sua conta é de uso pessoal: doar ou pedir ajuda. Funções da equipe do
-                    Vem da Gente são tratadas em outro lugar e não se misturam com sua conta.
+                    Sua conta é de uso pessoal: doar ou pedir ajuda. Funções da equipe do Vem da
+                    Gente são tratadas em outro lugar e não se misturam com sua conta.
                   </p>
                 </div>
-
 
                 <div className="flex flex-wrap gap-3">
                   <Button type="submit" disabled={save.isPending}>
@@ -351,16 +343,14 @@ function MinhaContaPage() {
           <CardHeader>
             <CardTitle>Senha de acesso</CardTitle>
             <CardDescription>
-              Crie ou troque a senha que você usa para entrar no Vem da Gente e acompanhar suas doações
-              ou seus pedidos de ajuda.
+              Crie ou troque a senha que você usa para entrar no Vem da Gente e acompanhar suas
+              doações ou seus pedidos de ajuda.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <SetPasswordForm />
           </CardContent>
         </Card>
-
-
 
         <Card className="mt-8 shadow-soft">
           <CardHeader>
@@ -401,7 +391,6 @@ function MinhaContaPage() {
           </CardContent>
         </Card>
       </section>
-
     </PageShell>
   );
 }

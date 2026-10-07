@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { PointPhoto } from "@/components/points/point-photo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatDistance, type NearbyPoint } from "@/lib/points";
+import { formatDate, formatDistance, type NearbyPoint } from "@/lib/points";
 
 export function PointCard({
   point,
@@ -15,13 +15,14 @@ export function PointCard({
   point: NearbyPoint;
   onHighlight?: (id: string) => void;
   active?: boolean;
-  needs?: { urgency: string; category_label: string; note: string | null }[];
+  needs?: { urgency: string; category_label: string; note: string | null; updated_at?: string }[];
   context?: "donation" | "support";
 }) {
   const distance = formatDistance(point.distance_km);
 
   return (
     <article
+      onFocus={onHighlight ? () => onHighlight(point.id) : undefined}
       onMouseEnter={onHighlight ? () => onHighlight(point.id) : undefined}
       className={`flex gap-4 rounded-xl border bg-card p-4 transition-colors ${
         active ? "border-accent" : "border-border"
@@ -54,9 +55,21 @@ export function PointCard({
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <span className="text-xs font-semibold text-amber-700">Precisa agora:</span>
             {needs.slice(0, 3).map((need, index) => (
-              <Badge key={index} variant={need.urgency === "critical" || need.urgency === "high" ? "destructive" : "outline"} className="text-xs">
+              <Badge
+                key={index}
+                title={need.updated_at ? `Atualizado em ${formatDate(need.updated_at)}` : undefined}
+                variant={
+                  need.urgency === "critical" || need.urgency === "high" ? "destructive" : "outline"
+                }
+                className="text-xs"
+              >
                 {need.category_label}
-                {need.urgency === "critical" ? " (crítico)" : need.urgency === "high" ? " (urgente)" : ""}
+                {need.updated_at ? ` · ${formatDate(need.updated_at)}` : ""}
+                {need.urgency === "critical"
+                  ? " (crítico)"
+                  : need.urgency === "high"
+                    ? " (urgente)"
+                    : ""}
               </Badge>
             ))}
             {needs.length > 3 && (

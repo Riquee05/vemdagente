@@ -36,7 +36,6 @@ async function assertOwner(supabase: any, userId: string) {
   if (data !== true) throw new Error("Apenas o dono da plataforma pode alterar acessos.");
 }
 
-
 export type AdminUserRow = {
   id: string;
   full_name: string | null;
@@ -46,7 +45,6 @@ export type AdminUserRow = {
   is_admin: boolean;
   is_owner: boolean;
 };
-
 
 export const listPlatformUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -64,9 +62,7 @@ export const listPlatformUsers = createServerFn({ method: "GET" })
 
     if (error) throw new Error("Não foi possível carregar os usuários.");
 
-    const adminIds = new Set(
-      (roles ?? []).filter((r) => r.role === "admin").map((r) => r.user_id),
-    );
+    const adminIds = new Set((roles ?? []).filter((r) => r.role === "admin").map((r) => r.user_id));
     const ownerIds = new Set(
       (roles ?? []).filter((r) => (r.role as string) === "owner").map((r) => r.user_id),
     );
@@ -89,16 +85,22 @@ export const setProfileRole = createServerFn({ method: "POST" })
     await assertAdmin(context.supabase);
     await assertStepUp(context.userId);
 
-
     const { error } = await context.supabase
       .from("profiles")
       .update({ role: data.role })
       .eq("id", data.user_id);
     if (error) throw new Error("Não foi possível atualizar o perfil.");
 
-    await audit(context.supabase, context.userId, "profile_role_updated", "profiles", data.user_id, {
-      role: data.role,
-    });
+    await audit(
+      context.supabase,
+      context.userId,
+      "profile_role_updated",
+      "profiles",
+      data.user_id,
+      {
+        role: data.role,
+      },
+    );
     return { ok: true };
   });
 
@@ -126,13 +128,13 @@ export const setAdminAccess = createServerFn({ method: "POST" })
       throw new Error("O acesso do dono da plataforma não pode ser alterado.");
     }
 
-
     if (data.grant) {
-      const { error } = await context.supabase
-        .from("user_roles")
-        .upsert({ user_id: data.user_id, role: "admin", granted_by: context.userId }, {
+      const { error } = await context.supabase.from("user_roles").upsert(
+        { user_id: data.user_id, role: "admin", granted_by: context.userId },
+        {
           onConflict: "user_id,role",
-        });
+        },
+      );
       if (error) throw new Error("Não foi possível conceder o acesso.");
     } else {
       const { count } = await context.supabase

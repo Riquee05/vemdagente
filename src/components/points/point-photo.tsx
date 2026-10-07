@@ -26,10 +26,15 @@ export function PointPhoto({
     let active = true;
     setUrl(null);
     setFailed(false);
-    if (!path) return () => { active = false; };
+    if (!path)
+      return () => {
+        active = false;
+      };
     if (path.startsWith("http")) {
       setUrl(path);
-      return () => { active = false; };
+      return () => {
+        active = false;
+      };
     }
     const resolve = adminAccess ? getAdminUrl : getPublicUrl;
     resolve({ data: { path } })

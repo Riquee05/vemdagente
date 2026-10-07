@@ -11,7 +11,9 @@ type OAuthDetails = {
 };
 
 type OAuthApi = {
-  getAuthorizationDetails: (id: string) => Promise<{ data: OAuthDetails | null; error: Error | null }>;
+  getAuthorizationDetails: (
+    id: string,
+  ) => Promise<{ data: OAuthDetails | null; error: Error | null }>;
   approveAuthorization: (id: string) => Promise<{ data: OAuthDetails | null; error: Error | null }>;
   denyAuthorization: (id: string) => Promise<{ data: OAuthDetails | null; error: Error | null }>;
 };
@@ -80,8 +82,8 @@ function ConsentPage() {
     <main className="mx-auto max-w-lg px-6 py-16">
       <h1 className="font-display text-2xl leading-tight">Conectar {clientName} à sua conta</h1>
       <p className="mt-4 text-muted-foreground">
-        Assim, {clientName} vai poder usar o Vem da Gente como você: buscar pontos de coleta e redes de
-        apoio, ver detalhes das instituições e enviar novos pontos para a curadoria.
+        Assim, {clientName} vai poder usar o Vem da Gente como você: buscar pontos de coleta e redes
+        de apoio, ver detalhes das instituições e enviar novos pontos para a curadoria.
       </p>
       <p className="mt-2 text-sm text-muted-foreground">
         Você pode recusar agora ou desconectar depois quando quiser.

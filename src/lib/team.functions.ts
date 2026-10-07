@@ -145,7 +145,12 @@ export const removeTeamMember = createServerFn({ method: "POST" })
 export const promoteApplicationToTeam = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) =>
-    z.object({ application_id: z.string().uuid(), role_title: z.string().trim().max(120).optional() }).parse(data),
+    z
+      .object({
+        application_id: z.string().uuid(),
+        role_title: z.string().trim().max(120).optional(),
+      })
+      .parse(data),
   )
   .handler(async ({ data, context }) => {
     await requireAdminAuthorization(context.userId, context.supabase);
@@ -208,8 +213,20 @@ export type AdminOverview = {
   helpRequests: { total: number; open: number };
   volunteers: Record<string, number>;
   team: { active: number; total: number };
-  recentPoints: { id: string; name: string; city: string; curation_status: string; created_at: string }[];
-  recentApplications: { id: string; full_name: string; city: string | null; status: string; created_at: string }[];
+  recentPoints: {
+    id: string;
+    name: string;
+    city: string;
+    curation_status: string;
+    created_at: string;
+  }[];
+  recentApplications: {
+    id: string;
+    full_name: string;
+    city: string | null;
+    status: string;
+    created_at: string;
+  }[];
 };
 
 export const getAdminOverview = createServerFn({ method: "GET" })
@@ -220,15 +237,21 @@ export const getAdminOverview = createServerFn({ method: "GET" })
 
     const count = async (
       table: "collection_points" | "help_requests" | "volunteer_applications" | "team_members",
-      apply: (q: any) => any = (q) => q,
+      apply: (
+        q: ReturnType<ReturnType<typeof sb.from>["select"]>,
+      ) => ReturnType<ReturnType<typeof sb.from>["select"]> = (q) => q,
     ) => {
-      const { count: total } = await apply(sb.from(table).select("id", { count: "exact", head: true }));
+      const { count: total } = await apply(
+        sb.from(table).select("id", { count: "exact", head: true }),
+      );
       return total ?? 0;
     };
 
     const [verified, pending, rejected, inactive, helpTotal, helpOpen, teamTotal, teamActive] =
       await Promise.all([
-        count("collection_points", (q) => q.eq("curation_status", "verified").eq("is_active", true)),
+        count("collection_points", (q) =>
+          q.eq("curation_status", "verified").eq("is_active", true),
+        ),
         count("collection_points", (q) => q.eq("curation_status", "pending")),
         count("collection_points", (q) => q.eq("curation_status", "rejected")),
         count("collection_points", (q) => q.eq("is_active", false)),

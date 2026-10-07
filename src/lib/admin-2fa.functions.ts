@@ -20,11 +20,7 @@ async function admin() {
   return supabaseAdmin as any;
 }
 
-async function audit(
-  actorId: string,
-  action: string,
-  details?: Record<string, unknown>,
-) {
+async function audit(actorId: string, action: string, details?: Record<string, unknown>) {
   const db = await admin();
   await db.from("admin_audit_log").insert({
     actor_id: actorId,
@@ -123,7 +119,6 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
     if (!error) await client.auth.signOut({ scope: "local" });
 
     if (error || signIn?.user?.id !== context.userId) {
-
       const attempts = (state?.attempts ?? 0) + 1;
       const blocked = attempts >= MAX_ATTEMPTS;
       await db.from("admin_otp_attempts").upsert(
@@ -143,27 +138,30 @@ export const verifyAdminPassword = createServerFn({ method: "POST" })
         expiresAt: null,
         message: blocked
           ? "Senha incorreta. Acesso ao painel bloqueado por 15 minutos."
-          : "Senha incorreta. Se você entra pelo Google ou link mágico, defina uma senha aqui mesmo em \"Definir senha\".",
+          : 'Senha incorreta. Se você entra pelo Google ou link mágico, defina uma senha aqui mesmo em "Definir senha".',
       };
     }
 
-
     const expiresAt = new Date(Date.now() + STEP_UP_HOURS * 60 * 60_000).toISOString();
-    await db.from("admin_step_up").upsert(
-      { user_id: context.userId, expires_at: expiresAt, updated_at: new Date().toISOString() },
-      { onConflict: "user_id" },
-    );
     await db
-      .from("admin_otp_attempts")
+      .from("admin_step_up")
       .upsert(
-        { user_id: context.userId, attempts: 0, blocked_until: null, updated_at: new Date().toISOString() },
+        { user_id: context.userId, expires_at: expiresAt, updated_at: new Date().toISOString() },
         { onConflict: "user_id" },
       );
+    await db.from("admin_otp_attempts").upsert(
+      {
+        user_id: context.userId,
+        attempts: 0,
+        blocked_until: null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
 
     await audit(context.userId, "admin_2fa_verified", { expires_at: expiresAt });
     return { ok: true as const, expiresAt, message: null };
   });
-
 
 /** Encerra a liberação do painel (sair da área administrativa). */
 export const endAdminStepUp = createServerFn({ method: "POST" })

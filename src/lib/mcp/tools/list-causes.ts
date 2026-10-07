@@ -18,10 +18,15 @@ export default defineTool({
       supabase.from("causes").select("id, slug, label").order("label"),
       supabase.from("item_categories").select("id, slug, label, kind").order("label"),
     ]);
-    if (causes.error) return { content: [{ type: "text", text: causes.error.message }], isError: true };
-    if (categories.error) return { content: [{ type: "text", text: categories.error.message }], isError: true };
+    if (causes.error)
+      return { content: [{ type: "text", text: causes.error.message }], isError: true };
+    if (categories.error)
+      return { content: [{ type: "text", text: categories.error.message }], isError: true };
 
     const payload = { causes: causes.data ?? [], item_categories: categories.data ?? [] };
-    return { content: [{ type: "text", text: JSON.stringify(payload) }], structuredContent: payload };
+    return {
+      content: [{ type: "text", text: JSON.stringify(payload) }],
+      structuredContent: payload,
+    };
   },
 });

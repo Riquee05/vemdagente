@@ -22,9 +22,15 @@ export const Route = createFileRoute("/pontos/$pointId")({
       return {
         meta: [
           { title: "Local indisponível | Vem da Gente" },
-          { name: "description", content: "Este local não está disponível na área de atuação atual do Vem da Gente." },
+          {
+            name: "description",
+            content: "Este local não está disponível na área de atuação atual do Vem da Gente.",
+          },
           { property: "og:title", content: "Local indisponível | Vem da Gente" },
-          { property: "og:description", content: "Consulte os locais disponíveis no estado de São Paulo." },
+          {
+            property: "og:description",
+            content: "Consulte os locais disponíveis no estado de São Paulo.",
+          },
           { property: "og:type", content: "website" },
           { name: "twitter:card", content: "summary" },
         ],
@@ -90,8 +96,12 @@ export const Route = createFileRoute("/pontos/$pointId")({
     <PageShell>
       <div className="mx-auto max-w-3xl px-4 py-20">
         <h1 className="text-3xl">Não foi possível carregar este local</h1>
-        <p className="mt-3 text-sm text-muted-foreground">A falha pode ser temporária. Tente novamente ou volte à busca.</p>
-        <Button asChild className="mt-6"><Link to="/pontos">Ver locais em São Paulo</Link></Button>
+        <p className="mt-3 text-sm text-muted-foreground">
+          A falha pode ser temporária. Tente novamente ou volte à busca.
+        </p>
+        <Button asChild className="mt-6">
+          <Link to="/pontos">Ver locais em São Paulo</Link>
+        </Button>
       </div>
     </PageShell>
   ),
@@ -112,7 +122,9 @@ function PointDetailPage() {
               ? "Este cadastro não existe ou o endereço do link está incorreto."
               : "Este cadastro está fora da área de atuação atual, está em revisão ou não está publicado."}
           </p>
-          <Button asChild className="mt-6"><Link to="/pontos">Ver locais no estado de São Paulo</Link></Button>
+          <Button asChild className="mt-6">
+            <Link to="/pontos">Ver locais no estado de São Paulo</Link>
+          </Button>
         </section>
       </PageShell>
     );
@@ -170,7 +182,7 @@ function PointDetailPage() {
                 <dd className="text-muted-foreground">
                   {data.confirmation_status === "confirmed" && !data.confirmed_at
                     ? "Não confirmado"
-                    : CONFIRMATION_LABELS[data.confirmation_status] ?? "Não confirmado"}
+                    : (CONFIRMATION_LABELS[data.confirmation_status] ?? "Não confirmado")}
                   {data.confirmation_status === "confirmed" && data.confirmed_at
                     ? ` — última confirmação em ${formatDate(data.confirmed_at)}`
                     : ""}
@@ -284,9 +296,7 @@ function PointDetailPage() {
                         {need.urgency}
                       </Badge>
                     ) : null}
-                    {need.note ? (
-                      <p className="mt-1 text-muted-foreground">{need.note}</p>
-                    ) : null}
+                    {need.note ? <p className="mt-1 text-muted-foreground">{need.note}</p> : null}
                     <p className="mt-1 text-xs text-muted-foreground">
                       Atualizado em {formatDate(need.updated_at)}
                     </p>
@@ -294,8 +304,8 @@ function PointDetailPage() {
                 ))
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Este local ainda não informou suas necessidades atuais. Entre em contato para saber
-                  como ajudar.
+                  Este local ainda não informou suas necessidades atuais. Entre em contato para
+                  saber como ajudar.
                 </p>
               )}
             </div>
@@ -306,8 +316,8 @@ function PointDetailPage() {
           </div>
         </div>
         <p className="mt-8 text-sm text-muted-foreground">
-          Reunimos locais a partir de dados públicos e indicações da comunidade. Confira os detalhes e
-          entre em contato com a instituição antes de levar sua doação.
+          Reunimos locais a partir de dados públicos e indicações da comunidade. Confira os detalhes
+          e entre em contato com a instituição antes de levar sua doação.
         </p>
         <MoneyNotice className="mt-6" />
       </section>

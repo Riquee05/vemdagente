@@ -1,4 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database, Json } from "@/integrations/supabase/types";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -22,7 +24,7 @@ const removeNeedSchema = z.object({
 });
 
 async function audit(
-  supabase: any,
+  supabase: SupabaseClient<Database>,
   userId: string,
   action: string,
   entityId: string,
@@ -33,7 +35,7 @@ async function audit(
     action,
     entity: "point_needs",
     entity_id: entityId,
-    details,
+    details: details as Json,
   });
 }
 
@@ -70,12 +72,15 @@ export const updatePointNeed = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => updateNeedSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = {};
+    const patch: Database["public"]["Tables"]["point_needs"]["Update"] = {};
     if (data.urgency !== undefined) patch["urgency"] = data.urgency;
     if (data.note !== undefined) patch["note"] = data.note;
     if (data.isActive !== undefined) patch["is_active"] = data.isActive;
 
-    const { error } = await context.supabase.from("point_needs").update(patch as any).eq("id", data.needId);
+    const { error } = await context.supabase
+      .from("point_needs")
+      .update(patch)
+      .eq("id", data.needId);
     if (error) throw new Error(error.message);
 
     const auditDetails: Record<string, unknown> = {};
@@ -108,7 +113,9 @@ export const listPointNeeds = createServerFn({ method: "GET" })
   .handler(async ({ data, context }) => {
     const { data: rows, error } = await context.supabase
       .from("point_needs")
-      .select("id, point_id, category_id, urgency, note, is_active, item_categories ( id, slug, label, kind )")
+      .select(
+        "id, point_id, category_id, urgency, note, is_active, item_categories ( id, slug, label, kind )",
+      )
       .eq("point_id", data.pointId)
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);

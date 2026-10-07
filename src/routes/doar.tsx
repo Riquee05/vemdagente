@@ -34,7 +34,8 @@ function DoarPage() {
         <h1 className="mt-3 text-4xl font-semibold">Encontre locais para doar em São Paulo</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
           Escolha o que você tem para doar e onde está no estado de São Paulo. Consulte endereço,
-          contato e informações cadastradas; confirme diretamente com o local antes de ir. Buscar não exige conta.
+          contato e informações cadastradas; confirme diretamente com o local antes de ir. Buscar
+          não exige conta.
         </p>
 
         <ol className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -55,10 +56,7 @@ function DoarPage() {
               text: "Use o contato informado para confirmar itens, horários e forma de recebimento. O Vem da Gente não realiza entregas.",
             },
           ].map((item, index) => (
-            <li
-              key={item.step}
-              className={`card-ink p-5 ${index === 1 ? "sm:translate-y-3" : ""}`}
-            >
+            <li key={item.step} className={`card-ink p-5 ${index === 1 ? "sm:translate-y-3" : ""}`}>
               <span className="font-display text-2xl text-accent">{item.step}</span>
               <h2 className="mt-2 font-display text-base leading-tight">{item.title}</h2>
               <p className="mt-2 text-sm text-muted-foreground">{item.text}</p>

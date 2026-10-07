@@ -141,8 +141,8 @@ export const importGooglePoints = createServerFn({ method: "POST" })
     const rows = pending.map(({ place }) => {
       const components = place.addressComponents ?? [];
       const state =
-        components.find((c) => (c.types ?? []).includes("administrative_area_level_1"))?.shortText ??
-        null;
+        components.find((c) => (c.types ?? []).includes("administrative_area_level_1"))
+          ?.shortText ?? null;
       const city =
         components.find((c) => (c.types ?? []).includes("administrative_area_level_2"))?.longText ??
         components.find((c) => (c.types ?? []).includes("locality"))?.longText ??

@@ -16,7 +16,12 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchCategories, type ItemCategory } from "@/lib/points";
-import { addPointNeed, deletePointNeed, listPointNeeds, updatePointNeed } from "@/lib/points-needs.functions";
+import {
+  addPointNeed,
+  deletePointNeed,
+  listPointNeeds,
+  updatePointNeed,
+} from "@/lib/points-needs.functions";
 
 export type PointNeed = {
   id: string;
@@ -70,14 +75,19 @@ export function PointNeedsEditor({
     queryKey: ["point-needs", pointId],
     queryFn: async () => {
       const rows = await listNeeds({ data: { pointId } });
-      return (rows ?? []).map((n: any) => ({
+      return (rows ?? []).map((n) => ({
         id: n.id,
         point_id: n.point_id,
         category_id: n.category_id,
         urgency: n.urgency,
         note: n.note,
         is_active: n.is_active,
-        category: (n.item_categories ?? { id: n.category_id, slug: "", label: "Categoria", kind: "item" }) as ItemCategory,
+        category: (n.item_categories ?? {
+          id: n.category_id,
+          slug: "",
+          label: "Categoria",
+          kind: "item",
+        }) as ItemCategory,
       })) as PointNeed[];
     },
   });
@@ -87,12 +97,18 @@ export function PointNeedsEditor({
   const [newNote, setNewNote] = useState("");
 
   const save = useMutation({
-    mutationFn: async (input: { id?: string; category_id: string; urgency: string; note: string | null; is_active?: boolean }) => {
+    mutationFn: async (input: {
+      id?: string;
+      category_id: string;
+      urgency: string;
+      note: string | null;
+      is_active?: boolean;
+    }) => {
       if (input.id) {
         await patchNeed({
           data: {
             needId: input.id,
-            urgency: input.urgency as any,
+            urgency: input.urgency as "low" | "normal" | "high" | "critical",
             note: input.note,
             isActive: input.is_active ?? true,
           },
@@ -102,7 +118,7 @@ export function PointNeedsEditor({
           data: {
             pointId,
             categoryId: input.category_id,
-            urgency: input.urgency as any,
+            urgency: input.urgency as "low" | "normal" | "high" | "critical",
             note: input.note,
           },
         });
@@ -118,7 +134,11 @@ export function PointNeedsEditor({
     },
     onError: (error) => {
       console.error("save need error:", error);
-      toast.error(error instanceof Error ? error.message : "Não conseguimos salvar a necessidade. Tente de novo.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não conseguimos salvar a necessidade. Tente de novo.",
+      );
     },
   });
 
@@ -155,7 +175,9 @@ export function PointNeedsEditor({
       {needs.isLoading && <Skeleton className="h-20 w-full" />}
 
       {needs.isSuccess && needs.data.length === 0 && (
-        <p className="text-sm text-muted-foreground">Nenhuma necessidade registrada para este ponto.</p>
+        <p className="text-sm text-muted-foreground">
+          Nenhuma necessidade registrada para este ponto.
+        </p>
       )}
 
       {needs.isSuccess && needs.data.length > 0 && (
@@ -172,7 +194,9 @@ export function PointNeedsEditor({
                 {urgencyBadge(need.urgency)}
                 {!need.is_active && <Badge variant="outline">inativa</Badge>}
               </div>
-              {need.note ? <p className="w-full text-xs text-muted-foreground">{need.note}</p> : null}
+              {need.note ? (
+                <p className="w-full text-xs text-muted-foreground">{need.note}</p>
+              ) : null}
               {!readOnly && (
                 <div className="flex flex-wrap gap-2">
                   <Button
@@ -188,7 +212,8 @@ export function PointNeedsEditor({
                     variant="ghost"
                     className="text-destructive"
                     onClick={() => {
-                      if (window.confirm("Remover esta necessidade permanentemente?")) remove.mutate(need.id);
+                      if (window.confirm("Remover esta necessidade permanentemente?"))
+                        remove.mutate(need.id);
                     }}
                     disabled={remove.isPending}
                   >
@@ -251,7 +276,11 @@ export function PointNeedsEditor({
             size="sm"
             disabled={!newCategory || save.isPending}
             onClick={() =>
-              save.mutate({ category_id: newCategory, urgency: newUrgency, note: newNote.trim() || null })
+              save.mutate({
+                category_id: newCategory,
+                urgency: newUrgency,
+                note: newNote.trim() || null,
+              })
             }
           >
             {save.isPending ? "Salvando…" : "Adicionar necessidade"}

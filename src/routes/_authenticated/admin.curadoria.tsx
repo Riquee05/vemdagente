@@ -16,8 +16,13 @@ export const Route = createFileRoute("/_authenticated/admin/curadoria")({
 const FILTERS = [
   { value: "pending", label: "Aguardando" },
   { value: "verified", label: "Aprovados" },
+  { value: "stale", label: "Revisar informações" },
   { value: "rejected", label: "Recusados" },
 ] as const;
+
+const reviewCutoff = () => new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+const reviewCondition = () =>
+  `confirmed_at.is.null,confirmed_at.lt.${reviewCutoff()},confirmation_status.eq.needs_update`;
 
 type Filter = (typeof FILTERS)[number]["value"];
 
@@ -30,10 +35,12 @@ function AdminCuradoria() {
     queryFn: async () => {
       const entries = await Promise.all(
         FILTERS.map(async (option) => {
-          const { count, error } = await supabase
+          let query = supabase
             .from("collection_points")
             .select("id", { count: "exact", head: true })
-            .eq("curation_status", option.value);
+            .eq("curation_status", option.value === "stale" ? "verified" : option.value);
+          if (option.value === "stale") query = query.eq("is_active", true).or(reviewCondition());
+          const { count, error } = await query;
           if (error) throw error;
           return [option.value, count ?? 0] as const;
         }),
@@ -45,14 +52,19 @@ function AdminCuradoria() {
   const queue = useQuery({
     queryKey: ["curation-queue", filter],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("collection_points")
         .select(
           "id, name, description, address, city, state, phone, whatsapp, website, opening_hours, donation_hours, photo_url, source, is_active, created_at, confirmation_status, confirmed_at, hidden_reason",
         )
-        .eq("curation_status", filter)
-        .order("created_at", { ascending: false })
+        .eq("curation_status", filter === "stale" ? "verified" : filter)
+        .order(filter === "stale" ? "confirmed_at" : "created_at", {
+          ascending: filter === "stale",
+          nullsFirst: true,
+        })
         .limit(100);
+      if (filter === "stale") query = query.eq("is_active", true).or(reviewCondition());
+      const { data, error } = await query;
       if (error) throw error;
       return data ?? [];
     },
@@ -101,6 +113,7 @@ function AdminCuradoria() {
     },
     onSuccess: () => {
       toast.success("Status de confirmação atualizado.");
+      queryClient.invalidateQueries({ queryKey: ["curation-counts"] });
       queryClient.invalidateQueries({ queryKey: ["curation-queue"] });
       queryClient.invalidateQueries({ queryKey: ["verified-points"] });
     },
@@ -132,6 +145,18 @@ function AdminCuradoria() {
         </div>
       </div>
 
+      {filter === "stale" && (
+        <p className="text-sm text-muted-foreground">
+          Locais ativos aprovados sem confirmação, sinalizados para atualização ou confirmados há
+          mais de 90 dias. A revisão não altera automaticamente o status público.
+        </p>
+      )}
+      {queue.isError && (
+        <div role="alert">
+          Não foi possível carregar a fila.{" "}
+          <Button onClick={() => void queue.refetch()}>Tentar novamente</Button>
+        </div>
+      )}
       {queue.isLoading && <Skeleton className="h-48 w-full" />}
 
       {queue.isSuccess && items.length === 0 && (
@@ -215,9 +240,7 @@ function AdminCuradoria() {
                   size="sm"
                   variant="outline"
                   disabled={confirmReceiving.isPending}
-                  onClick={() =>
-                    confirmReceiving.mutate({ id: point.id, status: "confirmed" })
-                  }
+                  onClick={() => confirmReceiving.mutate({ id: point.id, status: "confirmed" })}
                 >
                   Confirmar recebimento
                 </Button>
@@ -225,9 +248,7 @@ function AdminCuradoria() {
                   size="sm"
                   variant="ghost"
                   disabled={confirmReceiving.isPending}
-                  onClick={() =>
-                    confirmReceiving.mutate({ id: point.id, status: "needs_update" })
-                  }
+                  onClick={() => confirmReceiving.mutate({ id: point.id, status: "needs_update" })}
                 >
                   Marcar desatualizado
                 </Button>

@@ -24,7 +24,8 @@ export const Route = createFileRoute("/assistente")({
       { property: "og:title", content: "Assistente inteligente de doações | Vem da Gente" },
       {
         property: "og:description",
-        content: "Pergunte em linguagem natural e consulte locais publicados no estado de São Paulo.",
+        content:
+          "Pergunte em linguagem natural e consulte locais publicados no estado de São Paulo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -106,8 +107,8 @@ function AssistentePage() {
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground">
           Escreva em português como você falaria com alguém: o que quer doar ou precisa receber e
-          onde você está no estado de São Paulo. Respondemos apenas com dados publicados na plataforma;
-          confirme diretamente com o local antes de ir. Sem login.
+          onde você está no estado de São Paulo. Respondemos apenas com dados publicados na
+          plataforma; confirme diretamente com o local antes de ir. Sem login.
         </p>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
@@ -188,7 +189,8 @@ function AssistentePage() {
           <div className="space-y-4">
             {answer?.location ? (
               <p className="text-sm text-muted-foreground">
-                Buscando perto de <strong className="text-foreground">{answer.location.label}</strong>
+                Buscando perto de{" "}
+                <strong className="text-foreground">{answer.location.label}</strong>
                 {answer.categoryLabel ? ` — ${answer.categoryLabel}` : ""}
               </p>
             ) : null}

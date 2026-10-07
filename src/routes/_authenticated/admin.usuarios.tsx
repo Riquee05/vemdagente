@@ -39,7 +39,6 @@ function AdminUsuarios() {
     queryFn: () => fetchUsers(),
   });
 
-
   const setRole = useMutation({
     mutationFn: (input: { user_id: string; role: "donor" | "person_in_need" }) =>
       updateRole({ data: input }),
@@ -125,7 +124,6 @@ function AdminUsuarios() {
                   {user.is_admin ? "Revogar admin" : "Tornar admin"}
                 </Button>
               )}
-
             </div>
           </li>
         ))}

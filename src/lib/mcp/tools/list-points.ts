@@ -11,7 +11,13 @@ export default defineTool({
   inputSchema: {
     city: z.string().trim().min(2).optional().describe("Cidade, ex.: São Paulo."),
     search: z.string().trim().min(2).optional().describe("Parte do nome da instituição."),
-    limit: z.number().int().min(1).max(100).default(30).describe("Quantidade máxima de resultados."),
+    limit: z
+      .number()
+      .int()
+      .min(1)
+      .max(100)
+      .default(30)
+      .describe("Quantidade máxima de resultados."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ city, search, limit }, ctx) => {
@@ -21,7 +27,9 @@ export default defineTool({
     const supabase = supabaseForUser(ctx);
     let query = supabase
       .from("collection_points")
-      .select("id, name, description, address, city, state, phone, whatsapp, website, opening_hours")
+      .select(
+        "id, name, description, address, city, state, phone, whatsapp, website, opening_hours",
+      )
       .eq("is_active", true)
       .eq("curation_status", "verified")
       .order("name")

@@ -80,7 +80,12 @@ export function SiteHeader() {
             </Button>
           )}
           {!loading && (
-            <Button asChild variant={user ? "outline" : "default"} size="sm" className="hidden md:inline-flex">
+            <Button
+              asChild
+              variant={user ? "outline" : "default"}
+              size="sm"
+              className="hidden md:inline-flex"
+            >
               <Link to={user ? "/minha-conta" : "/entrar"}>{user ? "Minha conta" : "Entrar"}</Link>
             </Button>
           )}
@@ -130,7 +135,6 @@ export function SiteHeader() {
                   {user ? "Minha conta" : "Entrar"}
                 </Link>
               </nav>
-
             </SheetContent>
           </Sheet>
         </div>

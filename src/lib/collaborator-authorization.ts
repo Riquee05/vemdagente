@@ -1,3 +1,5 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 export const teamPermissions = [
   "points_review",
   "needs_management",
@@ -19,9 +21,7 @@ export type ActiveTeamMember = {
   last_activated_at: string | null;
 };
 
-type AccessClient = {
-  from: (table: "team_members" | "user_roles") => any;
-};
+export type AccessClient = Pick<SupabaseClient<Database>, "from">;
 
 export async function requireActiveTeamMember(
   userId: string | null | undefined,
@@ -41,7 +41,7 @@ export async function requireActiveTeamMember(
     .select("id, user_id, full_name, role_title, status, areas, permissions, last_activated_at")
     .eq("user_id", userId)
     .maybeSingle();
-  if (!member || member.status !== "active") {
+  if (!member || member["status"] !== "active") {
     throw new Error("Seu acesso de colaborador está pausado ou inativo. Procure o responsável.");
   }
   return member as ActiveTeamMember;

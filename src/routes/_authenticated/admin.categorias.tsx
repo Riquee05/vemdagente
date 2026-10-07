@@ -32,7 +32,10 @@ function CausesManager() {
   const causes = useQuery({
     queryKey: ["admin-causes"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("causes").select("id, slug, label").order("label");
+      const { data, error } = await supabase
+        .from("causes")
+        .select("id, slug, label")
+        .order("label");
       if (error) throw error;
       return data ?? [];
     },

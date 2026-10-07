@@ -7,7 +7,12 @@ import type { Database } from "@/integrations/supabase/types";
 
 const BUCKET = "point-photos";
 const inputSchema = z.object({
-  path: z.string().trim().min(3).max(500).refine((path) => !path.startsWith("http")),
+  path: z
+    .string()
+    .trim()
+    .min(3)
+    .max(500)
+    .refine((path) => !path.startsWith("http")),
 });
 
 async function signPhoto(path: string) {

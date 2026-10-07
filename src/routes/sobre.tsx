@@ -14,9 +14,15 @@ export const Route = createFileRoute("/sobre")({
   head: () => ({
     meta: [
       { title: "Sobre o projeto | Vem da Gente" },
-      { name: "description", content: "Conheça a missão, a independência e a responsabilidade do Vem da Gente." },
+      {
+        name: "description",
+        content: "Conheça a missão, a independência e a responsabilidade do Vem da Gente.",
+      },
       { property: "og:title", content: "Sobre o projeto | Vem da Gente" },
-      { property: "og:description", content: "Como o Vem da Gente reúne informações de locais para doação e apoio." },
+      {
+        property: "og:description",
+        content: "Como o Vem da Gente reúne informações de locais para doação e apoio.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -70,7 +76,9 @@ function AboutPage() {
   return (
     <PageShell>
       <main className="mx-auto w-full max-w-4xl px-4 py-12">
-        <p className="text-xs font-semibold uppercase tracking-widest text-accent">Sobre o projeto</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+          Sobre o projeto
+        </p>
         <h1 className="mt-3 font-display text-4xl">Vem da Gente</h1>
         <div className="mt-8 space-y-6 text-base leading-7 text-foreground">
           <p>
@@ -80,12 +88,12 @@ function AboutPage() {
             garante atendimento, disponibilidade ou recebimento de doações.
           </p>
           <p>
-            Reunimos locais a partir de dados públicos e indicações da comunidade. Confira os detalhes
-            e entre em contato com a instituição antes de levar sua doação.
+            Reunimos locais a partir de dados públicos e indicações da comunidade. Confira os
+            detalhes e entre em contato com a instituição antes de levar sua doação.
           </p>
           <p>
-            A origem de cada cadastro e o grau de confirmação são mostrados na ficha do local. Um ponto
-            estar publicado significa que foi aceito para aparecer na plataforma, não que suas
+            A origem de cada cadastro e o grau de confirmação são mostrados na ficha do local. Um
+            ponto estar publicado significa que foi aceito para aparecer na plataforma, não que suas
             informações ou o recebimento de todos os itens estejam confirmados.
           </p>
         </div>
@@ -100,18 +108,22 @@ function AboutPage() {
         </section>
 
         <section className="mt-8 border-t border-border pt-8">
-          <p className="text-xs font-semibold uppercase tracking-widest text-accent">Nossa inspiração</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent">
+            Nossa inspiração
+          </p>
           <blockquote className="mt-4 max-w-3xl border-l-2 border-primary pl-5">
             <p className="font-display text-2xl leading-9">
-              “O Rei responderá: ‘Digo a verdade: o que vocês fizeram a algum dos meus menores irmãos,
-              a mim o fizeram’.”
+              “O Rei responderá: ‘Digo a verdade: o que vocês fizeram a algum dos meus menores
+              irmãos, a mim o fizeram’.”
             </p>
-            <footer className="mt-3 text-sm font-semibold text-muted-foreground">Mateus 25:40 — NVI</footer>
+            <footer className="mt-3 text-sm font-semibold text-muted-foreground">
+              Mateus 25:40 — NVI
+            </footer>
           </blockquote>
           <p className="mt-5 max-w-2xl text-muted-foreground">
             Acreditamos que ajudar quem precisa é também uma forma de servir a Deus. Inspirado nesse
-            princípio, o Vem da Gente aproxima pessoas dispostas a doar de locais e redes de apoio em
-            São Paulo, acolhendo todos, independentemente de religião ou crença.
+            princípio, o Vem da Gente aproxima pessoas dispostas a doar de locais e redes de apoio
+            em São Paulo, acolhendo todos, independentemente de religião ou crença.
           </p>
         </section>
 
@@ -119,31 +131,73 @@ function AboutPage() {
           <section className="mt-8 border-t border-border pt-8">
             <h2 className="font-display text-2xl">Contato</h2>
             {data["contact_email"] && <p className="mt-3">E-mail: {data["contact_email"]}</p>}
-            {data["contact_whatsapp"] && <p className="mt-1">WhatsApp: {data["contact_whatsapp"]}</p>}
+            {data["contact_whatsapp"] && (
+              <p className="mt-1">WhatsApp: {data["contact_whatsapp"]}</p>
+            )}
           </section>
         ) : (
           <section className="mt-8 border-t border-border pt-8">
             <h2 className="font-display text-2xl">Contato</h2>
-            <p className="mt-3 text-muted-foreground">Canal de contato do projeto pendente de configuração pelo responsável.</p>
+            <p className="mt-3 text-muted-foreground">
+              Canal de contato do projeto pendente de configuração pelo responsável.
+            </p>
           </section>
         )}
 
         {admin.data && (
           <form
             className="mt-12 space-y-4 border-t border-border pt-8"
-            onSubmit={(event) => { event.preventDefault(); save.mutate(); }}
+            onSubmit={(event) => {
+              event.preventDefault();
+              save.mutate();
+            }}
           >
             <h2 className="font-display text-2xl">Editar apresentação</h2>
             <p className="text-sm text-muted-foreground">
               Campos vazios não aparecem publicamente.
             </p>
-            <div><Label htmlFor="owner-name">Nome do responsável</Label><Input id="owner-name" className="mt-2" value={form["owner_name"] ?? ""} onChange={(e) => setForm({ ...form, owner_name: e.target.value })} /></div>
-            <div><Label htmlFor="owner-bio">Breve história</Label><Textarea id="owner-bio" className="mt-2" rows={4} value={form["owner_bio"] ?? ""} onChange={(e) => setForm({ ...form, owner_bio: e.target.value })} /></div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div><Label htmlFor="contact-email">E-mail do projeto</Label><Input id="contact-email" className="mt-2" value={form["contact_email"] ?? ""} onChange={(e) => setForm({ ...form, contact_email: e.target.value })} /></div>
-              <div><Label htmlFor="contact-whatsapp">WhatsApp do projeto</Label><Input id="contact-whatsapp" className="mt-2" value={form["contact_whatsapp"] ?? ""} onChange={(e) => setForm({ ...form, contact_whatsapp: e.target.value })} /></div>
+            <div>
+              <Label htmlFor="owner-name">Nome do responsável</Label>
+              <Input
+                id="owner-name"
+                className="mt-2"
+                value={form["owner_name"] ?? ""}
+                onChange={(e) => setForm({ ...form, owner_name: e.target.value })}
+              />
             </div>
-            <Button type="submit" disabled={save.isPending}>{save.isPending ? "Salvando…" : "Salvar"}</Button>
+            <div>
+              <Label htmlFor="owner-bio">Breve história</Label>
+              <Textarea
+                id="owner-bio"
+                className="mt-2"
+                rows={4}
+                value={form["owner_bio"] ?? ""}
+                onChange={(e) => setForm({ ...form, owner_bio: e.target.value })}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="contact-email">E-mail do projeto</Label>
+                <Input
+                  id="contact-email"
+                  className="mt-2"
+                  value={form["contact_email"] ?? ""}
+                  onChange={(e) => setForm({ ...form, contact_email: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="contact-whatsapp">WhatsApp do projeto</Label>
+                <Input
+                  id="contact-whatsapp"
+                  className="mt-2"
+                  value={form["contact_whatsapp"] ?? ""}
+                  onChange={(e) => setForm({ ...form, contact_whatsapp: e.target.value })}
+                />
+              </div>
+            </div>
+            <Button type="submit" disabled={save.isPending}>
+              {save.isPending ? "Salvando…" : "Salvar"}
+            </Button>
           </form>
         )}
       </main>

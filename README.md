@@ -35,6 +35,7 @@ Comandos disponíveis:
 bun run dev
 bun run lint
 bun run test
+bun run typecheck
 bun run build
 ```
 
@@ -56,3 +57,11 @@ As mudanças incrementais ficam em `supabase/migrations`. Aplique-as em ordem no
 - Dados administrativos e pessoais são protegidos por autenticação, autorização no servidor e políticas de acesso no banco.
 
 O `trustForwardedHost` permanece habilitado no endpoint MCP porque o Lovable opera atrás de um proxy confiável.
+
+## Busca e manutenção dos dados
+
+A página `/pontos` usa páginas de 30 locais e aplica município e causa no banco, respeitando RLS e o escopo público de São Paulo. Os parâmetros `cidade`, `causa` e `pagina` ficam na URL. O mapa representa a página atual e agrupa marcadores próximos conforme o zoom.
+
+A curadoria oferece a fila “Revisar informações” para locais ativos aprovados sem confirmação, sinalizados para atualização ou com confirmação anterior a 90 dias. Essa fila não altera o status público automaticamente.
+
+O assistente mantém a categoria solicitada mesmo quando não há resultados e limita o tempo das chamadas externas. O GitHub Actions executa lint, tipos, testes e build em pushes e pull requests.

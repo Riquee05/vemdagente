@@ -46,9 +46,7 @@ function RedefinirSenhaPage() {
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
     if (error) {
-      toast.error(
-        "Não foi possível salvar. Abra novamente o link do e-mail e tente em seguida.",
-      );
+      toast.error("Não foi possível salvar. Abra novamente o link do e-mail e tente em seguida.");
       return;
     }
     toast.success("Senha atualizada! Use ela para entrar e liberar o painel.");

@@ -298,7 +298,10 @@ function AdminVoluntarios() {
                 </p>
                 <div className="mt-2 flex flex-wrap gap-1">
                   {(selecionado.areas ?? []).map((area) => (
-                    <span key={area} className="border-2 border-border bg-secondary px-2 py-0.5 text-xs">
+                    <span
+                      key={area}
+                      className="border-2 border-border bg-secondary px-2 py-0.5 text-xs"
+                    >
                       {areaLabel(area)}
                     </span>
                   ))}
@@ -308,13 +311,22 @@ function AdminVoluntarios() {
               {selecionado.availability && (
                 <Field label="Disponibilidade" value={selecionado.availability} />
               )}
-              {selecionado.experience && <Field label="Experiência" value={selecionado.experience} />}
+              {selecionado.experience && (
+                <Field label="Experiência" value={selecionado.experience} />
+              )}
               {selecionado.motivation && <Field label="Motivação" value={selecionado.motivation} />}
-              {selecionado.heard_from && <Field label="Como conheceu" value={selecionado.heard_from} />}
+              {selecionado.heard_from && (
+                <Field label="Como conheceu" value={selecionado.heard_from} />
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="nota">Notas internas</Label>
-                <Textarea id="nota" value={nota} onChange={(e) => setNota(e.target.value)} rows={4} />
+                <Textarea
+                  id="nota"
+                  value={nota}
+                  onChange={(e) => setNota(e.target.value)}
+                  rows={4}
+                />
                 <Button
                   size="sm"
                   onClick={() =>
@@ -339,7 +351,7 @@ function AdminVoluntarios() {
                     <li key={ev.id} className="text-muted-foreground">
                       {new Date(ev.created_at).toLocaleString("pt-BR")} —{" "}
                       {ev.from_status
-                        ? volunteerStageLabels[ev.from_status as VolunteerStage] ?? ev.from_status
+                        ? (volunteerStageLabels[ev.from_status as VolunteerStage] ?? ev.from_status)
                         : "Início"}{" "}
                       → {volunteerStageLabels[ev.to_status as VolunteerStage] ?? ev.to_status}
                     </li>
@@ -380,7 +392,9 @@ function AdminVoluntarios() {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </p>
       <p className="mt-1 text-sm whitespace-pre-line">{value}</p>
     </div>
   );

@@ -76,7 +76,8 @@ function AtivarAdmin() {
         </span>
         <h1 className="mt-4 font-display text-3xl">Ativar acesso administrativo</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Use o <strong className="text-foreground">mesmo e-mail da sua candidatura de voluntário</strong>{" "}
+          Use o{" "}
+          <strong className="text-foreground">mesmo e-mail da sua candidatura de voluntário</strong>{" "}
           e a senha temporária que o dono do Vem da Gente te enviou. Em seguida, crie a sua senha
           definitiva.
         </p>
@@ -142,8 +143,15 @@ function AtivarAdmin() {
           </Button>
 
           <p className="text-xs text-muted-foreground">
-            Ainda não se candidatou? Comece em <Link to="/voluntarios" className="underline">Voluntários</Link>.
-            Já tem acesso? Vá para <Link to="/entrar" className="underline">Entrar</Link>.
+            Ainda não se candidatou? Comece em{" "}
+            <Link to="/voluntarios" className="underline">
+              Voluntários
+            </Link>
+            . Já tem acesso? Vá para{" "}
+            <Link to="/entrar" className="underline">
+              Entrar
+            </Link>
+            .
           </p>
         </form>
       </section>

@@ -14,7 +14,8 @@ export const Route = createFileRoute("/privacidade")({
       { property: "og:title", content: "Privacidade e proteção de dados | Vem da Gente" },
       {
         property: "og:description",
-        content: "Nossa política de privacidade, base legal, medidas de proteção e direitos do titular.",
+        content:
+          "Nossa política de privacidade, base legal, medidas de proteção e direitos do titular.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

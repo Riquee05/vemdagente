@@ -33,7 +33,6 @@ import {
   searchNearbyPoints,
 } from "@/lib/points";
 
-
 const DEFAULT_CENTER: [number, number] = [-23.5505, -46.6333];
 const RADIUS_OPTIONS = [5, 10, 20, 50];
 
@@ -86,7 +85,10 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   }, []);
 
   function pickSuggestion(suggestion: AddressSuggestion) {
-    if (!isSaoPauloState(suggestion.state) || !isWithinSaoPauloBounds(suggestion.lat, suggestion.lng)) {
+    if (
+      !isSaoPauloState(suggestion.state) ||
+      !isWithinSaoPauloBounds(suggestion.lat, suggestion.lng)
+    ) {
       toast.error("A busca atual cobre somente o estado de São Paulo.");
       return;
     }
@@ -97,7 +99,6 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     setSuggestions([]);
     setShowSuggestions(false);
   }
-
 
   const categories = useQuery({ queryKey: ["item-categories"], queryFn: fetchCategories });
   const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
@@ -128,8 +129,6 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
         radiusKm: searchRadius,
       }),
   });
-
-
 
   async function useMyLocation() {
     setLocating(true);
@@ -174,7 +173,6 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     } finally {
       setLocating(false);
     }
-
   }
 
   const allowedIds = causeIds.length === 0 ? null : new Set(causePointIds.data ?? []);
@@ -201,7 +199,10 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
     enabled: points.length > 0,
   });
 
-  const needsByPoint = new Map<string, { urgency: string; category_label: string; note: string | null }[]>();
+  const needsByPoint = new Map<
+    string,
+    { urgency: string; category_label: string; note: string | null }[]
+  >();
   for (const need of activeNeeds.data ?? []) {
     const list = needsByPoint.get(need.point_id) ?? [];
     list.push(need);
@@ -211,7 +212,10 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
   return (
     <div className="space-y-6">
       {/* z-10 garante que os filtros fiquem sempre acima do mapa */}
-      <form onSubmit={searchByAddress} className="relative z-10 grid gap-4 md:grid-cols-[1.4fr_auto]">
+      <form
+        onSubmit={searchByAddress}
+        className="relative z-10 grid gap-4 md:grid-cols-[1.4fr_auto]"
+      >
         <div ref={suggestionsBox} className="relative">
           <Label htmlFor="local">Onde você está</Label>
           <div className="mt-2 flex gap-2">
@@ -361,7 +365,6 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
         ) : null}
       </div>
 
-
       <PointsMap
         center={center}
         zoom={coords ? 13 : 11}
@@ -379,8 +382,8 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
       <div className="space-y-3">
         {!coords ? (
           <p className="text-sm text-muted-foreground">
-            Mostrando pontos e instituições no estado de São Paulo. Informe sua localização acima para
-            ver os mais próximos de você.
+            Mostrando pontos e instituições no estado de São Paulo. Informe sua localização acima
+            para ver os mais próximos de você.
           </p>
         ) : null}
         {results.isPending ? (
@@ -404,7 +407,6 @@ export function PointSearch({ kindHint }: { kindHint: "donate" | "help" }) {
             />
           ))
         )}
-
       </div>
     </div>
   );

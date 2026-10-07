@@ -43,9 +43,7 @@ function AdminPontos() {
   const importer = useMutation({
     mutationFn: () => runImport({ data: { city: city.trim(), preset } }),
     onSuccess: (result) => {
-      toast.success(
-        `${result.created} ponto(s) importado(s) — ${result.skipped} já existiam.`,
-      );
+      toast.success(`${result.created} ponto(s) importado(s) — ${result.skipped} já existiam.`);
       queryClient.invalidateQueries({ queryKey: ["admin-points"] });
       queryClient.invalidateQueries({ queryKey: ["verified-points"] });
     },

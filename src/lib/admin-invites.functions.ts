@@ -80,7 +80,9 @@ export const listAdminInvites = createServerFn({ method: "GET" })
     const db = await admin();
     const { data, error } = await db
       .from("admin_invites")
-      .select("id, application_id, email, full_name, status, attempts, expires_at, used_at, created_at")
+      .select(
+        "id, application_id, email, full_name, status, attempts, expires_at, used_at, created_at",
+      )
       .order("created_at", { ascending: false })
       .limit(200);
 
@@ -189,10 +191,7 @@ async function findUserByEmail(db: any, email: string): Promise<string | null> {
 const redeemSchema = z.object({
   email: z.string().trim().email("E-mail inválido").max(255),
   temp_password: z.string().trim().min(6, "Informe a senha temporária").max(200),
-  new_password: z
-    .string()
-    .min(8, "A nova senha precisa ter pelo menos 8 caracteres")
-    .max(200),
+  new_password: z.string().min(8, "A nova senha precisa ter pelo menos 8 caracteres").max(200),
 });
 
 /**

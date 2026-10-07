@@ -44,6 +44,7 @@ async function geminiText(args: {
   instructions: string;
   prompt: string;
   jsonSchema?: GeminiSchema;
+  signal: AbortSignal;
 }): Promise<string> {
   const apiKey = process.env["GEMINI_API_KEY"];
   if (!apiKey) throw new Error("O assistente não está configurado (chave de IA ausente).");
@@ -62,9 +63,12 @@ async function geminiText(args: {
   });
 
   let lastStatus = 0;
-  let lastDetail = "";
 
   for (let i = 0; i < FALLBACK_MODELS.length; i++) {
+    if (args.signal.aborted)
+      throw new Error(
+        "O assistente demorou para responder. Tente novamente ou use a busca de pontos.",
+      );
     const model = FALLBACK_MODELS[i]!;
     // até 2 tentativas por modelo para falhas transitórias (429/5xx)
     for (let attempt = 0; attempt < 2; attempt++) {
@@ -72,7 +76,12 @@ async function geminiText(args: {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
         body,
-      });
+        signal: AbortSignal.any([args.signal, AbortSignal.timeout(8000)]),
+      }).catch(() => null);
+      if (!res) {
+        lastStatus = 504;
+        continue;
+      }
 
       if (res.ok) {
         const json = (await res.json()) as {
@@ -86,7 +95,7 @@ async function geminiText(args: {
       }
 
       lastStatus = res.status;
-      lastDetail = await res.text().catch(() => "");
+      await res.body?.cancel();
 
       if (res.status === 401 || res.status === 403)
         throw new Error(
@@ -105,7 +114,9 @@ async function geminiText(args: {
     throw new Error(
       "O assistente está com muita procura agora. Tente de novo em alguns instantes.",
     );
-  throw new Error(`Falha ao consultar o assistente (${lastStatus}). ${lastDetail.slice(0, 200)}`);
+  throw new Error(
+    "Não foi possível consultar o assistente. Tente novamente ou use a busca de pontos.",
+  );
 }
 
 type Intent = {
@@ -119,8 +130,10 @@ type Intent = {
 async function extractIntent(
   message: string,
   categories: { slug: string; label: string; kind: string }[],
+  signal: AbortSignal,
 ): Promise<Intent> {
   const raw = await geminiText({
+    signal,
     instructions:
       "Você interpreta perguntas em português do Brasil sobre doações e redes de apoio. " +
       "Escolha a categoria mais próxima da lista, ou null quando não houver. " +
@@ -155,7 +168,7 @@ async function extractIntent(
   }
 }
 
-async function geocode(query: string) {
+async function geocode(query: string, signal: AbortSignal) {
   const url = new URL("https://nominatim.openstreetmap.org/search");
   url.searchParams.set("q", `${query}, São Paulo, Brasil`);
   url.searchParams.set("format", "jsonv2");
@@ -164,9 +177,10 @@ async function geocode(query: string) {
   url.searchParams.set("viewbox", "-53.2,-19.75,-44,-25.35");
   url.searchParams.set("bounded", "1");
   const res = await fetch(url.toString(), {
+    signal: AbortSignal.any([signal, AbortSignal.timeout(5000)]),
     headers: { Accept: "application/json", "User-Agent": "Vem da Gente/1.0 (assistente)" },
-  });
-  if (!res.ok) return null;
+  }).catch(() => null);
+  if (!res || !res.ok) return null;
   const list = (await res.json()) as { display_name: string; lat: string; lon: string }[];
   const first = list[0];
   if (!first) return null;
@@ -197,16 +211,19 @@ export const askAssistant = createServerFn({ method: "POST" })
       auth: { persistSession: false },
     });
 
-    const { data: categories } = await supabase
+    const { data: categories, error: categoriesError } = await supabase
       .from("item_categories")
       .select("id, slug, label, kind")
       .order("label");
+    if (categoriesError)
+      throw new Error("Não foi possível consultar as categorias. Tente novamente.");
     const cats = categories ?? [];
 
-    const intent = await extractIntent(data.message, cats);
+    const signal = AbortSignal.timeout(25000);
+    const intent = await extractIntent(data.message, cats, signal);
 
     let location: { label: string; lat: number; lng: number } | null = null;
-    if (intent.local) location = await geocode(intent.local);
+    if (intent.local) location = await geocode(intent.local, signal);
     if (
       !location &&
       typeof data.lat === "number" &&
@@ -222,24 +239,15 @@ export const askAssistant = createServerFn({ method: "POST" })
 
     let points: AssistantPoint[] = [];
     if (location) {
-      const { data: nearby } = await supabase.rpc("search_nearby_points", {
+      const { data: nearby, error: nearbyError } = await supabase.rpc("search_nearby_points", {
         p_lat: location.lat,
         p_lng: location.lng,
         p_radius_km: intent.raio_km,
         p_limit: 8,
         ...(category ? { p_category_id: category.id } : {}),
       });
+      if (nearbyError) throw new Error("Não foi possível consultar os locais. Tente novamente.");
       points = (nearby ?? []) as AssistantPoint[];
-
-      if (points.length === 0 && category) {
-        const { data: fallback } = await supabase.rpc("search_nearby_points", {
-          p_lat: location.lat,
-          p_lng: location.lng,
-          p_radius_km: Math.min(intent.raio_km * 2, 60),
-          p_limit: 8,
-        });
-        points = (fallback ?? []) as AssistantPoint[];
-      }
     }
 
     const contexto = points.length
@@ -259,6 +267,7 @@ export const askAssistant = createServerFn({ method: "POST" })
       .join("\n");
 
     const reply = await geminiText({
+      signal,
       instructions:
         "Você é o assistente do Vem da Gente, uma iniciativa independente que facilita a descoberta de locais de doação e apoio no estado de São Paulo. " +
         "Fale português do Brasil, com tom acolhedor, direto e curto (máximo 120 palavras). " +

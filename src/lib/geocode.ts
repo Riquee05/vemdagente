@@ -23,7 +23,11 @@ const CEP_REGEX = /^\d{5}-?\d{3}$/;
 
 export function isSaoPauloState(state: string | null | undefined): boolean {
   if (!state) return false;
-  const normalized = state.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toUpperCase();
+  const normalized = state
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toUpperCase();
   return normalized === "SP" || normalized === "SAO PAULO";
 }
 
@@ -67,7 +71,11 @@ export async function lookupCep(cep: string): Promise<AddressSuggestion | null> 
   return {
     id: `cep-${digits}`,
     title: data.logradouro || data.localidade,
-    subtitle: [data.bairro, `${data.localidade}${data.uf ? ` - ${data.uf}` : ""}`, formatCep(digits)]
+    subtitle: [
+      data.bairro,
+      `${data.localidade}${data.uf ? ` - ${data.uf}` : ""}`,
+      formatCep(digits),
+    ]
       .filter(Boolean)
       .join(" · "),
     cep: formatCep(digits),
@@ -109,35 +117,36 @@ export async function suggestAddresses(query: string): Promise<AddressSuggestion
     address?: Record<string, string>;
   }>;
 
-  return results.map((item) => {
-    const address = item.address ?? {};
-    const city =
-      address["city"] ?? address["town"] ?? address["village"] ?? address["municipality"] ?? "";
-    const state = address["state_code"] ?? address["state"] ?? null;
-    const street = address["road"] ?? item.name ?? item.display_name.split(",")[0] ?? "";
-    const cep = address["postcode"] ? formatCep(address["postcode"]) : null;
-    const neighborhood = address["suburb"] ?? address["neighbourhood"] ?? null;
+  return results
+    .map((item) => {
+      const address = item.address ?? {};
+      const city =
+        address["city"] ?? address["town"] ?? address["village"] ?? address["municipality"] ?? "";
+      const state = address["state_code"] ?? address["state"] ?? null;
+      const street = address["road"] ?? item.name ?? item.display_name.split(",")[0] ?? "";
+      const cep = address["postcode"] ? formatCep(address["postcode"]) : null;
+      const neighborhood = address["suburb"] ?? address["neighbourhood"] ?? null;
 
-    return {
-      id: String(item.place_id),
-      title: street || city || item.display_name,
-      subtitle: [neighborhood, city && state ? `${city} - ${state}` : city, cep]
-        .filter(Boolean)
-        .join(" · "),
-      cep,
-      city,
-      state,
-      lat: Number(item.lat),
-      lng: Number(item.lon),
-    };
-  }).filter((item) => isSaoPauloState(item.state) && isWithinSaoPauloBounds(item.lat, item.lng));
+      return {
+        id: String(item.place_id),
+        title: street || city || item.display_name,
+        subtitle: [neighborhood, city && state ? `${city} - ${state}` : city, cep]
+          .filter(Boolean)
+          .join(" · "),
+        cep,
+        city,
+        state,
+        lat: Number(item.lat),
+        lng: Number(item.lon),
+      };
+    })
+    .filter((item) => isSaoPauloState(item.state) && isWithinSaoPauloBounds(item.lat, item.lng));
 }
 
 /** Geocodificação gratuita (OpenStreetMap/Nominatim) para cidade, endereço ou CEP. */
 export async function geocodeAddress(query: string): Promise<GeocodeResult | null> {
   const trimmed = query.trim();
   if (trimmed.length < 3) return null;
-
 
   const url = new URL("https://nominatim.openstreetmap.org/search");
   if (isCep(trimmed)) {

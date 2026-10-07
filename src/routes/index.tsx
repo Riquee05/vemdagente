@@ -81,8 +81,8 @@ function Index() {
             </h1>
             <p className="mt-8 max-w-lg text-lg leading-relaxed md:text-xl">
               O Vem da Gente reúne instituições, pontos de coleta e redes de apoio no estado de São
-              Paulo, a partir de dados públicos e indicações da comunidade. Consulte os locais e entre
-              em contato para confirmar como ajudar.
+              Paulo, a partir de dados públicos e indicações da comunidade. Consulte os locais e
+              entre em contato para confirmar como ajudar.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-5">
               <Button
@@ -203,4 +203,3 @@ function Index() {
     </PageShell>
   );
 }
-

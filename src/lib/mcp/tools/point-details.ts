@@ -23,11 +23,18 @@ export default defineTool({
       .eq("id", point_id)
       .maybeSingle();
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
-    if (!point) return { content: [{ type: "text", text: "Ponto não encontrado." }], isError: true };
+    if (!point)
+      return { content: [{ type: "text", text: "Ponto não encontrado." }], isError: true };
 
     const [items, causes, needs] = await Promise.all([
-      supabase.from("point_accepted_items").select("category_id, item_categories(slug, label)").eq("point_id", point_id),
-      supabase.from("point_causes").select("cause_id, causes(slug, label)").eq("point_id", point_id),
+      supabase
+        .from("point_accepted_items")
+        .select("category_id, item_categories(slug, label)")
+        .eq("point_id", point_id),
+      supabase
+        .from("point_causes")
+        .select("cause_id, causes(slug, label)")
+        .eq("point_id", point_id),
       supabase.from("point_needs").select("*").eq("point_id", point_id),
     ]);
 

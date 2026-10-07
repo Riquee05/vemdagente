@@ -1,6 +1,12 @@
-import { createFileRoute, Link, Outlet, useMatches } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  useMatches,
+  type SearchSchemaInput,
+} from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { PageShell } from "@/components/layout/page-shell";
 import { PointsMap } from "@/components/map/points-map";
@@ -16,9 +22,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { fetchCauses, fetchPointIdsByCause, fetchVerifiedPoints } from "@/lib/points";
+import { fetchActiveNeedsByPointIds, fetchCauses, fetchVerifiedPointsPage } from "@/lib/points";
 
 export const Route = createFileRoute("/pontos")({
+  validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
+    cidade: typeof search["cidade"] === "string" ? search["cidade"].trim().slice(0, 120) : "",
+    causa:
+      typeof search["causa"] === "string" &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(search["causa"])
+        ? search["causa"]
+        : "all",
+    pagina:
+      Number.isSafeInteger(Number(search["pagina"])) && Number(search["pagina"]) > 0
+        ? Math.min(Number(search["pagina"]), 10000)
+        : 1,
+  }),
   head: () => ({
     meta: [
       { title: "Pontos e instituições | Vem da Gente" },
@@ -30,7 +48,8 @@ export const Route = createFileRoute("/pontos")({
       { property: "og:title", content: "Pontos e instituições | Vem da Gente" },
       {
         property: "og:description",
-        content: "Locais no estado de São Paulo com origem, grau de confirmação, endereço e horários informados.",
+        content:
+          "Locais no estado de São Paulo com origem, grau de confirmação, endereço e horários informados.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -49,28 +68,35 @@ function PontosLayout() {
 }
 
 function PontosPage() {
-  const [cityInput, setCityInput] = useState("");
-  const [city, setCity] = useState("");
-  const [causeId, setCauseId] = useState("all");
+  const { cidade: city, causa: causeId, pagina: page } = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const [cityInput, setCityInput] = useState(city);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [visibleCount, setVisibleCount] = useState(30);
-
+  useEffect(() => {
+    setCityInput(city);
+    setSelectedId(null);
+  }, [city, causeId, page]);
+  const updateFilters = (cidade: string, causa: string, pagina = 1) =>
+    void navigate({ search: { cidade, causa, pagina } });
   const points = useQuery({
-    queryKey: ["verified-points", city],
-    queryFn: () => fetchVerifiedPoints(city),
+    queryKey: ["verified-points", city, causeId, page],
+    queryFn: ({ signal }) => fetchVerifiedPointsPage({ city, causeId, page, signal }),
   });
-
   const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
-
-  const causePointIds = useQuery({
-    queryKey: ["cause-point-ids", causeId],
-    queryFn: () => fetchPointIdsByCause(causeId),
-    enabled: causeId !== "all",
+  const list = points.data?.points ?? [];
+  const pointIds = list.map((point) => point.id);
+  const needs = useQuery({
+    queryKey: ["point-needs", pointIds],
+    queryFn: () => fetchActiveNeedsByPointIds(pointIds),
+    enabled: pointIds.length > 0,
   });
-
-  const allowedIds = causeId === "all" ? null : new Set(causePointIds.data ?? []);
-  const list = (points.data ?? []).filter((point) => !allowedIds || allowedIds.has(point.id));
-  const visibleList = list.slice(0, visibleCount);
+  const total = points.data?.total ?? 0;
+  useEffect(() => {
+    if (!points.isSuccess) return;
+    const lastPage = Math.max(1, Math.ceil(total / 30));
+    if (page > lastPage)
+      void navigate({ search: { cidade: city, causa: causeId, pagina: lastPage }, replace: true });
+  }, [points.isSuccess, total, page, city, causeId, navigate]);
   const first = list[0];
   const center: [number, number] = first ? [first.lat, first.lng] : DEFAULT_CENTER;
 
@@ -82,8 +108,9 @@ function PontosPage() {
         </p>
         <h1 className="mt-3 text-4xl font-semibold">Pontos e instituições</h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Reunimos locais no estado de São Paulo a partir de dados públicos e indicações da comunidade. Confira os detalhes e entre em contato antes de ir. Filtre por município, por causa ou
-          navegue pelo mapa.
+          Reunimos locais no estado de São Paulo a partir de dados públicos e indicações da
+          comunidade. Confira os detalhes e entre em contato antes de ir. Filtre por município, por
+          causa ou navegue pelo mapa.
         </p>
 
         <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
@@ -91,7 +118,7 @@ function PontosPage() {
             className="flex items-end gap-2"
             onSubmit={(event) => {
               event.preventDefault();
-              setCity(cityInput);
+              updateFilters(cityInput, causeId);
             }}
           >
             <div className="flex-1">
@@ -105,14 +132,13 @@ function PontosPage() {
               />
             </div>
             <Button type="submit">Filtrar</Button>
-            {(city || cityInput) ? (
+            {city || cityInput ? (
               <Button
                 type="button"
                 variant="ghost"
                 onClick={() => {
                   setCityInput("");
-                  setCity("");
-                  setVisibleCount(30);
+                  updateFilters("", "all");
                 }}
               >
                 Limpar
@@ -120,9 +146,9 @@ function PontosPage() {
             ) : null}
           </form>
           <div>
-            <Label>Causa</Label>
-            <Select value={causeId} onValueChange={(value) => { setCauseId(value); setVisibleCount(30); }}>
-              <SelectTrigger className="mt-2">
+            <Label htmlFor="causa">Causa</Label>
+            <Select value={causeId} onValueChange={(value) => updateFilters(city, value)}>
+              <SelectTrigger id="causa" className="mt-2">
                 <SelectValue placeholder="Todas as causas" />
               </SelectTrigger>
               <SelectContent>
@@ -137,7 +163,17 @@ function PontosPage() {
           </div>
         </div>
 
-
+        {causes.isError && (
+          <div role="alert" className="mt-4 text-sm">
+            Não foi possível carregar as causas.{" "}
+            <Button variant="outline" onClick={() => void causes.refetch()}>
+              Tentar novamente
+            </Button>
+          </div>
+        )}
+        <p className="mt-4 text-sm text-muted-foreground">
+          O mapa mostra os locais desta página. Use a paginação para ver os demais.
+        </p>
         <div className="mt-8">
           <PointsMap
             center={center}
@@ -161,34 +197,60 @@ function PontosPage() {
           {points.isPending ? (
             <p className="text-sm text-muted-foreground">Carregando pontos…</p>
           ) : points.isError ? (
-            <p className="text-sm text-muted-foreground">Não foi possível carregar os pontos.</p>
+            <div role="alert">
+              <p>Não foi possível carregar os pontos.</p>
+              <Button className="mt-3" onClick={() => void points.refetch()}>
+                Tentar novamente
+              </Button>
+            </div>
           ) : list.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Nenhum ponto encontrado {city ? `em “${city}”` : "ainda"}. Você pode{" "}
+              Nenhum ponto encontrado nesta página {city ? `em “${city}”` : "ainda"}. Você pode{" "}
               <Link to="/cadastrar-ponto" className="underline">
                 cadastrar um ponto
               </Link>
-              .
+              .{" "}
+              <Button variant="outline" onClick={() => updateFilters("", "all")}>
+                Ver todos os locais
+              </Button>
             </p>
           ) : (
-            visibleList.map((point) => (
+            list.map((point) => (
               <PointCard
                 key={point.id}
                 point={point}
+                needs={(needs.data ?? []).filter((need) => need.point_id === point.id)}
                 active={selectedId === point.id}
                 onHighlight={setSelectedId}
               />
             ))
           )}
-          {!points.isPending && visibleList.length > 0 ? (
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-3 text-sm text-muted-foreground">
-              <span>Mostrando {visibleList.length} de {list.length} locais.</span>
-              {visibleList.length < list.length ? (
-                <Button type="button" variant="outline" onClick={() => setVisibleCount((count) => count + 30)}>
-                  Mostrar mais
+          {points.isSuccess && total > 0 ? (
+            <nav
+              aria-label="Paginação de locais"
+              className="flex flex-wrap items-center justify-between gap-3 pt-3 text-sm"
+            >
+              <span>
+                Mostrando {(page - 1) * 30 + (list.length ? 1 : 0)}–{(page - 1) * 30 + list.length}{" "}
+                de {total} locais.
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  disabled={page === 1}
+                  onClick={() => updateFilters(city, causeId, page - 1)}
+                >
+                  Anterior
                 </Button>
-              ) : null}
-            </div>
+                <Button
+                  variant="outline"
+                  disabled={page * 30 >= total}
+                  onClick={() => updateFilters(city, causeId, page + 1)}
+                >
+                  Próxima
+                </Button>
+              </div>
+            </nav>
           ) : null}
         </div>
       </section>

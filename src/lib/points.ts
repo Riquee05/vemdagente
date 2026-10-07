@@ -89,6 +89,42 @@ export async function fetchVerifiedPoints(city?: string): Promise<NearbyPoint[]>
   return (data ?? []).map((p) => ({ ...p, distance_km: null }));
 }
 
+/** Página pública: filtros e paginação executados pelo banco, sob RLS. */
+export async function fetchVerifiedPointsPage(params: {
+  city: string;
+  causeId: string;
+  page: number;
+  signal?: AbortSignal;
+}): Promise<{ points: NearbyPoint[]; total: number }> {
+  const fields =
+    "id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url, opening_hours, donation_method, confirmation_status";
+  let query = supabase
+    .from("collection_points")
+    .select(params.causeId === "all" ? fields : `${fields}, point_causes!inner(cause_id)`, {
+      count: "exact",
+    })
+    .eq("is_active", true)
+    .eq("curation_status", "verified")
+    .eq("state", "SP");
+  const city = params.city.trim().replace(/[%_\\]/g, "");
+  if (city) query = query.ilike("city", `%${city}%`);
+  if (params.causeId !== "all") query = query.eq("point_causes.cause_id", params.causeId);
+  query = query
+    .order("name")
+    .order("id")
+    .range((params.page - 1) * 30, params.page * 30 - 1);
+  if (params.signal) query = query.abortSignal(params.signal);
+  const { data, count, error } = await query;
+  if (error) throw error;
+  return {
+    points: ((data ?? []) as unknown as NearbyPoint[]).map((point) => ({
+      ...point,
+      distance_km: null,
+    })),
+    total: count ?? 0,
+  };
+}
+
 export type PointDetail = NearbyPoint & {
   curation_status: string;
   source: string;
@@ -183,21 +219,28 @@ export function extractNeighborhood(address: string | null, city?: string | null
 }
 
 /** Necessidades ativas de uma lista de pontos (leitura pública). */
-export async function fetchActiveNeedsByPointIds(
-  pointIds: string[],
-): Promise<{ point_id: string; urgency: string; category_label: string; note: string | null }[]> {
+export async function fetchActiveNeedsByPointIds(pointIds: string[]): Promise<
+  {
+    point_id: string;
+    urgency: string;
+    category_label: string;
+    note: string | null;
+    updated_at: string;
+  }[]
+> {
   if (pointIds.length === 0) return [];
   const { data, error } = await supabase
     .from("point_needs")
-    .select("point_id, urgency, note, item_categories ( label )")
+    .select("point_id, urgency, note, updated_at, item_categories ( label )")
     .in("point_id", pointIds)
     .eq("is_active", true)
     .limit(500);
   if (error) throw error;
-  return (data ?? []).map((row: any) => ({
+  return (data ?? []).map((row) => ({
     point_id: row.point_id,
     urgency: row.urgency,
     category_label: row.item_categories?.label ?? "",
     note: row.note,
+    updated_at: row.updated_at,
   }));
 }

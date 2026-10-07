@@ -11,7 +11,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { geocodeAddress, getBrowserLocation, isCep, isSaoPauloState, isWithinSaoPauloBounds, lookupCep } from "@/lib/geocode";
+import {
+  geocodeAddress,
+  getBrowserLocation,
+  isCep,
+  isSaoPauloState,
+  isWithinSaoPauloBounds,
+  lookupCep,
+} from "@/lib/geocode";
 import { fetchCategories, fetchCauses, PHOTO_BUCKET } from "@/lib/points";
 
 export const Route = createFileRoute("/_authenticated/cadastrar-ponto")({
@@ -111,7 +118,6 @@ function CadastrarPontoPage() {
     toast.success("Localização encontrada. Ajuste o pino clicando no mapa se precisar.");
   }
 
-
   async function locateFromBrowser() {
     try {
       const position = await getBrowserLocation();
@@ -172,7 +178,8 @@ function CadastrarPontoPage() {
           website: form.website.trim() || null,
           opening_hours: form.opening_hours.trim() || null,
           donation_method: form.donation_method.trim() || null,
-          location_type: form.location_type as "social_organization" | "collection_point" | "support_service" | "partner_business",
+          location_type: form.location_type as
+            "social_organization" | "collection_point" | "support_service" | "partner_business",
           lat: coords.lat,
           lng: coords.lng,
           photo_url: photoPath,
@@ -317,7 +324,14 @@ function CadastrarPontoPage() {
               onPick={(lat, lng) => setCoords({ lat, lng })}
               points={
                 coords
-                  ? [{ id: "novo", name: form.name || "Novo ponto", lat: coords.lat, lng: coords.lng }]
+                  ? [
+                      {
+                        id: "novo",
+                        name: form.name || "Novo ponto",
+                        lat: coords.lat,
+                        lng: coords.lng,
+                      },
+                    ]
                   : []
               }
             />

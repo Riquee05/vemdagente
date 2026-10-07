@@ -30,11 +30,15 @@ export const getPublicPointDetail = createServerFn({ method: "GET" })
       throw new Error("Falha temporária ao carregar o local.");
     }
     if (!row) return { status: "not_found", point: null };
-    if (!row.is_active || row.curation_status !== "verified" || row.state?.trim().toUpperCase() !== "SP") {
+    if (
+      !row.is_active ||
+      row.curation_status !== "verified" ||
+      row.state?.trim().toUpperCase() !== "SP"
+    ) {
       return { status: "unavailable", point: null };
     }
 
-    const raw = row as Record<string, any>;
+    const raw = row;
     const point: PointDetail = {
       id: raw["id"],
       name: raw["name"],
@@ -58,12 +62,12 @@ export const getPublicPointDetail = createServerFn({ method: "GET" })
       donation_hours: raw["donation_hours"],
       location_type: raw["location_type"] ?? "collection_point",
       accepted: (raw["point_accepted_items"] ?? [])
-        .filter((item: any) => item.item_categories)
-        .map((item: any) => ({ ...item.item_categories, confirmed_at: item.confirmed_at ?? null })),
-      causes: (raw["point_causes"] ?? []).map((item: any) => item.causes).filter(Boolean),
+        .filter((item) => item.item_categories)
+        .map((item) => ({ ...item.item_categories, confirmed_at: item.confirmed_at ?? null })),
+      causes: (raw["point_causes"] ?? []).map((item) => item.causes).filter(Boolean),
       needs: (raw["point_needs"] ?? [])
-        .filter((need: any) => need.is_active && need.item_categories)
-        .map((need: any) => ({
+        .filter((need) => need.is_active && need.item_categories)
+        .map((need) => ({
           id: need.id,
           urgency: need.urgency,
           note: need.note,
