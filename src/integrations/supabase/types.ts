@@ -248,6 +248,57 @@ export type Database = {
         }
         Relationships: []
       }
+      point_delivery: {
+        Row: {
+          point_id: string;
+          drop_off: string;
+          pickup: string;
+          appointment: string;
+          confirmed_at: string;
+          confirmed_by: string | null;
+        };
+        Insert: {
+          point_id: string;
+          drop_off?: string;
+          pickup?: string;
+          appointment?: string;
+          confirmed_at?: string;
+          confirmed_by?: string | null;
+        };
+        Update: {
+          point_id: string;
+          drop_off?: string;
+          pickup?: string;
+          appointment?: string;
+          confirmed_at?: string;
+          confirmed_by?: string | null;
+        };
+        Relationships: [];
+      };
+      point_change_history: {
+        Row: {
+          id: string;
+          point_id: string;
+          actor_id: string | null;
+          changed_at: string;
+          changes: Json;
+        };
+        Insert: {
+          id?: string;
+          point_id: string;
+          actor_id?: string | null;
+          changed_at?: string;
+          changes: Json;
+        };
+        Update: {
+          id?: string;
+          point_id: string;
+          actor_id?: string | null;
+          changed_at?: string;
+          changes: Json;
+        };
+        Relationships: [];
+      };
       collection_points: {
         Row: {
           address: string | null

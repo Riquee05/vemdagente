@@ -1,3 +1,4 @@
+import { DonationPlanning } from "@/components/points/donation-planning";
 import { Campaigns } from "@/components/points/campaigns";
 import { PointActions } from "@/components/points/point-actions";
 import { pointReviewReason } from "@/lib/point-freshness";
@@ -326,6 +327,10 @@ function PointDetailPage() {
               )}
             </div>
 
+            <DonationPlanning
+              pointId={data.id}
+              categories={data.accepted.map((category) => category.label)}
+            />
             <Campaigns pointId={data.id} />
             <AccessibilityInfo pointId={data.id} />
             <InstitutionAccessRequest pointId={data.id} />

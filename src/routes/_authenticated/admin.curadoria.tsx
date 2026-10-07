@@ -1,3 +1,5 @@
+import { DuplicateAlerts, PointHistory } from "@/components/admin/curation-insights";
+import { PointDeliveryEditor } from "@/components/admin/point-delivery-editor";
 import { pointReviewReason } from "@/lib/point-freshness";
 import { PointAccessibilityEditor } from "@/components/admin/point-accessibility-editor";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -128,6 +130,7 @@ function AdminCuradoria() {
 
   return (
     <div className="space-y-6">
+      <DuplicateAlerts />
       <OngImportPanel />
       <div className="rounded-xl border border-border bg-surface p-6">
         <h2 className="text-lg font-semibold">Curadoria de pontos e redes</h2>
@@ -246,6 +249,8 @@ function AdminCuradoria() {
                   .join(" · ") || "Sem contato informado"}
               </p>
               <PointAccessibilityEditor pointId={point.id} />
+              <PointDeliveryEditor pointId={point.id} />
+              <PointHistory pointId={point.id} />
               <div className="mt-3 flex flex-wrap gap-2">
                 {filter !== "verified" && (
                   <Button

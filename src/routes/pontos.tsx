@@ -1,3 +1,4 @@
+import { deliveryFields, type DeliveryField } from "@/lib/donation-planning";
 import { accessibilityFields, type AccessibilityField } from "@/lib/accessibility";
 import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import {
@@ -78,6 +79,7 @@ function PontosPage() {
   const { cidade: city, causa: causeId, pagina: page, bairro: neighborhood } = Route.useSearch();
   const { acessibilidade: accessibility, necessidades: needsOnly } = Route.useSearch();
   const navigate = Route.useNavigate();
+  const [delivery, setDelivery] = useState<DeliveryField | "">("");
   const [cityInput, setCityInput] = useState(city);
   const [neighborhoodInput, setNeighborhoodInput] = useState(neighborhood);
   const [location, setLocation] = useState<
@@ -138,6 +140,7 @@ function PontosPage() {
       location,
       accessibility,
       needsOnly,
+      delivery,
     ],
     queryFn: ({ signal }) =>
       fetchVerifiedPointsPage({
@@ -149,6 +152,7 @@ function PontosPage() {
         location,
         accessibility: accessibility as AccessibilityField | "",
         needsOnly,
+        delivery,
       }),
   });
   const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
@@ -272,6 +276,38 @@ function PontosPage() {
         </div>
 
         <div className="mt-5 space-y-3 max-w-2xl">
+          <label htmlFor="delivery-filter" className="block font-semibold">
+            Entrega e agendamento confirmados
+          </label>
+          <select
+            id="delivery-filter"
+            value={delivery}
+            className="w-full rounded border border-input bg-background p-3"
+            onChange={(event) => {
+              setDelivery(event.target.value as DeliveryField | "");
+              void navigate({
+                search: {
+                  cidade: city,
+                  causa: causeId,
+                  bairro: neighborhood,
+                  pagina: 1,
+                  acessibilidade: accessibility,
+                  necessidades: needsOnly,
+                },
+              });
+            }}
+          >
+            <option value="">Todas as formas de doar</option>
+            {deliveryFields.map(([field, label]) => (
+              <option key={field} value={field}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <p className="text-sm text-muted-foreground">
+            Inclui somente informações confirmadas como “Sim”. Agendamento obrigatório indica uma
+            condição da visita.
+          </p>
           <label htmlFor="access-filter" className="block font-semibold">
             Acessibilidade confirmada
           </label>
@@ -441,7 +477,12 @@ function PontosPage() {
               {points.data?.limited
                 ? "Nenhum local atende aos filtros entre os 200 mais próximos. Diminua o raio ou desative a proximidade para buscar em toda a cidade. "
                 : ""}
-              {neighborhood || needsOnly || accessibility || causeId !== "all" || location ? (
+              {delivery ||
+              neighborhood ||
+              needsOnly ||
+              accessibility ||
+              causeId !== "all" ||
+              location ? (
                 <span className="block mb-3">
                   Tente uma destas opções:{" "}
                   {neighborhood ? (
@@ -460,10 +501,11 @@ function PontosPage() {
                       Ampliar para 50 km
                     </Button>
                   ) : null}
-                  {needsOnly || accessibility || causeId !== "all" ? (
+                  {delivery || needsOnly || accessibility || causeId !== "all" ? (
                     <Button
                       variant="outline"
-                      onClick={() =>
+                      onClick={() => {
+                        setDelivery("");
                         void navigate({
                           search: {
                             cidade: city,
@@ -473,10 +515,10 @@ function PontosPage() {
                             acessibilidade: "",
                             necessidades: false,
                           },
-                        })
-                      }
+                        });
+                      }}
                     >
-                      Retirar filtros de causa, acessibilidade e necessidade
+                      Retirar filtros de causa, acessibilidade, entrega e necessidade
                     </Button>
                   ) : null}
                 </span>

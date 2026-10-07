@@ -1,3 +1,4 @@
+import { type DeliveryField } from "@/lib/donation-planning";
 import { type AccessibilityField } from "@/lib/accessibility";
 import { saoPauloToday, isNeedCurrent } from "@/lib/need-validity";
 import { supabase } from "@/integrations/supabase/client";
@@ -102,9 +103,12 @@ export async function fetchVerifiedPointsPage(params: {
   location?: { lat: number; lng: number; radiusKm: number } | undefined;
   accessibility?: AccessibilityField | "";
   needsOnly?: boolean;
+  delivery?: DeliveryField | "";
   favoriteIds?: string[];
 }): Promise<{ points: NearbyPoint[]; total: number; limited?: boolean }> {
-  const extraFilters = Boolean(params.accessibility || params.needsOnly || params.favoriteIds);
+  const extraFilters = Boolean(
+    params.delivery || params.accessibility || params.needsOnly || params.favoriteIds,
+  );
   if (params.favoriteIds?.length === 0) return { points: [], total: 0 };
   if (params.location && !extraFilters) {
     const { data, error } = await supabase
@@ -138,6 +142,7 @@ export async function fetchVerifiedPointsPage(params: {
   const fields =
     "id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url, opening_hours, donation_method, confirmation_status, confirmed_at";
   const relations = [
+    params.delivery ? `point_delivery!inner(${params.delivery})` : "",
     params.causeId !== "all" ? "point_causes!inner(cause_id)" : "",
     params.accessibility ? `point_accessibility!inner(${params.accessibility})` : "",
     params.needsOnly ? "point_needs!inner(is_active,expires_at)" : "",
@@ -153,6 +158,7 @@ export async function fetchVerifiedPointsPage(params: {
   const neighborhood = (params.neighborhood ?? "").trim().replace(/[%_\\]/g, "");
   if (neighborhood) query = query.ilike("address", `%${neighborhood}%`);
   if (params.causeId !== "all") query = query.eq("point_causes.cause_id", params.causeId);
+  if (params.delivery) query = query.eq(`point_delivery.${params.delivery}`, "yes");
   if (params.accessibility) query = query.eq(`point_accessibility.${params.accessibility}`, "yes");
   if (params.needsOnly)
     query = query
@@ -173,9 +179,12 @@ export async function fetchVerifiedPointsPage(params: {
   if (params.signal) query = query.abortSignal(params.signal);
   const { data, count, error } = await query;
   if (error) {
-    if (params.accessibility && ["42P01", "PGRST200", "PGRST205"].includes(error.code))
+    if (
+      (params.delivery || params.accessibility) &&
+      ["42P01", "PGRST200", "PGRST205"].includes(error.code)
+    )
       throw new Error(
-        "O filtro de acessibilidade ainda não está disponível. Retire esse filtro para continuar.",
+        "Este filtro depende de uma migração ainda não aplicada. Retire o filtro para continuar.",
       );
     throw error;
   }

@@ -109,3 +109,7 @@ Em Minha conta → Gerenciar instituição, responsáveis com vínculo aprovado 
 Relatos de contato vão à fila de correções por função de servidor com validação, honeypot e limite persistente. Correções, propostas e pedidos de acesso compartilham a cota de cinco solicitações institucionais por dia por identificador protegido.
 
 Administração → Visão geral reúne cadastros sem contato, confirmações antigas, correções pendentes, necessidades vencidas e pedidos de vínculo. As buscas sem resultados oferecem ações explícitas para retirar filtros ou ampliar o raio; nunca mudam os critérios silenciosamente. Mapas públicos começam recolhidos, fotos são solicitadas perto da área visível e links privados de fotos são reaproveitados por até 45 minutos em caches separados para público/admin.
+
+## Manutenção e acessibilidade
+
+Consulte [o guia de manutenção](docs/MANUTENCAO.md) para migrações pendentes, publicação, revisão de duplicidades, permissões, recuperação e testes de teclado/TalkBack. A nova migração `20261007160000_delivery_history.sql` ativa logística confirmada e histórico privado. Enquanto ela não for aplicada, as fichas mostram logística como não informada e os filtros correspondentes avisam que estão indisponíveis.
