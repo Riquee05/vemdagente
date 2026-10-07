@@ -1,0 +1,902 @@
+[
+  {
+    "cnpj": "53.835.690/0001-65",
+    "name": "A ALTERNATIVA ASSOCIACAO DE ASSISTENCIA AO EXCEPCIONAL",
+    "address": "RUA JOAQUIM NABUCO, 513 — BROOKLIN PAULISTA",
+    "postalCode": "04621003",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5542-6072"
+  },
+  {
+    "cnpj": "62.024.120/0001-86",
+    "name": "ABRACE ASSOCIACAO BRASILEIRA PARA O ADOLESCENTE E A CRIANCA ESPECIAL",
+    "address": "RUA PRINCESA ISABEL, 548 — BROOKLIN PAULISTA",
+    "postalCode": "04601001",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5093-2311"
+  },
+  {
+    "cnpj": "61.750.246/0001-75",
+    "name": "ACAO COMUNITARIA DO BRASIL VOCACAO",
+    "address": "RUA AMACAS, 243 — JARDIM LEONIDAS MOREIRA",
+    "postalCode": "05792030",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5843-2909"
+  },
+  {
+    "cnpj": "43.487.834/0001-86",
+    "name": "ADERE  ASSOCIACAO PARA DESENVOLVIMENTO EDUCACAO E RECUPERACAO DOS EXCEPCIONAIS",
+    "address": "RUA CONTOS GAUCHESCOS, 86 — VILA SANTA CATARINA",
+    "postalCode": "04369000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5562-4523"
+  },
+  {
+    "cnpj": "50.059.070/0001-93",
+    "name": "AGES ASSOCIACAO CIVIL GAUDIUM ET SPES",
+    "address": "RUA ALIANCA LIBERAL, 703 — VILA LEOPOLDINA",
+    "postalCode": "05088000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3836-8631"
+  },
+  {
+    "cnpj": "74.137.126/0001-49",
+    "name": "ALDEIA DO FUTURO ASSOCIACAO PARA MELHORIA DA CONDICAO DA POPULACAO CARENTE",
+    "address": "RUA JORGE RUBENS NEIVA DE CAMARGO, 228 — AMERICANOPOLIS",
+    "postalCode": "04337090",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5563-4436"
+  },
+  {
+    "cnpj": "35.797.364/0001-29",
+    "name": "ALDEIAS INFANTIS SOS BRASIL",
+    "address": "RUA MARACAJU, 26 — VILA MARIANA",
+    "postalCode": "04013020",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5574-8199"
+  },
+  {
+    "cnpj": "43.896.505/0001-99",
+    "name": "AME",
+    "address": "RUA GODOFREDO BRAGA, 215 — VILA FACCHINI",
+    "postalCode": "04326120",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5588-0599"
+  },
+  {
+    "cnpj": "66.862.657/0001-76",
+    "name": "ARCO ASSOCIACAO BENEFICENTE",
+    "address": "RUA LICINIO FELINI, 97 — CHACARA FLORIDA",
+    "postalCode": "04949170",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5517-3440 "
+  },
+  {
+    "cnpj": "43.082.197/0001-68",
+    "name": "ARRASTAO  MOVIMENTO DE PROMOCAO HUMANA",
+    "address": "RUA DOUTOR JOVIANO PACHECO DE AGUIRRE, 255 — JARDIM BOM REFUGIO",
+    "postalCode": "05788290",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5843-3365"
+  },
+  {
+    "cnpj": "65.501.025/0001-14",
+    "name": "ASAM CENTRO DE APOIO AO JOVEM",
+    "address": "RUA BARAO DE DUPRAT, 312 — SANTO AMARO",
+    "postalCode": "04743060",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5698-4700 "
+  },
+  {
+    "cnpj": "43.898.923/0001-15",
+    "name": "ASSISTENCIA E PROMOCAO SOCIAL EXERCITO DE SALVACAO",
+    "address": "RUA JUA, 264 — BOSQUE DA SAUDE",
+    "postalCode": "04138020",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5591-7077"
+  },
+  {
+    "cnpj": "00.236.857/0001-05",
+    "name": "ASSOC DE ASSIST A CRIANCA E AO ADOLESCENTE CARDIACOS E AOS TRANSPL DO CORACAO ACTC",
+    "address": "RUA OSCAR FREIRE, 1463 — PINHEIROS",
+    "postalCode": "05409010",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3088-7454"
+  },
+  {
+    "cnpj": "23.712.823/0001-45",
+    "name": "ASSOCIACAO ALICERCE DO BEM",
+    "address": "RUA DOUTOR SERGIO JABUR MALUF, 114 — PARQUE MARIA HELENA",
+    "postalCode": "05854100",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 97130-6479"
+  },
+  {
+    "cnpj": "09.095.549/0001-81",
+    "name": "ASSOCIACAO AMIGOS DA INOCENCIA",
+    "address": "RUA SAO PAULINO, 258 — VILA MARIANA",
+    "postalCode": "04019040",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 2941-7661"
+  },
+  {
+    "cnpj": "03.542.664/0001-70",
+    "name": "ASSOCIACAO AMIGOS E TERCEIRA IDADE ESPERANCA DO JD MONTE AZUL",
+    "address": "RUA ALVARO ADORNO, 16 — JARTDIM MONTE AZUL",
+    "postalCode": "05836120",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 2961-8090"
+  },
+  {
+    "cnpj": "03.864.895/0001-09",
+    "name": "ASSOCIACAO ASSISTENCIAL COMUNITARIA AZARIAS",
+    "address": "RUA CRISPIM DO AMARAL, 33 — VILA CAIUBA",
+    "postalCode": "05207180",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3918-6751"
+  },
+  {
+    "cnpj": "60.598.539/0001-16",
+    "name": "ASSOCIACAO BARAO DE SOUZA QUEIROZ DE PROTECAO A INFANCIA E A JUVENTUDE",
+    "address": "RUA CANIO RIZZO, 100 — JARDIM TRUSSARDI",
+    "postalCode": "05519090",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3746-1700"
+  },
+  {
+    "cnpj": "03.858.692/0001-00",
+    "name": "ASSOCIACAO BENEFICENTE A CRIANCA DESAMPARADA NOSSA CASA",
+    "address": "RUA MINISTRO GASTAO MESQUITA, 487 — VILA POMPEIA",
+    "postalCode": "05012010",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 4563-0608"
+  },
+  {
+    "cnpj": "62.299.169/0001-41",
+    "name": "ASSOCIACAO BENEFICENTE A MAO BRANCA DE AMPARO AOS IDOSOS",
+    "address": "AV  SANTO AMARO, 6487 — SANTO AMARO",
+    "postalCode": "04701100",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5523-2055"
+  },
+  {
+    "cnpj": "01.824.608/0001-01",
+    "name": "ASSOCIACAO BENEFICENTE ASSISTENCIAL AQUARELA",
+    "address": "RUA ENGENHEIRO VITOR FREIRE, 435 — JAGUARE",
+    "postalCode": "05334020",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 4329-3171"
+  },
+  {
+    "cnpj": "00.214.708/0001-45",
+    "name": "ASSOCIACAO BENEFICENTE BENEDITO PACHECO",
+    "address": "RUA BERNARDINO DE CAMPOS, 1474 — BROOKLIN PAULISTA",
+    "postalCode": "04620004",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11-5533-7143"
+  },
+  {
+    "cnpj": "66.063.231/0001-52",
+    "name": "ASSOCIACAO BENEFICENTE BETSAIDA",
+    "address": "RUA SAO FRANCISCO DE ASSIS, 649 — VILA GUEDES",
+    "postalCode": "05133100",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11   3901-2860"
+  },
+  {
+    "cnpj": "05.000.703/0001-33",
+    "name": "ASSOCIACAO BENEFICENTE CAMINHO DE LUZ ABECAL",
+    "address": "AVENIDA LEONARDO DA VINCI, 1422 — VILA GUARANI",
+    "postalCode": "04313001",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5588-0834"
+  },
+  {
+    "cnpj": "05.324.125/0001-90",
+    "name": "ASSOCIACAO BENEFICENTE DA INFANCIA ADOLESCENCIA E TERCEIRA IDADE ABIATI",
+    "address": "RUA PAUVA, 506 — VILA JAGUARA",
+    "postalCode": "05116001",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3621-9100"
+  },
+  {
+    "cnpj": "04.492.408/0001-89",
+    "name": "ASSOCIACAO BENEFICENTE GUAINUMBI",
+    "address": "RUA EMANUEL LIST, 96 — CHACARA FLORIDA",
+    "postalCode": "04949175",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5895-7501"
+  },
+  {
+    "cnpj": "04.084.230/0001-37",
+    "name": "ASSOCIACAO BENEFICENTE GUILHERMINA MARIA DE JESUS",
+    "address": "AVENIDA PAULO GUILGUER REIMBERG, 7003 — CHACARA SANTO AMARO",
+    "postalCode": "04858570",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11)5974-9520"
+  },
+  {
+    "cnpj": "66.511.833/0001-25",
+    "name": "ASSOCIACAO BENEFICENTE PARSIFAL",
+    "address": "RUA ROBELIA, 59 — JARDIM PRUDENCIA",
+    "postalCode": "04648240",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5547-0201"
+  },
+  {
+    "cnpj": "71.729.628/0001-70",
+    "name": "ASSOCIACAO BENEFICENTE SANTA FE",
+    "address": "RUA RIO GRANDE, 853 — VILA MARIANA",
+    "postalCode": "04018003",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5549-0564"
+  },
+  {
+    "cnpj": "61.577.110/0001-05",
+    "name": "ASSOCIACAO BENEFICENTE VIVENDA DA CRIANCA",
+    "address": "RUA HENRIQUE HESSEL, 300 — PARELHEIROS",
+    "postalCode": "04882010",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5920-8492"
+  },
+  {
+    "cnpj": "59.641.340/0001-44",
+    "name": "ASSOCIACAO BRASILEIRA BENEFICENTE ASLAN",
+    "address": "RUA FREDERICO RENE DE JAEGHER, 1194 — RIO BONITO",
+    "postalCode": "04826010",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5925-3190"
+  },
+  {
+    "cnpj": "53.689.287/0001-75",
+    "name": "ASSOCIACAO BRASILEIRA DE ESCLEROSE MULTIPLA  ABEM",
+    "address": "AV INDIANAPOLIS, 2752 — PLANALTO PAULISTA",
+    "postalCode": "04062003",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5587-6050"
+  },
+  {
+    "cnpj": "50.711.845/0001-63",
+    "name": "ASSOCIACAO BRASILEIRA DE TALASSEMIA  ABRASTA",
+    "address": "RUA DOUTOR FERNANDES COELHO, 64 — PINHEIROS",
+    "postalCode": "05423040",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3149-5190"
+  },
+  {
+    "cnpj": "08.608.749/0001-28",
+    "name": "ASSOCIACAO CASA DA FAMILIA",
+    "address": "ALAMEDA DOS UAPES, 690 — PLANALTO PAULISTA",
+    "postalCode": "04067031",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5055-5725"
+  },
+  {
+    "cnpj": "07.883.701/0001-65",
+    "name": "ASSOCIACAO CASA DOS CURUMINS",
+    "address": "RUA DOS MANDIS, 48 — BALNEARIO SAO FRANCISCO",
+    "postalCode": "04473000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5672-5131"
+  },
+  {
+    "cnpj": "74.682.550/0001-74",
+    "name": "ASSOCIACAO COMUNITARIA DESPERTAR",
+    "address": "RUA  ANTONIO MACHADO SOBRINHO, 220 — JARDIM VILAS BOAS",
+    "postalCode": "04416070",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5621-0901"
+  },
+  {
+    "cnpj": "11.297.788/0001-66",
+    "name": "ASSOCIACAO COMUNITARIA EUGENIO GOES",
+    "address": "RUA DAPOLI, 9 — JARDIM SANTA EDWIGES",
+    "postalCode": "04913080",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 99206-1207"
+  },
+  {
+    "cnpj": "02.902.759/0001-95",
+    "name": "ASSOCIACAO COMUNITARIA PEQUENO PRINCIPE",
+    "address": "RUA AMARO ALVES DO ROSARIO, 951 — PARELHEIROS",
+    "postalCode": "04884000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5921-4672"
+  },
+  {
+    "cnpj": "43.970.029/0001-09",
+    "name": "ASSOCIACAO CRISTA LUIS CARLOS ELO DO AMOR CASA DE CRIANCAS",
+    "address": "RUA GUIOMAR NOVAES, 88 — JARAGUA",
+    "postalCode": "05185000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3941-4801"
+  },
+  {
+    "cnpj": "08.926.821/0001-65",
+    "name": "ASSOCIACAO CULTURAL E COMUNITARIA SORRISO DO FUTURO",
+    "address": "RUA JURITIS, 71 — COLONIA",
+    "postalCode": "04895240",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5920-2353"
+  },
+  {
+    "cnpj": "11.042.809/0001-00",
+    "name": "ASSOCIACAO DA CIDADE AZUL E ADJACENTES ACAAD",
+    "address": "RUA BRAS DE MELO MONIZ, 160 — CIDADE DOMITILA",
+    "postalCode": "04387140",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3439-4705"
+  },
+  {
+    "cnpj": "53.812.574/0001-20",
+    "name": "ASSOCIACAO DE AMIGOS DOS EXCEPCIONAIS DO BROOKLIN",
+    "address": "RUA MARQUES DE CASCAIS, 477 — BROOKLIN",
+    "postalCode": "04557030",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5533-0087"
+  },
+  {
+    "cnpj": "04.589.879/0001-00",
+    "name": "ASSOCIACAO DE AMPARO AO IDOSO",
+    "address": "AVENIDA BRIGADEIRO FARIA LIMA, 4509 — ITAIM BIBI",
+    "postalCode": "04538133",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11  3071-4040"
+  },
+  {
+    "cnpj": "05.972.800/0001-98",
+    "name": "ASSOCIACAO DE APOIO A CRIANCA E AO ADOLESCENTE BOM PASTOR",
+    "address": "RUA AMARO GOMES, 200 — JARDIM ARACATI",
+    "postalCode": "04949120",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5895-5892"
+  },
+  {
+    "cnpj": "73.950.362/0001-17",
+    "name": "ASSOCIACAO DE APOIO A FAMILIA AO GRUPO E A COMUNIDADE SAO PAULO",
+    "address": "RUA CONEGO ANTONIO PINTO, 525 — JD PEDREIRA",
+    "postalCode": "04468000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5543-1851"
+  },
+  {
+    "cnpj": "04.590.929/0001-79",
+    "name": "ASSOCIACAO DE APOIO A INFANCIA E ADOLESCENCIA NOSSA TURMA",
+    "address": "AVENIDA DOUTOR GASTAO VIDIGAL, 1946 — VILA LEOPOLDINA",
+    "postalCode": "05316900",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "3832-3366"
+  },
+  {
+    "cnpj": "43.567.809/0001-02",
+    "name": "ASSOCIACAO DE DIABETES JUVENIL",
+    "address": "RUA PADRE ANTONIO TOMAS, 213 — AGUA BRANCA",
+    "postalCode": "05003010",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 97148-0465"
+  },
+  {
+    "cnpj": "13.857.550/0001-73",
+    "name": "ASSOCIACAO DE EQUOTERAPIA EDUCACIONAL TEXAS RANCH",
+    "address": "AVENIDA FRANCISCO MATARAZZO, 455 — AGUA BRANCA",
+    "postalCode": "05001900",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3129-3727"
+  },
+  {
+    "cnpj": "36.553.890/0001-06",
+    "name": "ASSOCIACAO DE MORADORES RUMO AO FUTURO",
+    "address": "AVENIDA MORADA NOVA, 104 — GUARAPIRANGA",
+    "postalCode": "04911040",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 97775-3770"
+  },
+  {
+    "cnpj": "22.719.774/0001-00",
+    "name": "ASSOCIACAO DE MULHERES CASA NOVA MULHER",
+    "address": "RUA ADOLFO KURT BOEHM, 43 — JARDIM CENTENRIO",
+    "postalCode": "05463040",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3859-3411"
+  },
+  {
+    "cnpj": "55.068.811/0001-16",
+    "name": "ASSOCIACAO DE PAIS BANESPIANOS DE EXCEPCIONAIS APABEX",
+    "address": "PRACA MONTEIRO DOS SANTOS, 43 — VILA MARIANA",
+    "postalCode": "04117095",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5908-9000"
+  },
+  {
+    "cnpj": "15.161.567/0001-17",
+    "name": "ASSOCIACAO DIVINA MISERICORDIA",
+    "address": "RUA FONTE NOVA, 23 — JARDIM DAS FONTES",
+    "postalCode": "04894470",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5975-4091"
+  },
+  {
+    "cnpj": "69.100.576/0001-27",
+    "name": "ASSOCIACAO DO ABRIGO NOSSA SENHORA RAINHA DA PAZ DO JARDIM FIM DE SEMANA",
+    "address": "RUA YOSHIMARA MINAMOTO, 1164 A — JARDIM BRASILIA",
+    "postalCode": "05847620",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5819-8984"
+  },
+  {
+    "cnpj": "62.808.894/0001-06",
+    "name": "ASSOCIACAO DOS CAVALEIROS DA SOBERANA ORDEM MILITAR DE MALTA DE SAO PAULO E BRASIL MERIDIONAL",
+    "address": "RUA ORLANDO MURGEL, 161 — PARQUE JABAQUARA",
+    "postalCode": "04358090",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5070-6550"
+  },
+  {
+    "cnpj": "56.098.460/0001-59",
+    "name": "ASSOCIACAO DOS MORADORES DA VILA ARCO IRIS",
+    "address": "RUA EDUARDO DAS NEVES, 16 — VILA ARCO IRIS",
+    "postalCode": "04852760",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5931-9325"
+  },
+  {
+    "cnpj": "20.428.360/0001-04",
+    "name": "ASSOCIACAO EDUCACIONAL E ASSISTENCIAL CASA DO PASSARINHO",
+    "address": "RUA LIRA CEARENSE, 554 — CAMPO LIMPO",
+    "postalCode": "05763450",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 98815-2105"
+  },
+  {
+    "cnpj": "74.566.035/0001-29",
+    "name": "ASSOCIACAO EDUCACIONAL E ASSISTENCIAL CASA DO ZEZINHO",
+    "address": "RUA ANALIA DOLACIO ALBINO, 30 — PARQUE MARIA HELENA",
+    "postalCode": "05854020",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5818-0878"
+  },
+  {
+    "cnpj": "06.256.776/0001-53",
+    "name": "ASSOCIACAO FALA MULHER",
+    "address": "RUA ALVARO NUNES, 184 — VILA CONGONHAS",
+    "postalCode": "04612070",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3271-7099"
+  },
+  {
+    "cnpj": "86.793.999/0001-99",
+    "name": "ASSOCIACAO IDADE DOURADA DE PINHEIROS",
+    "address": "RUA PAULO GONTIJO DE CARVALHO, 13 — CERQUEIRA CESAR",
+    "postalCode": "05404020",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5093-1769"
+  },
+  {
+    "cnpj": "08.849.829/0001-75",
+    "name": "ASSOCIACAO INSTITUTO PAPEL SOLIDARIO",
+    "address": "RUA JOSE DE OLIVEIRA COELHO, 180 — VILA ANDRADE",
+    "postalCode": "05727240",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3739-0247"
+  },
+  {
+    "cnpj": "44.807.261/0001-93",
+    "name": "ASSOCIACAO LAR TERNURA SAO CAMILO",
+    "address": "RUA INACIO CERVANTES, 630 — PARQUE IPE",
+    "postalCode": "05572000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3782-5949"
+  },
+  {
+    "cnpj": "44.006.203/0001-60",
+    "name": "ASSOCIACAO MARIA HELEN DREXEL AMHD",
+    "address": "RUA MIGUEL SUTIL, 590 — VILA CORDEIRO",
+    "postalCode": "04583050",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5044-9023"
+  },
+  {
+    "cnpj": "02.833.597/0001-80",
+    "name": "ASSOCIACAO METODISTA DE ACAO SOCIAL DE PINHEIROS AMAS PINHEIROS",
+    "address": "RUA DEPUTADO LACERDA FRANCO, 318 — PINHEIROS",
+    "postalCode": "05418001",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3813-3279"
+  },
+  {
+    "cnpj": "04.955.194/0001-30",
+    "name": "ASSOCIACAO METODISTA LIVRE AGENTE",
+    "address": "RUA VERIANO PEREIRA, 52 — VILA DA SAUDE",
+    "postalCode": "04144030",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3714-7537"
+  },
+  {
+    "cnpj": "62.569.835/0001-14",
+    "name": "ASSOCIACAO NACIONAL DE ASSISTENCIA AO CARDIACO ANAC",
+    "address": "RUA CARAVELAS, 527 — IBIRAPUERA",
+    "postalCode": "04011031",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5093-1769"
+  },
+  {
+    "cnpj": "62.440.045/0001-34",
+    "name": "ASSOCIACAO OBRA DO BERCO",
+    "address": "RUA DO CHICO NUNES, 173 — JARDIM  REBOUCAS",
+    "postalCode": "05734110",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5843-2333"
+  },
+  {
+    "cnpj": "43.420.520/0001-66",
+    "name": "ASSOCIACAO PARA PROFISSIONALIZACAO ORIENTACAO E INTEGRACAO DO EXCEPCIONAL APOIE",
+    "address": "AVENIDA PREFEITO FABIO PRADO, 17 — JARDIM VILA MARIANA",
+    "postalCode": "04116000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5575-0257"
+  },
+  {
+    "cnpj": "02.072.483/0001-65",
+    "name": "ASSOCIACAO PRO HOPE  APOIO A CRIANCA COM CANCER",
+    "address": "ALAMEDA DOS GUAINUMBIS, 1027 — PLANALTO PAULISTA",
+    "postalCode": "04067002",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5056-9700"
+  },
+  {
+    "cnpj": "03.783.381/0001-10",
+    "name": "ASSOCIACAO PROBRASIL",
+    "address": "RUA JOSE VILA BUSQUETS, 499 — JARDIM DOS ALAMOS",
+    "postalCode": "04883090",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5926-0483"
+  },
+  {
+    "cnpj": "42.899.515/0001-15",
+    "name": "ASSOCIACAO PROJETO STEPHAN JUNIO GONCALVES DOS SANTOS",
+    "address": "RUA JOSE LINHARES, 26 — JORDANOPOLIS",
+    "postalCode": "04830290",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 99930-5188"
+  },
+  {
+    "cnpj": "03.960.066/0001-11",
+    "name": "ASSOCIACAO RECICLAZARO",
+    "address": "RUA MARIO, 307 — VILA ROMANA",
+    "postalCode": "05048010",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3871-5972"
+  },
+  {
+    "cnpj": "69.271.930/0001-86",
+    "name": "ASSOCIACAO SAL DA TERRA",
+    "address": "RUA BICA DE PEDRA, 294 — VILA ANGLO BRASILEIRA",
+    "postalCode": "05028140",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3671-3128"
+  },
+  {
+    "cnpj": "55.641.468/0001-57",
+    "name": "ASSOCIACAO SANTA CECILIA",
+    "address": "RUA HUMBERTO MIRANDA, 3 — JARDIM CRISTALIA",
+    "postalCode": "05843250",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5851-1941"
+  },
+  {
+    "cnpj": "31.435.074/0001-84",
+    "name": "ASSOCIACAO SOCIAL ESPORTIVA CULTURAL E AMBIENTAL DO BRASIL",
+    "address": "RUA JOSE TARTINI, 34 — JARDIM DOM JOSE",
+    "postalCode": "05886090",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 96337-6603"
+  },
+  {
+    "cnpj": "08.008.707/0001-56",
+    "name": "ASSOCIACAO SOLIDARIEDADE EM MARCHA",
+    "address": "RUA SENADOR VERGUEIRO, 243 — SANTO AMARO",
+    "postalCode": "04739060",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5852-5067"
+  },
+  {
+    "cnpj": "37.976.829/0001-34",
+    "name": "ASSOCIACAO UB",
+    "address": "RUA SILVA CORREIA, 186 — VILA NOVA CONCEICAO",
+    "postalCode": "04537040",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 97093-1818"
+  },
+  {
+    "cnpj": "57.062.366/0001-02",
+    "name": "ASSOCIACAO VIDA JOVEM",
+    "address": "RUA PADRE MARCHETTI, 240 — IPIRANGA",
+    "postalCode": "04266000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 2063-1230"
+  },
+  {
+    "cnpj": "04.831.433/0001-40",
+    "name": "ASSOCIACAO VIVER EM FAMILIA PARA UM FUTURO MELHOR",
+    "address": "RUA CLEMENTINE BRENNE, 857 — PARAISOPOLIS",
+    "postalCode": "05659000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 2113-4950"
+  },
+  {
+    "cnpj": "05.097.443/0001-66",
+    "name": "ASSOCIACAO VIVER MELHOR DO JARDIM MIRIAM",
+    "address": "RUA RAINHA DAS MISSOES, 206 — VILA MISSIONARIA",
+    "postalCode": "04430010",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11  5621-9191"
+  },
+  {
+    "cnpj": "73.482.986/0001-57",
+    "name": "BRASCRI ASSOC SUICO BRASILEIRA DE AJUDA A CRIANCA",
+    "address": "RUA  DOUTOR ARMANDO DA SILVA PRADO, 191 — JARDIM BELGICA",
+    "postalCode": "04672040",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5548-1646"
+  },
+  {
+    "cnpj": "45.219.623/0001-98",
+    "name": "CAAP ASA ASSISTENCIA SOCIAL AO ADOLESCENTE",
+    "address": "RUA PROFESSOR VILALVA JUNIOR, 339 — VILA MOINHO VELHO",
+    "postalCode": "04285120",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 2060-9920"
+  },
+  {
+    "cnpj": "61.581.773/0001-01",
+    "name": "CAMINHANDO NUCLEO DE EDUCACAO E ACAO SOCIAL",
+    "address": "RUA ROSARIA MUSSARA, 90 — VILA CALIFORNIA",
+    "postalCode": "04775150",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5541-8845"
+  },
+  {
+    "cnpj": "52.569.043/0001-96",
+    "name": "CAMP OESTE CENTRO DE ASSISTENCIA E MOTIVACAO DE PESSOAS",
+    "address": "RUA JOAO PEREIRA, 328 — LAPA",
+    "postalCode": "05074070",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3647-2284"
+  },
+  {
+    "cnpj": "50.246.529/0001-68",
+    "name": "CAMP PINHEIROS CENTRO ASSISTENCIAL DE MOTIVACAO PROFISSIONAL",
+    "address": "RUA DOUTOR VIRGILIO DE CARVALHO PINTO, 588 — PINHEIROS",
+    "postalCode": "05415020",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3814-1402"
+  },
+  {
+    "cnpj": "69.107.142/0001-59",
+    "name": "CASA ASSISTENCIAL MARIA HELENA PAULINA",
+    "address": "RUA JUDITH PASSALD ESTEVES, 137 — VILA SONIA",
+    "postalCode": "05625030",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3772-5661"
+  },
+  {
+    "cnpj": "61.054.698/0001-12",
+    "name": "CASA DA CRIANCA E DO ADOLESCENTE DE SANTO AMARO GROSSARL",
+    "address": "RUA PADRE CHICO, 320 — SANTO AMARO",
+    "postalCode": "04747090",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5686-3288"
+  },
+  {
+    "cnpj": "04.436.297/0001-93",
+    "name": "CASA DO PEQUENO CIDADAO NOSSA SENHORA APARECIDA",
+    "address": "RUA ALIANCA LIBERAL, 84 — BELA ALIANCA",
+    "postalCode": "05088000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3837-9619"
+  },
+  {
+    "cnpj": "62.788.484/0001-32",
+    "name": "CASA DOS VELHINHOS DE ONDINA LOBO",
+    "address": "RUA REGINA BADRA, 471 — JARDIM DOS ESTADOS",
+    "postalCode": "04641000",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5686-4322"
+  },
+  {
+    "cnpj": "59.483.099/0001-72",
+    "name": "CASA JOSE COLTRO",
+    "address": "AV CARLOS LACERDA, 3094 — JARDIM ROSANA",
+    "postalCode": "05789001",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5825-6818"
+  },
+  {
+    "cnpj": "57.395.287/0001-13",
+    "name": "CENPEC CENTRO DE ESTUDOS E PESQUISAS EM EDUCACAO CULTURA E ACAO COMUNITARIA",
+    "address": "RUA ARTUR DE AZEVEDO, 289 — CERQUEIRA CESAR",
+    "postalCode": "05404010",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 2132-9000"
+  },
+  {
+    "cnpj": "54.277.744/0001-87",
+    "name": "CENTRO COMUNITARIO E RECREATIVO DO JARDIM MACEDONIA",
+    "address": "RUA MONET, 150 — JARDIM MACEDONIA",
+    "postalCode": "05894380",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5825-2709"
+  },
+  {
+    "cnpj": "50.708.486/0001-95",
+    "name": "CENTRO COMUNITARIO JARDIM IPANEMA",
+    "address": "RUA JOSE CARDOSO COUTINHO, 87 — JARDIM IPANEMA",
+    "postalCode": "04784250",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5660-7399"
+  },
+  {
+    "cnpj": "07.882.523/0001-58",
+    "name": "CENTRO DE APOIO A CRIANCA COM CANCER MARTA KUBOIAMA",
+    "address": "RUA JOAO DE SANTA MARIA, 320 — VILA BRASILINA",
+    "postalCode": "04158070",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5061-1456"
+  },
+  {
+    "cnpj": "01.314.935/0001-05",
+    "name": "CENTRO DE APOIO COMUNITARIO DE PERUS",
+    "address": "RUA ENGENHEIRO NOGUEIRA SOARES, 35 — JARDIM RUSSO",
+    "postalCode": "05205110",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3917-1781"
+  },
+  {
+    "cnpj": "03.129.195/0001-62",
+    "name": "CENTRO DE DEFESA DOS DIREITOS DA CRIANCA E DO ADOLESCENTE DE INTERLAGOS  CEDECA",
+    "address": "RUA NOSSA SENHORA DE NAZARE, 51 — CIDADE DUTRA",
+    "postalCode": "04805100",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 5666-9861"
+  },
+  {
+    "cnpj": "02.970.204/0001-80",
+    "name": "CENTRO DE OBRAS SOCIAIS NOSSA SENHORA DAS GRACAS DA CAPELA DO SOCORRO",
+    "address": "RUA GAIVOTA, 30 — COLONIA",
+    "postalCode": "04895310",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 58376448"
+  },
+  {
+    "cnpj": "59.936.781/0001-73",
+    "name": "CENTRO DE PROMOCAO SOCIAL BORORE",
+    "address": "RUA GIUSEPPE BENITO PEGORARO, 93 — JARDIM LUCELIA",
+    "postalCode": "04852228",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 5976-5400"
+  },
+  {
+    "cnpj": "00.081.908/0001-77",
+    "name": "CENTRO EDUCACIONAL E PROFISSIONAL VINICIUS",
+    "address": "RUA MINISTRO EDUARDO DE CAMPOS MAIA, 25 — JARDIM BONFIGLIOLI",
+    "postalCode": "05594060",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 3733-6342"
+  },
+  {
+    "cnpj": "61.683.272/0001-28",
+    "name": "CENTRO ISRAELITA DE APOIO MULTIDISCIPLINAR CIAM",
+    "address": "RUA IRMA PIA, 78 — JAGUARE",
+    "postalCode": "05335050",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "11 3760-0068"
+  },
+  {
+    "cnpj": "03.600.845/0001-06",
+    "name": "CENTRO PARA CRIANCAS E ADOLESCENTES LUDOVICO PAVONI",
+    "address": "RUA BARAO DE CASTRO LIMA, 478 — REAL PARQUE",
+    "postalCode": "05685040",
+    "city": "São Paulo",
+    "state": "SP",
+    "phone": "(11) 99294-0512"
+  }
+]

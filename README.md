@@ -65,3 +65,9 @@ A página `/pontos` usa páginas de 30 locais e aplica município e causa no ban
 A curadoria oferece a fila “Revisar informações” para locais ativos aprovados sem confirmação, sinalizados para atualização ou com confirmação anterior a 90 dias. Essa fila não altera o status público automaticamente.
 
 O assistente mantém a categoria solicitada mesmo quando não há resultados e limita o tempo das chamadas externas. O GitHub Actions executa lint, tipos, testes e build em pushes e pull requests.
+
+### Lote inicial de instituições da capital
+
+A área Administração → Curadoria inclui 100 instituições de assistência social de São Paulo, extraídas da base oficial [Pró-Social](https://dadosabertos.sp.gov.br/dataset/pro-social-organizacoes-sociais-parceiras), com dados de 14/04/2025 e licença CC BY 4.0. A seleção é única por CNPJ e prioriza CEPs 04 e 05; não é um inventário completo de ONGs ou uma confirmação de recebimento de doações. Os registros ficam em `src/data/ongs-capital.json`.
+
+Use “Cadastrar lote para revisão” ou cadastre cada instituição individualmente. A operação exige administrador, a conexão Google Maps do Lovable e as credenciais de servidor já utilizadas pelo projeto. Cada endereço precisa retornar uma localização completa, com CEP e município correspondentes. Não são usados marcadores artificiais. Falhas interrompem o lote e permitem retomá-lo; IDs determinísticos por CNPJ evitam repetir o lote, e um nome já cadastrado é preservado. Os pontos entram como pendentes e não confirmados, sem categorias presumidas. Confirme telefone, localização e doações antes de aprovar. Nenhuma migração de banco é necessária.

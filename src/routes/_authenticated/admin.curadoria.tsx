@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { OngImportPanel } from "@/components/admin/ong-import-panel";
 import { PointPhoto } from "@/components/points/point-photo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -124,6 +125,7 @@ function AdminCuradoria() {
 
   return (
     <div className="space-y-6">
+      <OngImportPanel />
       <div className="rounded-xl border border-border bg-surface p-6">
         <h2 className="text-lg font-semibold">Curadoria de pontos e redes</h2>
         <p className="mt-1 text-sm text-muted-foreground">
