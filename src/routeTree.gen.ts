@@ -18,6 +18,7 @@ import { Route as AtivarAdminRouteImport } from './routes/ativar-admin'
 import { Route as AtivarColaboradorRouteImport } from './routes/ativar-colaborador'
 import { Route as DoarRouteImport } from './routes/doar'
 import { Route as EntrarRouteImport } from './routes/entrar'
+import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
@@ -86,6 +87,11 @@ const DoarRoute = DoarRouteImport.update({
 const EntrarRoute = EntrarRouteImport.update({
   id: '/entrar',
   path: '/entrar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritosRoute = FavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -234,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/ativar-colaborador': typeof AtivarColaboradorRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
+  '/favoritos': typeof FavoritosRoute
   '/mcp': typeof McpRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
@@ -269,6 +276,7 @@ export interface FileRoutesByTo {
   '/ativar-colaborador': typeof AtivarColaboradorRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
+  '/favoritos': typeof FavoritosRoute
   '/mcp': typeof McpRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
@@ -305,6 +313,7 @@ export interface FileRoutesById {
   '/ativar-colaborador': typeof AtivarColaboradorRoute
   '/doar': typeof DoarRoute
   '/entrar': typeof EntrarRoute
+  '/favoritos': typeof FavoritosRoute
   '/mcp': typeof McpRoute
   '/pedir-ajuda': typeof PedirAjudaRoute
   '/pontos': typeof PontosRouteWithChildren
@@ -342,6 +351,7 @@ export interface FileRouteTypes {
     | '/ativar-colaborador'
     | '/doar'
     | '/entrar'
+    | '/favoritos'
     | '/mcp'
     | '/pedir-ajuda'
     | '/pontos'
@@ -377,6 +387,7 @@ export interface FileRouteTypes {
     | '/ativar-colaborador'
     | '/doar'
     | '/entrar'
+    | '/favoritos'
     | '/mcp'
     | '/pedir-ajuda'
     | '/pontos'
@@ -412,6 +423,7 @@ export interface FileRouteTypes {
     | '/ativar-colaborador'
     | '/doar'
     | '/entrar'
+    | '/favoritos'
     | '/mcp'
     | '/pedir-ajuda'
     | '/pontos'
@@ -449,6 +461,7 @@ export interface RootRouteChildren {
   AtivarColaboradorRoute: typeof AtivarColaboradorRoute
   DoarRoute: typeof DoarRoute
   EntrarRoute: typeof EntrarRoute
+  FavoritosRoute: typeof FavoritosRoute
   McpRoute: typeof McpRoute
   PedirAjudaRoute: typeof PedirAjudaRoute
   PontosRoute: typeof PontosRouteWithChildren
@@ -524,6 +537,13 @@ declare module '@tanstack/react-router' {
       path: '/entrar'
       fullPath: '/entrar'
       preLoaderRoute: typeof EntrarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/favoritos': {
+      id: '/favoritos'
+      path: '/favoritos'
+      fullPath: '/favoritos'
+      preLoaderRoute: typeof FavoritosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -771,6 +791,7 @@ const rootRouteChildren: RootRouteChildren = {
   AtivarColaboradorRoute: AtivarColaboradorRoute,
   DoarRoute: DoarRoute,
   EntrarRoute: EntrarRoute,
+  FavoritosRoute: FavoritosRoute,
   McpRoute: McpRoute,
   PedirAjudaRoute: PedirAjudaRoute,
   PontosRoute: PontosRouteWithChildren,

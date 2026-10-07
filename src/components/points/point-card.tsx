@@ -1,3 +1,5 @@
+import { PointActions } from "@/components/points/point-actions";
+import { pointReviewReason } from "@/lib/point-freshness";
 import { whatsappLink } from "@/lib/contact-links";
 import { Link } from "@tanstack/react-router";
 
@@ -16,10 +18,17 @@ export function PointCard({
   point: NearbyPoint;
   onHighlight?: (id: string) => void;
   active?: boolean;
-  needs?: { urgency: string; category_label: string; note: string | null; updated_at?: string }[];
+  needs?: {
+    urgency: string;
+    category_label: string;
+    note: string | null;
+    updated_at?: string;
+    expires_at?: string | null;
+  }[];
   context?: "donation" | "support";
 }) {
   const distance = formatDistance(point.distance_km);
+  const reviewReason = pointReviewReason(point);
 
   return (
     <article
@@ -44,7 +53,7 @@ export function PointCard({
           {point.city}
           {point.state ? `/${point.state}` : ""}
         </p>
-        {point.confirmation_status === "confirmed" ? (
+        {point.confirmation_status === "confirmed" && point.confirmed_at ? (
           <Badge className="mt-2 text-xs">Recebimento de doações confirmado</Badge>
         ) : null}
         {point.confirmed_at && (
@@ -55,6 +64,9 @@ export function PointCard({
               : ""}
           </p>
         )}
+        {reviewReason ? (
+          <p className="mt-2 rounded border border-border bg-surface p-2 text-xs">{reviewReason}</p>
+        ) : null}
         {point.opening_hours ? (
           <p className="mt-1 text-xs text-muted-foreground">
             Horário de funcionamento: {point.opening_hours}
@@ -86,6 +98,19 @@ export function PointCard({
             )}
           </div>
         )}
+        {needs.length > 0 ? (
+          <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+            {needs.slice(0, 3).map((need, index) => (
+              <li key={index}>
+                {need.note ? `${need.category_label}: ${need.note}` : need.category_label}
+                {need.expires_at
+                  ? ` · válido até ${need.expires_at.split("-").reverse().join("/")}`
+                  : " · validade não informada; confirme antes de doar"}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <PointActions point={point} />
         <div className="mt-3 flex flex-wrap gap-2">
           <Button asChild size="sm" variant="outline">
             <Link to="/pontos/$pointId" params={{ pointId: point.id }}>

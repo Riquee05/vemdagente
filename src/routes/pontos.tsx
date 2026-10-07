@@ -1,3 +1,4 @@
+import { accessibilityFields, type AccessibilityField } from "@/lib/accessibility";
 import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import {
   createFileRoute,
@@ -34,6 +35,10 @@ export const Route = createFileRoute("/pontos")({
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(search["causa"])
         ? search["causa"]
         : "all",
+    acessibilidade: accessibilityFields.some(([field]) => field === search["acessibilidade"])
+      ? (search["acessibilidade"] as AccessibilityField)
+      : "",
+    necessidades: search["necessidades"] === true || search["necessidades"] === "true",
     pagina:
       Number.isSafeInteger(Number(search["pagina"])) && Number(search["pagina"]) > 0
         ? Math.min(Number(search["pagina"]), 10000)
@@ -71,6 +76,7 @@ function PontosLayout() {
 
 function PontosPage() {
   const { cidade: city, causa: causeId, pagina: page, bairro: neighborhood } = Route.useSearch();
+  const { acessibilidade: accessibility, necessidades: needsOnly } = Route.useSearch();
   const navigate = Route.useNavigate();
   const [cityInput, setCityInput] = useState(city);
   const [neighborhoodInput, setNeighborhoodInput] = useState(neighborhood);
@@ -86,7 +92,16 @@ function PontosPage() {
     setSelectedId(null);
   }, [city, causeId, page, neighborhood]);
   const updateFilters = (cidade: string, causa: string, pagina = 1, bairro = neighborhood) =>
-    void navigate({ search: { cidade, causa, pagina, bairro } });
+    void navigate({
+      search: {
+        cidade,
+        causa,
+        pagina,
+        bairro,
+        acessibilidade: accessibility,
+        necessidades: needsOnly,
+      },
+    });
   const findNearby = () => {
     if (!navigator.geolocation) {
       setLocationError("Seu navegador não oferece localização. Use município e bairro.");
@@ -114,9 +129,27 @@ function PontosPage() {
     );
   };
   const points = useQuery({
-    queryKey: ["verified-points", city, causeId, page, neighborhood, location],
+    queryKey: [
+      "verified-points",
+      city,
+      causeId,
+      page,
+      neighborhood,
+      location,
+      accessibility,
+      needsOnly,
+    ],
     queryFn: ({ signal }) =>
-      fetchVerifiedPointsPage({ city, causeId, page, signal, neighborhood, location }),
+      fetchVerifiedPointsPage({
+        city,
+        causeId,
+        page,
+        signal,
+        neighborhood,
+        location,
+        accessibility: accessibility as AccessibilityField | "",
+        needsOnly,
+      }),
   });
   const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
   const list = points.data?.points ?? [];
@@ -132,10 +165,27 @@ function PontosPage() {
     const lastPage = Math.max(1, Math.ceil(total / 30));
     if (page > lastPage)
       void navigate({
-        search: { cidade: city, causa: causeId, pagina: lastPage, bairro: neighborhood },
+        search: {
+          cidade: city,
+          causa: causeId,
+          pagina: lastPage,
+          bairro: neighborhood,
+          acessibilidade: accessibility,
+          necessidades: needsOnly,
+        },
         replace: true,
       });
-  }, [points.isSuccess, total, page, city, causeId, navigate, neighborhood]);
+  }, [
+    points.isSuccess,
+    total,
+    page,
+    city,
+    causeId,
+    navigate,
+    neighborhood,
+    accessibility,
+    needsOnly,
+  ]);
   const first = list[0];
   const center: [number, number] = first ? [first.lat, first.lng] : DEFAULT_CENTER;
 
@@ -186,7 +236,16 @@ function PontosPage() {
                   setCityInput("");
                   setNeighborhoodInput("");
                   setLocation(undefined);
-                  updateFilters("", "all", 1, "");
+                  void navigate({
+                    search: {
+                      cidade: "",
+                      causa: "all",
+                      bairro: "",
+                      pagina: 1,
+                      acessibilidade: "",
+                      necessidades: false,
+                    },
+                  });
                 }}
               >
                 Limpar
@@ -211,6 +270,58 @@ function PontosPage() {
           </div>
         </div>
 
+        <div className="mt-5 space-y-3 max-w-2xl">
+          <label htmlFor="access-filter" className="block font-semibold">
+            Acessibilidade confirmada
+          </label>
+          <select
+            id="access-filter"
+            value={accessibility}
+            className="w-full rounded border border-input bg-background p-3"
+            onChange={(event) =>
+              void navigate({
+                search: {
+                  cidade: city,
+                  causa: causeId,
+                  bairro: neighborhood,
+                  pagina: 1,
+                  acessibilidade: event.target.value as AccessibilityField | "",
+                  necessidades: needsOnly,
+                },
+              })
+            }
+          >
+            <option value="">Todos os locais</option>
+            {accessibilityFields.map(([field, label]) => (
+              <option key={field} value={field}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-muted-foreground">
+            O filtro inclui apenas respostas “Sim”. Dados ausentes são “Não informado”, não
+            significam ausência de acessibilidade. Confirme antes de ir.
+          </p>
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={needsOnly}
+              onChange={(event) =>
+                void navigate({
+                  search: {
+                    cidade: city,
+                    causa: causeId,
+                    bairro: neighborhood,
+                    pagina: 1,
+                    acessibilidade: accessibility,
+                    necessidades: event.target.checked,
+                  },
+                })
+              }
+            />
+            Mostrar apenas locais com necessidades atuais
+          </label>
+        </div>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <Button variant="outline" disabled={locating} onClick={findNearby}>
             {locating ? "Obtendo localização…" : "Perto de mim"}
@@ -264,6 +375,9 @@ function PontosPage() {
         )}
         <p className="mt-4 text-sm text-muted-foreground">
           O mapa mostra os locais desta página. Use a paginação para ver os demais.
+          {points.data?.limited
+            ? " Com filtros adicionais, a proximidade considera os 200 locais mais próximos; reduza o raio para refinar."
+            : ""}
         </p>
         <a href="#lista-de-pontos" className="mt-4 inline-block min-h-11 py-3 underline">
           Ir direto para a lista de instituições
@@ -286,6 +400,20 @@ function PontosPage() {
         </div>
 
         <MoneyNotice className="mt-8" />
+        {needs.isError ? (
+          <div role="alert" className="mt-4">
+            <p>
+              Os locais carregaram, mas não foi possível consultar as necessidades atuais. Confirme
+              com a instituição.
+            </p>
+            <Button variant="outline" onClick={() => needs.refetch()}>
+              Recarregar necessidades
+            </Button>
+          </div>
+        ) : null}
+        <Link to="/favoritos" className="mt-4 inline-block underline">
+          Ver meus favoritos
+        </Link>
 
         <div
           id="lista-de-pontos"
@@ -294,16 +422,24 @@ function PontosPage() {
           className="mt-8 space-y-3"
         >
           {points.isPending ? (
-            <p className="text-sm text-muted-foreground">Carregando pontos…</p>
+            <p role="status" className="text-sm text-muted-foreground">
+              Carregando pontos…
+            </p>
           ) : points.isError ? (
             <div role="alert">
-              <p>Não foi possível carregar os pontos.</p>
+              <p>Não foi possível carregar os pontos. Verifique a conexão e tente novamente.</p>
+              {points.error instanceof Error ? (
+                <p className="text-sm">{points.error.message}</p>
+              ) : null}
               <Button className="mt-3" onClick={() => void points.refetch()}>
                 Tentar novamente
               </Button>
             </div>
           ) : list.length === 0 ? (
             <p className="text-sm text-muted-foreground">
+              {points.data?.limited
+                ? "Nenhum local atende aos filtros entre os 200 mais próximos. Diminua o raio ou desative a proximidade para buscar em toda a cidade. "
+                : ""}
               Nenhum ponto encontrado nesta página {city ? `em “${city}”` : "ainda"}. Você pode{" "}
               <Link to="/cadastrar-ponto" className="underline">
                 cadastrar um ponto
@@ -313,7 +449,16 @@ function PontosPage() {
                 variant="outline"
                 onClick={() => {
                   setLocation(undefined);
-                  updateFilters("", "all", 1, "");
+                  void navigate({
+                    search: {
+                      cidade: "",
+                      causa: "all",
+                      bairro: "",
+                      pagina: 1,
+                      acessibilidade: "",
+                      necessidades: false,
+                    },
+                  });
                 }}
               >
                 Ver todos os locais

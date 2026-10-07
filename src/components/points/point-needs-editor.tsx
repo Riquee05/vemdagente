@@ -283,7 +283,7 @@ export function PointNeedsEditor({
               </p>
             </div>
             <div className="sm:col-span-2">
-              <Label htmlFor={`need-note-${pointId}`}>Observação (opcional)</Label>
+              <Label htmlFor={`need-note-${pointId}`}>Quantidade e orientações (opcional)</Label>
               <Input
                 id={`need-note-${pointId}`}
                 className="mt-1.5"

@@ -1,3 +1,5 @@
+import { PointActions } from "@/components/points/point-actions";
+import { pointReviewReason } from "@/lib/point-freshness";
 import { AccessibilityInfo } from "@/components/points/accessibility-info";
 import { whatsappLink } from "@/lib/contact-links";
 import { InstitutionAccessRequest } from "@/components/points/institution-access-request";
@@ -149,6 +151,7 @@ function PointDetailPage() {
               className="h-56 w-full rounded-xl"
             />
             <h1 className="mt-6 text-3xl font-semibold">{data.name}</h1>
+            {data.curation_status === "verified" ? <PointActions point={data} /> : null}
             <p className="mt-2 text-sm font-medium text-muted-foreground">
               {LOCATION_TYPE_LABELS[data.location_type] ?? "Tipo não informado"}
             </p>
@@ -171,10 +174,9 @@ function PointDetailPage() {
               {data.city}
               {data.state ? `/${data.state}` : ""}
             </p>
-            {data.confirmed_at && Date.now() - Date.parse(data.confirmed_at) > 90 * 86400000 ? (
+            {pointReviewReason(data) ? (
               <p className="mt-3 rounded-lg border border-border p-3 text-sm">
-                A última confirmação tem mais de 90 dias. Confirme contato, horários e recebimento
-                antes de ir.
+                {pointReviewReason(data)}
               </p>
             ) : null}
             {data.description ? <p className="mt-4 text-base">{data.description}</p> : null}

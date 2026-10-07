@@ -1,3 +1,4 @@
+import { pointReviewReason } from "@/lib/point-freshness";
 import { PointAccessibilityEditor } from "@/components/admin/point-accessibility-editor";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -30,6 +31,7 @@ type Filter = (typeof FILTERS)[number]["value"];
 
 function AdminCuradoria() {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
   const [filter, setFilter] = useState<Filter>("pending");
 
   const counts = useQuery({
@@ -52,7 +54,7 @@ function AdminCuradoria() {
   });
 
   const queue = useQuery({
-    queryKey: ["curation-queue", filter],
+    queryKey: ["curation-queue", filter, page],
     queryFn: async () => {
       let query = supabase
         .from("collection_points")
@@ -64,7 +66,7 @@ function AdminCuradoria() {
           ascending: filter === "stale",
           nullsFirst: true,
         })
-        .limit(100);
+        .range((page - 1) * 30, page * 30 - 1);
       if (filter === "stale") query = query.eq("is_active", true).or(reviewCondition());
       const { data, error } = await query;
       if (error) throw error;
@@ -139,7 +141,11 @@ function AdminCuradoria() {
               key={option.value}
               size="sm"
               variant={filter === option.value ? "default" : "outline"}
-              onClick={() => setFilter(option.value)}
+              aria-pressed={filter === option.value}
+              onClick={() => {
+                setFilter(option.value);
+                setPage(1);
+              }}
             >
               {option.label}
               {counts.data ? ` (${counts.data[option.value]})` : ""}
@@ -154,6 +160,14 @@ function AdminCuradoria() {
           mais de 90 dias. A revisão não altera automaticamente o status público.
         </p>
       )}
+      {counts.isError ? (
+        <div role="alert">
+          Não foi possível carregar os totais da fila.{" "}
+          <Button variant="outline" onClick={() => counts.refetch()}>
+            Recarregar totais
+          </Button>
+        </div>
+      ) : null}
       {queue.isError && (
         <div role="alert">
           Não foi possível carregar a fila.{" "}
@@ -170,6 +184,23 @@ function AdminCuradoria() {
         </p>
       )}
 
+      <nav aria-label="Páginas da curadoria" className="flex flex-wrap gap-3">
+        <Button
+          variant="outline"
+          disabled={page <= 1 || queue.isPending}
+          onClick={() => setPage(page - 1)}
+        >
+          Anterior
+        </Button>
+        <span>Página {page}</span>
+        <Button
+          variant="outline"
+          disabled={queue.isPending || items.length < 30}
+          onClick={() => setPage(page + 1)}
+        >
+          Próxima
+        </Button>
+      </nav>
       <ul className="space-y-4">
         {items.map((point) => (
           <li key={point.id} className="flex gap-4 rounded-xl border border-border bg-card p-4">
@@ -180,8 +211,13 @@ function AdminCuradoria() {
               adminAccess
             />
             <div className="min-w-0 flex-1">
+              {filter === "stale" ? (
+                <p className="mb-2 rounded border border-border bg-surface p-2 text-xs">
+                  {pointReviewReason(point)}
+                </p>
+              ) : null}
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="truncate font-semibold">{point.name}</h3>
+                <h3 className="break-words font-semibold">{point.name}</h3>
                 <Badge variant="secondary">
                   {point.source === "google_maps" ? "Google Maps" : "Cadastro manual"}
                 </Badge>

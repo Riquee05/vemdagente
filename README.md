@@ -91,3 +91,11 @@ As verificações automatizadas e de contraste não substituem testes com pessoa
 ### Busca guiada
 
 A rota `/assistente` consulta o banco público por categoria e cidade/bairro ou localização atual. Não usa Gemini, IA externa ou geocodificação. Mantém RLS, limite de requisições e paginação. A proximidade mostra até 60 locais; confirme informações com cada instituição. Não exige uma nova migração.
+
+### Recursos para visitantes e revisão
+
+Os cartões e fichas publicados oferecem favoritos locais (até 200 por navegador) e compartilhamento pelo WhatsApp. `/favoritos` consulta somente instituições ainda publicadas; limpar dados do navegador apaga os favoritos. Necessidades atuais mostram orientações e validade na lista e no assistente.
+
+Em `/pontos`, é possível filtrar necessidades ativas e acessibilidade confirmada como “Sim”. Os filtros atuam no banco antes da paginação. Proximidade com filtros adicionais considera até 200 candidatos e informa esse limite na interface. O filtro de acessibilidade depende da migração `20261007021000_point_accessibility.sql` já enviada anteriormente; se ela estiver pendente, a interface oferece retirar o filtro sem interromper a busca normal. Esta atualização não adiciona migrações.
+
+Cadastros sem confirmação datada, com mais de 90 dias ou sinalizados para atualização exibem aviso público. A fila “Revisar informações” tem paginação para alcançar todos os registros.

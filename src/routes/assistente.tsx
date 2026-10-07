@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { askAssistant, type AssistantAnswer } from "@/lib/assistant.functions";
 import { getBrowserLocation } from "@/lib/geocode";
-import { fetchCategories } from "@/lib/points";
+import { fetchActiveNeedsByPointIds, fetchCategories } from "@/lib/points";
 import { GUIDED_PAGE_SIZE, type GuidedSearch } from "@/lib/guided-search";
 
 export const Route = createFileRoute("/assistente")({
@@ -84,6 +84,12 @@ function AssistentePage() {
     mutation.mutate({ ...submitted, page });
   }
   const points = answer?.points ?? [];
+  const pointIds = points.map((point) => point.id);
+  const needs = useQuery({
+    queryKey: ["point-needs", pointIds],
+    queryFn: () => fetchActiveNeedsByPointIds(pointIds),
+    enabled: pointIds.length > 0,
+  });
   const center: [number, number] = points[0]
     ? [points[0].lat, points[0].lng]
     : submitted?.location
@@ -300,6 +306,7 @@ function AssistentePage() {
                     <PointCard
                       key={point.id}
                       point={point}
+                      needs={(needs.data ?? []).filter((need) => need.point_id === point.id)}
                       active={selectedId === point.id}
                       onHighlight={setSelectedId}
                     />
@@ -332,6 +339,17 @@ function AssistentePage() {
                   Próxima
                 </Button>
               </nav>
+            ) : null}
+            {needs.isError ? (
+              <div role="alert">
+                <p>
+                  Não foi possível consultar as necessidades atuais. Os locais encontrados continuam
+                  disponíveis.
+                </p>
+                <Button variant="outline" onClick={() => needs.refetch()}>
+                  Recarregar necessidades
+                </Button>
+              </div>
             ) : null}
             {answer?.limited ? (
               <p className="text-sm text-muted-foreground">

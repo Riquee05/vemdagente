@@ -1,4 +1,5 @@
-import { isNeedCurrent } from "@/lib/need-validity";
+import { type AccessibilityField } from "@/lib/accessibility";
+import { saoPauloToday, isNeedCurrent } from "@/lib/need-validity";
 import { supabase } from "@/integrations/supabase/client";
 
 export type ItemCategory = {
@@ -99,8 +100,13 @@ export async function fetchVerifiedPointsPage(params: {
   signal?: AbortSignal;
   neighborhood?: string;
   location?: { lat: number; lng: number; radiusKm: number } | undefined;
-}): Promise<{ points: NearbyPoint[]; total: number }> {
-  if (params.location) {
+  accessibility?: AccessibilityField | "";
+  needsOnly?: boolean;
+  favoriteIds?: string[];
+}): Promise<{ points: NearbyPoint[]; total: number; limited?: boolean }> {
+  const extraFilters = Boolean(params.accessibility || params.needsOnly || params.favoriteIds);
+  if (params.favoriteIds?.length === 0) return { points: [], total: 0 };
+  if (params.location && !extraFilters) {
     const { data, error } = await supabase
       .rpc("search_public_points_page", {
         p_lat: params.location.lat,
@@ -115,13 +121,30 @@ export async function fetchVerifiedPointsPage(params: {
     if (error) throw error;
     return data as { points: NearbyPoint[]; total: number };
   }
+  let nearbyCandidates: NearbyPoint[] | null = null;
+  if (params.location) {
+    const { data, error } = await supabase
+      .rpc("search_nearby_points", {
+        p_lat: params.location.lat,
+        p_lng: params.location.lng,
+        p_radius_km: params.location.radiusKm,
+        p_limit: 200,
+      })
+      .abortSignal(params.signal ?? new AbortController().signal);
+    if (error) throw error;
+    nearbyCandidates = (data ?? []) as NearbyPoint[];
+    if (!nearbyCandidates.length) return { points: [], total: 0 };
+  }
   const fields =
     "id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url, opening_hours, donation_method, confirmation_status, confirmed_at";
+  const relations = [
+    params.causeId !== "all" ? "point_causes!inner(cause_id)" : "",
+    params.accessibility ? `point_accessibility!inner(${params.accessibility})` : "",
+    params.needsOnly ? "point_needs!inner(is_active,expires_at)" : "",
+  ].filter(Boolean);
   let query = supabase
     .from("collection_points")
-    .select(params.causeId === "all" ? fields : `${fields}, point_causes!inner(cause_id)`, {
-      count: "exact",
-    })
+    .select([fields, ...relations].join(","), { count: "exact" })
     .eq("is_active", true)
     .eq("curation_status", "verified")
     .eq("state", "SP");
@@ -130,20 +153,44 @@ export async function fetchVerifiedPointsPage(params: {
   const neighborhood = (params.neighborhood ?? "").trim().replace(/[%_\\]/g, "");
   if (neighborhood) query = query.ilike("address", `%${neighborhood}%`);
   if (params.causeId !== "all") query = query.eq("point_causes.cause_id", params.causeId);
-  query = query
-    .order("name")
-    .order("id")
-    .range((params.page - 1) * 30, params.page * 30 - 1);
+  if (params.accessibility) query = query.eq(`point_accessibility.${params.accessibility}`, "yes");
+  if (params.needsOnly)
+    query = query
+      .eq("point_needs.is_active", true)
+      .or(`expires_at.is.null,expires_at.gte.${saoPauloToday()}`, {
+        referencedTable: "point_needs",
+      });
+  if (params.favoriteIds) query = query.in("id", params.favoriteIds);
+  if (nearbyCandidates)
+    query = query.in(
+      "id",
+      nearbyCandidates.map((point) => point.id),
+    );
+  query = query.order("name").order("id");
+  query = nearbyCandidates
+    ? query.limit(200)
+    : query.range((params.page - 1) * 30, params.page * 30 - 1);
   if (params.signal) query = query.abortSignal(params.signal);
   const { data, count, error } = await query;
-  if (error) throw error;
-  return {
-    points: ((data ?? []) as unknown as NearbyPoint[]).map((point) => ({
-      ...point,
-      distance_km: null,
-    })),
-    total: count ?? 0,
-  };
+  if (error) {
+    if (params.accessibility && ["42P01", "PGRST200", "PGRST205"].includes(error.code))
+      throw new Error(
+        "O filtro de acessibilidade ainda não está disponível. Retire esse filtro para continuar.",
+      );
+    throw error;
+  }
+  let points = ((data ?? []) as unknown as NearbyPoint[]).map((point) => ({
+    ...point,
+    distance_km: null as number | null,
+  }));
+  if (nearbyCandidates) {
+    const distances = new Map(nearbyCandidates.map((point) => [point.id, point.distance_km]));
+    points = points
+      .map((point) => ({ ...point, distance_km: distances.get(point.id) ?? null }))
+      .sort((a, b) => (a.distance_km ?? Infinity) - (b.distance_km ?? Infinity));
+    points = points.slice((params.page - 1) * 30, params.page * 30);
+  }
+  return { points, total: count ?? 0, limited: nearbyCandidates?.length === 200 };
 }
 
 export type PointDetail = NearbyPoint & {
@@ -248,6 +295,7 @@ export async function fetchActiveNeedsByPointIds(pointIds: string[]): Promise<
     category_label: string;
     note: string | null;
     updated_at: string;
+    expires_at: string | null;
   }[]
 > {
   if (pointIds.length === 0) return [];
@@ -276,5 +324,6 @@ export async function fetchActiveNeedsByPointIds(pointIds: string[]): Promise<
       category_label: row.item_categories?.label ?? "",
       note: row.note,
       updated_at: row.updated_at,
+      expires_at: row.expires_at,
     }));
 }

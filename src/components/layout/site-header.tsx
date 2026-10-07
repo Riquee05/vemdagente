@@ -12,6 +12,7 @@ const navItems = [
   { to: "/doar", label: "Doar" },
   { to: "/pedir-ajuda", label: "Pedir Ajuda" },
   { to: "/pontos", label: "Pontos" },
+  { to: "/favoritos", label: "Favoritos" },
   { to: "/assistente", label: "Assistente" },
   { to: "/voluntarios", label: "Voluntários" },
   { to: "/apoiar", label: "Apoiar" },
@@ -59,7 +60,10 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav aria-label="Navegação principal" className="hidden items-center gap-1 xl:flex">
+        <nav
+          aria-label="Navegação principal"
+          className="hidden min-w-0 flex-1 flex-wrap items-center justify-center gap-1 xl:flex"
+        >
           {navItems.map((item) => (
             <Link
               key={item.to}
