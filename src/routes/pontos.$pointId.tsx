@@ -1,3 +1,4 @@
+import { Campaigns } from "@/components/points/campaigns";
 import { PointActions } from "@/components/points/point-actions";
 import { pointReviewReason } from "@/lib/point-freshness";
 import { AccessibilityInfo } from "@/components/points/accessibility-info";
@@ -325,6 +326,7 @@ function PointDetailPage() {
               )}
             </div>
 
+            <Campaigns pointId={data.id} />
             <AccessibilityInfo pointId={data.id} />
             <InstitutionAccessRequest pointId={data.id} />
             <div className="mt-6">

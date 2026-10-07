@@ -86,6 +86,7 @@ function AssistentePage() {
   const points = answer?.points ?? [];
   const pointIds = points.map((point) => point.id);
   const needs = useQuery({
+    staleTime: 60000,
     queryKey: ["point-needs", pointIds],
     queryFn: () => fetchActiveNeedsByPointIds(pointIds),
     enabled: pointIds.length > 0,
@@ -254,6 +255,50 @@ function AssistentePage() {
             {answer ? (
               <div role="status" className="card-ink bg-surface p-5">
                 <p>{answer.reply}</p>
+                {answer.total === 0 ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {submitted?.neighborhood ? (
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setNeighborhood("");
+                          mutation.mutate({ ...submitted, neighborhood: "", page: 1 });
+                        }}
+                      >
+                        Buscar sem bairro
+                      </Button>
+                    ) : null}
+                    {submitted?.categoryId ? (
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setCategoryId("");
+                          mutation.mutate({ ...submitted, categoryId: "", page: 1 });
+                        }}
+                      >
+                        Buscar todas as categorias
+                      </Button>
+                    ) : null}
+                    {submitted?.location && submitted.location.radiusKm < 60 ? (
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setRadiusKm(60);
+                          mutation.mutate({
+                            ...submitted,
+                            location: { ...submitted.location!, radiusKm: 60 },
+                            page: 1,
+                          });
+                        }}
+                      >
+                        Ampliar para 60 km
+                      </Button>
+                    ) : null}
+                    <Link to="/pontos" className="underline">
+                      Explorar outros municípios e bairros
+                    </Link>
+                  </div>
+                ) : null}
               </div>
             ) : !mutation.isPending && !mutation.isError ? (
               <p>

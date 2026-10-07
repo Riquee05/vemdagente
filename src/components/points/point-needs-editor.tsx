@@ -1,3 +1,4 @@
+import { CampaignEditor } from "@/components/points/campaign-editor";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
@@ -238,7 +239,8 @@ export function PointNeedsEditor({
 
       {!readOnly && (
         <div className="rounded-lg border border-dashed border-border p-4">
-          <h4 className="text-sm font-semibold">Adicionar necessidade</h4>
+          <CampaignEditor pointId={pointId} />
+          <h4 className="mt-4 text-sm font-semibold">Adicionar necessidade</h4>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <div>
               <Label htmlFor={`need-category-${pointId}`}>Categoria</Label>

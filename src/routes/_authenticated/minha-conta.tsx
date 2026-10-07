@@ -1,3 +1,4 @@
+import { InstitutionEditor } from "@/components/points/institution-editor";
 import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -315,7 +316,7 @@ function MinhaContaPage() {
                       <Sheet>
                         <SheetTrigger asChild>
                           <Button size="sm" variant="outline">
-                            Editar necessidades
+                            Gerenciar instituição
                           </Button>
                         </SheetTrigger>
                         <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
@@ -324,6 +325,7 @@ function MinhaContaPage() {
                           </SheetHeader>
                           <div className="mt-6">
                             <PointNeedsEditor pointId={point.id} />
+                            <InstitutionEditor pointId={point.id} />
                           </div>
                         </SheetContent>
                       </Sheet>

@@ -1,3 +1,4 @@
+import { readInstitutionProposal } from "@/lib/institution-workspace";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -25,6 +26,8 @@ function CommunityReview() {
       toast.success("Revisão salva.");
       void queryClient.invalidateQueries({ queryKey: ["community-review"] });
       void queryClient.invalidateQueries({ queryKey: ["published-testimonials"] });
+      void queryClient.invalidateQueries({ queryKey: ["verified-points"] });
+      void queryClient.invalidateQueries({ queryKey: ["project-health"] });
     },
     onError: (error) =>
       toast.error(error instanceof Error ? error.message : "Não foi possível salvar."),
@@ -149,7 +152,39 @@ function CommunityReview() {
                   Ver instituição
                 </Link>
               </Button>
-              <p className="mt-3 whitespace-pre-wrap break-words">{item.message}</p>
+              {readInstitutionProposal(item.message) ? (
+                <div className="mt-3 space-y-2">
+                  <p className="font-semibold">Atualização proposta pelo responsável</p>
+                  <dl>
+                    {Object.entries(readInstitutionProposal(item.message)!.patch).map(
+                      ([field, value]) => (
+                        <div key={field}>
+                          <dt className="font-medium">
+                            {{
+                              name: "Nome",
+                              phone: "Telefone",
+                              whatsapp: "WhatsApp",
+                              website: "Site",
+                              opening_hours: "Funcionamento",
+                              donation_hours: "Doações",
+                              description: "Apresentação",
+                            }[field as "name"] ?? field}
+                          </dt>
+                          <dd className="whitespace-pre-wrap break-words">
+                            {value || "Não informado"}
+                          </dd>
+                        </div>
+                      ),
+                    )}
+                  </dl>
+                  <p className="text-xs">
+                    A aprovação aplica estes campos à ficha. Se a ficha mudou desde o envio, a
+                    proposta será bloqueada.
+                  </p>
+                </div>
+              ) : (
+                <p className="mt-3 whitespace-pre-wrap break-words">{item.message}</p>
+              )}
               {item.contact && <p className="mt-2 text-sm">Contato: {item.contact}</p>}
               {status === "pending" && (
                 <div className="mt-4 flex gap-2">
@@ -159,7 +194,9 @@ function CommunityReview() {
                       review.mutate({ id: item.id, kind: "correction", status: "approved" })
                     }
                   >
-                    Marcar corrigida
+                    {readInstitutionProposal(item.message)
+                      ? "Aprovar e atualizar ficha"
+                      : "Marcar corrigida"}
                   </Button>
                   <Button
                     variant="destructive"

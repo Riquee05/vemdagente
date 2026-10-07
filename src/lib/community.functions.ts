@@ -1,3 +1,4 @@
+import { readInstitutionProposal } from "@/lib/institution-workspace";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -137,11 +138,29 @@ export const reviewCommunitySubmission = createServerFn({ method: "POST" })
           "Não foi possível revisar. Verifique se há outro responsável ou se o pedido já foi revisado.",
         );
     } else if (data.kind === "correction") {
-      const { error } = await context.supabase
+      const { data: correction, error: readError } = await context.supabase
         .from("point_corrections")
-        .update({ status: data.status === "approved" ? "resolved" : "dismissed" })
-        .eq("id", data.id);
-      if (error) throw new Error("Não foi possível revisar a correção.");
+        .select("message,status")
+        .eq("id", data.id)
+        .maybeSingle();
+      if (readError || !correction || correction.status !== "open")
+        throw new Error("Correção já revisada ou ausente.");
+      if (data.status === "approved" && readInstitutionProposal(correction.message)) {
+        const { error } = await context.supabase.rpc("apply_institution_proposal", {
+          p_id: data.id,
+        });
+        if (error)
+          throw new Error(
+            "Não foi possível aplicar a proposta. Confira a migração, o vínculo e se a ficha mudou desde o envio.",
+          );
+      } else {
+        const { error } = await context.supabase
+          .from("point_corrections")
+          .update({ status: data.status === "approved" ? "resolved" : "dismissed" })
+          .eq("id", data.id)
+          .eq("status", "open");
+        if (error) throw new Error("Não foi possível revisar a correção.");
+      }
     } else {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: rows, error } = await supabaseAdmin

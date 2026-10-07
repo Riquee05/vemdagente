@@ -1,93 +1,96 @@
 import { AccessibleForm } from "@/components/accessibility/accessible-form";
-import { useState, type FormEvent } from "react";
-import { toast } from "sonner";
-
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
-
-/** Envia uma sugestão de correção para revisão da administração (não altera o cadastro). */
+import { feedbackKinds } from "@/lib/institution-workspace";
+import { submitContactFeedback } from "@/lib/institution-workspace.functions";
 export function SuggestCorrection({ pointId }: { pointId: string }) {
   const [open, setOpen] = useState(false);
+  const [kind, setKind] = useState<"phone" | "item" | "hours" | "closed" | "other">("other");
   const [message, setMessage] = useState("");
   const [contact, setContact] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    if (message.trim().length < 5) {
-      toast.error("Descreva a correção em pelo menos algumas palavras.");
-      return;
-    }
-    setSending(true);
-    const { data: auth } = await supabase.auth.getUser();
-    const { error } = await supabase.from("point_corrections").insert({
-      point_id: pointId,
-      message: message.trim().slice(0, 2000),
-      contact: contact.trim().slice(0, 200) || null,
-      submitted_by: auth.user?.id ?? null,
-    });
-    setSending(false);
-    if (error) {
-      toast.error("Não conseguimos enviar agora. Tente de novo em instantes.");
-      return;
-    }
-    setSent(true);
-  }
-
-  if (sent) {
+  const [website, setWebsite] = useState("");
+  const send = useServerFn(submitContactFeedback);
+  const mutation = useMutation({
+    mutationFn: () => send({ data: { point_id: pointId, kind, message, contact, website } }),
+  });
+  if (mutation.isSuccess)
     return (
-      <p className="rounded-lg border border-border bg-surface p-4 text-sm">
-        Obrigado! Sua sugestão foi enviada para revisão. O cadastro só muda depois que a
-        administração conferir.
+      <p role="status" className="rounded border border-border bg-surface p-4">
+        Obrigado! Seu relato foi enviado à curadoria. As informações públicas só mudam após revisão.
       </p>
     );
-  }
-
-  if (!open) {
-    return (
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
-        Sugerir correção
-      </Button>
-    );
-  }
-
   return (
-    <AccessibleForm
-      onSubmit={submit}
-      className="space-y-3 rounded-lg border border-border bg-surface p-4"
-    >
-      <label className="block text-sm font-medium" htmlFor="correction-message">
-        O que está errado ou desatualizado?
-      </label>
-      <Textarea
-        id="correction-message"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        maxLength={2000}
-        rows={4}
-        placeholder="Ex.: o telefone mudou, o local não recebe mais roupas, horário diferente…"
-      />
-      <label className="block text-sm font-medium" htmlFor="correction-contact">
-        Seu contato (opcional)
-      </label>
-      <Input
-        id="correction-contact"
-        value={contact}
-        onChange={(e) => setContact(e.target.value)}
-        maxLength={200}
-        placeholder="E-mail ou telefone, caso precisemos tirar dúvidas"
-      />
-      <div className="flex gap-2">
-        <Button type="submit" size="sm" disabled={sending}>
-          {sending ? "Enviando…" : "Enviar sugestão"}
-        </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={() => setOpen(false)}>
-          Cancelar
-        </Button>
+    <section className="rounded border border-border p-4">
+      <h2 className="font-semibold">Conseguiu entrar em contato?</h2>
+      <p className="mt-2 text-sm">Se encontrou um problema, conte para a curadoria conferir.</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {feedbackKinds.map(([value, label]) => (
+          <Button
+            key={value}
+            variant="outline"
+            size="sm"
+            type="button"
+            aria-pressed={open && kind === value}
+            onClick={() => {
+              setKind(value);
+              setOpen(true);
+            }}
+          >
+            {label}
+          </Button>
+        ))}
       </div>
-    </AccessibleForm>
+      {open ? (
+        <AccessibleForm
+          className="mt-4 space-y-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            mutation.mutate();
+          }}
+        >
+          <label htmlFor={`correction-${pointId}`} className="block">
+            O que aconteceu? Não inclua dados de pessoas atendidas.
+          </label>
+          <Textarea
+            id={`correction-${pointId}`}
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            required
+            minLength={5}
+            maxLength={1000}
+          />
+          <label htmlFor={`contact-${pointId}`} className="block">
+            Seu contato (opcional, visível apenas para revisão)
+          </label>
+          <Input
+            id={`contact-${pointId}`}
+            value={contact}
+            onChange={(event) => setContact(event.target.value)}
+            maxLength={200}
+          />
+          <div hidden aria-hidden="true">
+            <label htmlFor={`website-${pointId}`}>Site</label>
+            <input
+              id={`website-${pointId}`}
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(event) => setWebsite(event.target.value)}
+            />
+          </div>
+          {mutation.isError ? <p role="alert">{mutation.error.message}</p> : null}
+          <Button type="submit" disabled={mutation.isPending}>
+            {mutation.isPending ? "Enviando…" : "Enviar para revisão"}
+          </Button>
+          <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+            Cancelar
+          </Button>
+        </AccessibleForm>
+      ) : null}
+    </section>
   );
 }

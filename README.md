@@ -99,3 +99,13 @@ Os cartões e fichas publicados oferecem favoritos locais (até 200 por navegado
 Em `/pontos`, é possível filtrar necessidades ativas e acessibilidade confirmada como “Sim”. Os filtros atuam no banco antes da paginação. Proximidade com filtros adicionais considera até 200 candidatos e informa esse limite na interface. O filtro de acessibilidade depende da migração `20261007021000_point_accessibility.sql` já enviada anteriormente; se ela estiver pendente, a interface oferece retirar o filtro sem interromper a busca normal. Esta atualização não adiciona migrações.
 
 Cadastros sem confirmação datada, com mais de 90 dias ou sinalizados para atualização exibem aviso público. A fila “Revisar informações” tem paginação para alcançar todos os registros.
+
+### Instituições, campanhas e saúde do projeto
+
+Aplique `supabase/migrations/20261007140000_institution_campaigns.sql` antes de ativar campanhas e a aprovação das propostas de atualização. A migração executa em transação e preserva dados e permissões existentes: acrescenta campos de campanha nas necessidades, fecha campanhas com meta completa, bloqueia inserções diretas de correções e permite aprovar propostas de forma atômica. Não basta publicar o código para aplicar a migração.
+
+Em Minha conta → Gerenciar instituição, responsáveis com vínculo aprovado propõem contatos, horários, nome e apresentação para revisão em Administração → Comunidade. Endereço, coordenadas, vínculo e publicação não são alteráveis por esse formulário. A aprovação verifica o vínculo atual e a versão da ficha, aplica os campos permitidos e grava auditoria. Necessidades e campanhas continuam sob as permissões do banco; os valores recebidos são informados pela instituição.
+
+Relatos de contato vão à fila de correções por função de servidor com validação, honeypot e limite persistente. Correções, propostas e pedidos de acesso compartilham a cota de cinco solicitações institucionais por dia por identificador protegido.
+
+Administração → Visão geral reúne cadastros sem contato, confirmações antigas, correções pendentes, necessidades vencidas e pedidos de vínculo. As buscas sem resultados oferecem ações explícitas para retirar filtros ou ampliar o raio; nunca mudam os critérios silenciosamente. Mapas públicos começam recolhidos, fotos são solicitadas perto da área visível e links privados de fotos são reaproveitados por até 45 minutos em caches separados para público/admin.

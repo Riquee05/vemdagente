@@ -683,6 +683,10 @@ export type Database = {
       }
       point_needs: {
         Row: {
+          campaign_title: string | null
+          target_quantity: number | null
+          received_quantity: number
+          quantity_unit: string | null
           category_id: string
           created_at: string
           expires_at: string | null
@@ -694,6 +698,10 @@ export type Database = {
           urgency: string
         }
         Insert: {
+          campaign_title?: string | null
+          target_quantity?: number | null
+          received_quantity?: number
+          quantity_unit?: string | null
           category_id: string
           created_at?: string
           expires_at?: string | null
@@ -705,6 +713,10 @@ export type Database = {
           urgency?: string
         }
         Update: {
+          campaign_title?: string | null
+          target_quantity?: number | null
+          received_quantity?: number
+          quantity_unit?: string | null
           category_id?: string
           created_at?: string
           expires_at?: string | null
@@ -1151,6 +1163,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_institution_proposal: { Args: { p_id: string }; Returns: undefined }
       consume_request_rate_limit: {
         Args: {
           p_identifier_hash: string

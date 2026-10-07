@@ -28,9 +28,10 @@ export function PointsMap(props: {
   selectedId?: string | null;
   fitBounds?: boolean;
   className?: string;
+  initiallyVisible?: boolean;
 }) {
-  const { className, ...rest } = props;
-  const [visible, setVisible] = useState(true);
+  const { className, initiallyVisible = Boolean(props.onPick), ...rest } = props;
+  const [visible, setVisible] = useState(initiallyVisible);
   const mapId = useId();
   return (
     <div className="min-w-0">
@@ -47,25 +48,26 @@ export function PointsMap(props: {
         O mapa é uma visualização complementar. Consulte também os endereços e contatos apresentados
         em texto.
       </p>
-      {visible && (
-        <div
-          id={mapId}
-          role="region"
-          aria-label="Mapa de locais"
-          className={
-            // Mantém controles e marcadores do mapa abaixo dos menus e do cabeçalho.
-            "relative isolate " +
-            (className ??
-              "h-[420px] w-full overflow-hidden rounded-xl border border-border bg-surface")
-          }
-        >
+      <div
+        id={mapId}
+        hidden={!visible}
+        role="region"
+        aria-label="Mapa de locais"
+        className={
+          // Mantém controles e marcadores do mapa abaixo dos menus e do cabeçalho.
+          "relative isolate " +
+          (className ??
+            "h-[420px] w-full overflow-hidden rounded-xl border border-border bg-surface")
+        }
+      >
+        {visible && (
           <ClientOnly fallback={<MapSkeleton />}>
             <Suspense fallback={<MapSkeleton />}>
               <PointsMapImpl {...rest} />
             </Suspense>
           </ClientOnly>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { ProjectHealth } from "@/components/admin/project-health";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -33,6 +34,7 @@ function AdminVisaoGeral() {
 
   return (
     <div className="space-y-10">
+      <ProjectHealth />
       <section>
         <h2 className="font-display text-xl uppercase tracking-tight">Pontos e redes</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

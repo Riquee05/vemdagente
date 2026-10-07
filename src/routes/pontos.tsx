@@ -155,6 +155,7 @@ function PontosPage() {
   const list = points.data?.points ?? [];
   const pointIds = list.map((point) => point.id);
   const needs = useQuery({
+    staleTime: 60000,
     queryKey: ["point-needs", pointIds],
     queryFn: () => fetchActiveNeedsByPointIds(pointIds),
     enabled: pointIds.length > 0,
@@ -440,6 +441,46 @@ function PontosPage() {
               {points.data?.limited
                 ? "Nenhum local atende aos filtros entre os 200 mais próximos. Diminua o raio ou desative a proximidade para buscar em toda a cidade. "
                 : ""}
+              {neighborhood || needsOnly || accessibility || causeId !== "all" || location ? (
+                <span className="block mb-3">
+                  Tente uma destas opções:{" "}
+                  {neighborhood ? (
+                    <Button variant="outline" onClick={() => updateFilters(city, causeId, 1, "")}>
+                      Buscar sem bairro
+                    </Button>
+                  ) : null}
+                  {location && location.radiusKm < 50 ? (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setLocation({ ...location, radiusKm: 50 });
+                        updateFilters(city, causeId);
+                      }}
+                    >
+                      Ampliar para 50 km
+                    </Button>
+                  ) : null}
+                  {needsOnly || accessibility || causeId !== "all" ? (
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        void navigate({
+                          search: {
+                            cidade: city,
+                            bairro: neighborhood,
+                            causa: "all",
+                            pagina: 1,
+                            acessibilidade: "",
+                            necessidades: false,
+                          },
+                        })
+                      }
+                    >
+                      Retirar filtros de causa, acessibilidade e necessidade
+                    </Button>
+                  ) : null}
+                </span>
+              ) : null}
               Nenhum ponto encontrado nesta página {city ? `em “${city}”` : "ainda"}. Você pode{" "}
               <Link to="/cadastrar-ponto" className="underline">
                 cadastrar um ponto

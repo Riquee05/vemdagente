@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-
 import fallbackPhoto from "@/assets/ponto-sem-foto.jpg";
 import { getAdminPointPhotoUrl, getPublishedPointPhotoUrl } from "@/lib/point-photos.functions";
 import { cn } from "@/lib/utils";
-
-/** Exibe a foto de um ponto, com imagem acolhedora padrão quando não há foto. */
 export function PointPhoto({
   path,
   alt,
@@ -17,45 +15,46 @@ export function PointPhoto({
   className?: string;
   adminAccess?: boolean;
 }) {
-  const getPublicUrl = useServerFn(getPublishedPointPhotoUrl);
-  const getAdminUrl = useServerFn(getAdminPointPhotoUrl);
-  const [url, setUrl] = useState<string | null>(null);
+  const getPublic = useServerFn(getPublishedPointPhotoUrl);
+  const getAdmin = useServerFn(getAdminPointPhotoUrl);
+  const ref = useRef<HTMLImageElement>(null);
+  const [nearby, setNearby] = useState(false);
   const [failed, setFailed] = useState(false);
-
   useEffect(() => {
-    let active = true;
-    setUrl(null);
-    setFailed(false);
-    if (!path)
-      return () => {
-        active = false;
-      };
-    if (path.startsWith("http")) {
-      setUrl(path);
-      return () => {
-        active = false;
-      };
+    if (!ref.current || typeof IntersectionObserver === "undefined") {
+      setNearby(true);
+      return;
     }
-    const resolve = adminAccess ? getAdminUrl : getPublicUrl;
-    resolve({ data: { path } })
-      .then((result) => {
-        if (active) setUrl(result.url);
-      })
-      .catch(() => {
-        if (active) setFailed(true);
-      });
-    return () => {
-      active = false;
-    };
-  }, [adminAccess, getAdminUrl, getPublicUrl, path]);
-
-  const src = !path || failed || !url ? fallbackPhoto : url;
-
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setNearby(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+  const remote = Boolean(path && /^https?:\/\//i.test(path));
+  const photo = useQuery({
+    queryKey: ["point-photo", adminAccess ? "admin" : "public", path],
+    enabled: nearby && Boolean(path) && !remote,
+    queryFn: () => (adminAccess ? getAdmin : getPublic)({ data: { path: path! } }),
+    staleTime: 45 * 60 * 1000,
+    gcTime: 55 * 60 * 1000,
+    retry: false,
+  });
+  const url = nearby ? (remote ? path : photo.data?.url) : null;
+  useEffect(() => setFailed(false), [path, url]);
   return (
     <img
-      src={src}
+      ref={ref}
+      src={failed || !url ? fallbackPhoto : url}
       alt={alt}
       loading="lazy"
+      decoding="async"
       onError={() => setFailed(true)}
       className={cn("bg-surface object-cover", className)}
     />

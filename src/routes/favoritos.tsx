@@ -24,6 +24,7 @@ function FavoritesPage() {
   const list = points.data?.points ?? [];
   const pointIds = list.map((point) => point.id);
   const needs = useQuery({
+    staleTime: 60000,
     queryKey: ["point-needs", pointIds],
     queryFn: () => fetchActiveNeedsByPointIds(pointIds),
     enabled: pointIds.length > 0,
