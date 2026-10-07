@@ -149,7 +149,7 @@ export async function fetchVerifiedPointsPage(params: {
   const relations = [
     params.zone ? "point_territory!inner(zone)" : "",
     params.delivery ? `point_delivery!inner(${params.delivery})` : "",
-    params.causeId !== "all" ? "point_causes!inner(cause_id)" : "",
+
     params.accessibility ? `point_accessibility!inner(${params.accessibility})` : "",
     params.needsOnly ? "point_needs!inner(is_active,expires_at)" : "",
   ].filter(Boolean);
@@ -163,7 +163,11 @@ export async function fetchVerifiedPointsPage(params: {
   if (city) query = query.ilike("city", `%${city}%`);
   const neighborhood = (params.neighborhood ?? "").trim().replace(/[%_\\]/g, "");
   if (neighborhood) query = query.ilike("address", `%${neighborhood}%`);
-  if (params.causeId !== "all") query = query.eq("point_causes.cause_id", params.causeId);
+  if (params.causeId !== "all") {
+    const ids = await fetchPointIdsByCause(params.causeId);
+    if (!ids.length) return { points: [], total: 0 };
+    query = query.in("id", ids);
+  }
   if (params.zone) query = query.eq("point_territory.zone", params.zone).eq("city", "São Paulo");
   if (params.delivery) query = query.eq(`point_delivery.${params.delivery}`, "yes");
   if (params.accessibility) query = query.eq(`point_accessibility.${params.accessibility}`, "yes");
@@ -259,25 +263,14 @@ export function formatDistance(km: number | null): string | null {
 
 /** IDs dos pontos que atendem uma causa (leitura pública). */
 export async function fetchPointIdsByCause(causeId: string): Promise<string[]> {
-  const { data, error } = await supabase
-    .from("point_causes")
-    .select("point_id")
-    .eq("cause_id", causeId)
-    .limit(3000);
-  if (error) throw error;
-  return (data ?? []).map((row) => row.point_id);
+  return fetchPointIdsByCauses([causeId]);
 }
 
-/** IDs dos pontos que atendem qualquer uma das causas informadas (união). */
+/** Vínculos públicos resolvidos no servidor com escopo de publicação explícito. */
 export async function fetchPointIdsByCauses(causeIds: string[]): Promise<string[]> {
   if (causeIds.length === 0) return [];
-  const { data, error } = await supabase
-    .from("point_causes")
-    .select("point_id")
-    .in("cause_id", causeIds)
-    .limit(5000);
-  if (error) throw error;
-  return Array.from(new Set((data ?? []).map((row) => row.point_id)));
+  const { listPublicPointCauseIds } = await import("./public-point-causes.functions");
+  return listPublicPointCauseIds({ data: { causeIds } });
 }
 
 /**

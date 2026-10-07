@@ -12,6 +12,10 @@ const { from, calls, result, rpc } = vi.hoisted(() => {
       calls.push({ method: "select", args });
       return chain;
     },
+    in: (...args: unknown[]) => {
+      calls.push({ method: "in", args });
+      return chain;
+    },
     eq: (...args: unknown[]) => {
       calls.push({ method: "eq", args });
       return chain;
@@ -44,6 +48,9 @@ const { from, calls, result, rpc } = vi.hoisted(() => {
   };
 });
 vi.mock("@/integrations/supabase/client", () => ({ supabase: { from, rpc } }));
+vi.mock("./public-point-causes.functions", () => ({
+  listPublicPointCauseIds: vi.fn().mockResolvedValue(["published-id"]),
+}));
 import { fetchVerifiedPointsPage } from "./points";
 
 beforeEach(() => {
@@ -87,9 +94,9 @@ describe("busca pública paginada", () => {
   });
   it("aplica causa no banco e trata caracteres de busca como texto", async () => {
     await fetchVerifiedPointsPage({ city: "  São%_Paulo  ", causeId: "cause-id", page: 1 });
-    expect(calls).toContainEqual({ method: "eq", args: ["point_causes.cause_id", "cause-id"] });
+    expect(calls).toContainEqual({ method: "in", args: ["id", ["published-id"]] });
     expect(calls).toContainEqual({ method: "ilike", args: ["city", "%SãoPaulo%"] });
-    expect(String(calls.find((call) => call.method === "select")?.args[0])).toContain(
+    expect(String(calls.find((call) => call.method === "select")?.args[0])).not.toContain(
       "point_causes!inner",
     );
   });

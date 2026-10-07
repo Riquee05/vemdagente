@@ -83,7 +83,12 @@ function DoarPage() {
         </ol>
 
         <div className="mt-10">
-          <PointSearch kindHint="donate" initialCategoryId={categoria} initialQuery={local} />
+          <PointSearch
+            kindHint="donate"
+            initialCategoryId={categoria}
+            initialQuery={local}
+            initialCauseId={causa}
+          />
         </div>
 
         <div className="mt-12 rounded-xl border border-border bg-surface p-6">

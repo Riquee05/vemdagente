@@ -118,6 +118,7 @@ export function PointSearch({
     queryKey: ["cause-point-ids", [...causeIds].sort().join(",")],
     queryFn: () => fetchPointIdsByCauses(causeIds),
     enabled: causeIds.length > 0,
+    retry: false,
   });
 
   function toggleCause(id: string) {
@@ -373,7 +374,9 @@ export function PointSearch({
             );
           })}
         </div>
-        {causeIds.length > 0 || neighborhood !== "all" ? (
+        {!causePointIds.isFetching &&
+        !causePointIds.isError &&
+        (causeIds.length > 0 || neighborhood !== "all") ? (
           <p className="text-xs text-muted-foreground">
             {points.length} {points.length === 1 ? "instituição" : "instituições"} com os filtros
             escolhidos.{" "}
@@ -412,7 +415,24 @@ export function PointSearch({
             para ver os mais próximos de você.
           </p>
         ) : null}
-        {results.isPending ? (
+        {causeIds.length > 0 && causePointIds.isFetching ? (
+          <p role="status" className="text-sm text-muted-foreground">
+            Buscando locais para as causas selecionadas…
+          </p>
+        ) : causeIds.length > 0 && causePointIds.isError ? (
+          <div role="alert" className="space-y-2">
+            <p className="text-sm">
+              Não foi possível carregar o filtro por causa. Isso não significa que não existam
+              locais.
+            </p>
+            <Button variant="outline" onClick={() => void causePointIds.refetch()}>
+              Tentar novamente
+            </Button>
+            <Button variant="outline" onClick={() => setCauseIds([])}>
+              Mostrar todas as causas
+            </Button>
+          </div>
+        ) : results.isPending ? (
           <p className="text-sm text-muted-foreground">Buscando pontos…</p>
         ) : results.isError ? (
           <p className="text-sm text-muted-foreground">
@@ -420,7 +440,9 @@ export function PointSearch({
           </p>
         ) : points.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Nenhum ponto encontrado nesse raio. Tente aumentar a distância ou trocar a categoria.
+            {causeIds.length > 0
+              ? "Nenhum local com vínculo cadastrado às causas selecionadas atende aos filtros atuais. Retire a causa ou ajuste a região para ampliar a busca."
+              : "Nenhum ponto encontrado nessa região. Tente aumentar a distância ou trocar a categoria."}
           </p>
         ) : (
           points.map((point) => (
