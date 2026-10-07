@@ -1,3 +1,4 @@
+import { isNeedCurrent } from "@/lib/need-validity";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -12,7 +13,7 @@ export const getPublicPointDetail = createServerFn({ method: "GET" })
   .handler(async ({ data }): Promise<PointDetailResult> => {
     if (!z.string().uuid().safeParse(data.id).success) return { status: "not_found", point: null };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin
+    let { data: row, error } = await supabaseAdmin
       .from("collection_points")
       .select(
         `id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url,
@@ -20,11 +21,32 @@ export const getPublicPointDetail = createServerFn({ method: "GET" })
          donation_hours, is_active, location_type,
          point_accepted_items ( confirmed_at, item_categories ( id, slug, label, kind ) ),
          point_causes ( causes ( id, slug, label ) ),
-         point_needs ( id, urgency, note, is_active, updated_at, item_categories ( id, slug, label, kind ) )`,
+         point_needs ( id, urgency, note, is_active, updated_at, expires_at, item_categories ( id, slug, label, kind ) )`,
       )
       .eq("id", data.id)
       .maybeSingle();
 
+    if (error?.code === "42703") {
+      const fallback = await supabaseAdmin
+        .from("collection_points")
+        .select(
+          `id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url,
+         opening_hours, donation_method, curation_status, source, confirmation_status, confirmed_at,
+         donation_hours, is_active, location_type,
+         point_accepted_items ( confirmed_at, item_categories ( id, slug, label, kind ) ),
+         point_causes ( causes ( id, slug, label ) ),
+         point_needs ( id, urgency, note, is_active, updated_at, item_categories ( id, slug, label, kind ) )`,
+        )
+        .eq("id", data.id)
+        .maybeSingle();
+      row = fallback.data
+        ? {
+            ...fallback.data,
+            point_needs: fallback.data.point_needs.map((need) => ({ ...need, expires_at: null })),
+          }
+        : null;
+      error = fallback.error;
+    }
     if (error) {
       console.error("Erro ao carregar ficha pública:", error);
       throw new Error("Falha temporária ao carregar o local.");
@@ -66,12 +88,13 @@ export const getPublicPointDetail = createServerFn({ method: "GET" })
         .map((item) => ({ ...item.item_categories, confirmed_at: item.confirmed_at ?? null })),
       causes: (raw["point_causes"] ?? []).map((item) => item.causes).filter(Boolean),
       needs: (raw["point_needs"] ?? [])
-        .filter((need) => need.is_active && need.item_categories)
+        .filter((need) => need.is_active && need.item_categories && isNeedCurrent(need.expires_at))
         .map((need) => ({
           id: need.id,
           urgency: need.urgency,
           note: need.note,
           updated_at: need.updated_at,
+          expires_at: need.expires_at,
           category: need.item_categories,
         })),
     };

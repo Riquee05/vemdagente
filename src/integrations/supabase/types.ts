@@ -8,6 +8,82 @@ export type Database = {
   };
   public: {
     Tables: {
+      testimonials: {
+        Row: {
+          id: string;
+          display_name: string;
+          city: string | null;
+          rating: number;
+          story: string;
+          consent_at: string;
+          status: string;
+          created_at: string;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          display_name: string;
+          city?: string | null;
+          rating: number;
+          story: string;
+          consent_at?: string;
+          status?: string;
+          created_at?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          display_name?: string;
+          city?: string | null;
+          rating?: number;
+          story?: string;
+          consent_at?: string;
+          status?: string;
+          created_at?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+        };
+        Relationships: [];
+      };
+      institution_claims: {
+        Row: {
+          id: string;
+          point_id: string;
+          user_id: string;
+          contact: string;
+          message: string;
+          status: string;
+          created_at: string;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          point_id: string;
+          user_id: string;
+          contact: string;
+          message: string;
+          status?: string;
+          created_at?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          point_id?: string;
+          user_id?: string;
+          contact?: string;
+          message?: string;
+          status?: string;
+          created_at?: string;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+        };
+        Relationships: [];
+      };
+
       admin_audit_log: {
         Row: {
           action: string;
@@ -592,6 +668,7 @@ export type Database = {
       };
       point_needs: {
         Row: {
+          expires_at: string | null;
           category_id: string;
           created_at: string;
           id: string;
@@ -602,6 +679,7 @@ export type Database = {
           urgency: string;
         };
         Insert: {
+          expires_at?: string | null;
           category_id: string;
           created_at?: string;
           id?: string;
@@ -612,6 +690,7 @@ export type Database = {
           urgency?: string;
         };
         Update: {
+          expires_at?: string | null;
           category_id?: string;
           created_at?: string;
           id?: string;
@@ -1018,6 +1097,23 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      search_public_points_page: {
+        Args: {
+          p_lat: number;
+          p_lng: number;
+          p_radius: number;
+          p_city: string;
+          p_neighborhood: string;
+          p_cause: string | null;
+          p_page: number;
+        };
+        Returns: Json;
+      };
+      review_institution_claim: {
+        Args: { p_id: string; p_status: string };
+        Returns: undefined;
+      };
+
       consume_request_rate_limit: {
         Args: {
           p_identifier_hash: string;

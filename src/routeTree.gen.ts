@@ -22,6 +22,7 @@ import { Route as PedirAjudaRouteImport } from './routes/pedir-ajuda'
 import { Route as PontosRouteImport } from './routes/pontos'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as RedefinirSenhaRouteImport } from './routes/redefinir-senha'
+import { Route as RelatosRouteImport } from './routes/relatos'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as VoluntariosRouteImport } from './routes/voluntarios'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -33,6 +34,7 @@ import { Route as PontosPointIdRouteImport } from './routes/pontos.$pointId'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_authenticated/admin.categorias'
+import { Route as AuthenticatedAdminComunidadeRouteImport } from './routes/_authenticated/admin.comunidade'
 import { Route as AuthenticatedAdminCuradoriaRouteImport } from './routes/_authenticated/admin.curadoria'
 import { Route as AuthenticatedAdminNecessidadesRouteImport } from './routes/_authenticated/admin.necessidades'
 import { Route as AuthenticatedAdminSegurancaRouteImport } from './routes/_authenticated/admin.seguranca'
@@ -105,6 +107,11 @@ const RedefinirSenhaRoute = RedefinirSenhaRouteImport.update({
   path: '/redefinir-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RelatosRoute = RelatosRouteImport.update({
+  id: '/relatos',
+  path: '/relatos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SobreRoute = SobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
@@ -164,6 +171,12 @@ const AuthenticatedAdminCategoriasRoute =
     path: '/categorias',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminComunidadeRoute =
+  AuthenticatedAdminComunidadeRouteImport.update({
+    id: '/comunidade',
+    path: '/comunidade',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminCuradoriaRoute =
   AuthenticatedAdminCuradoriaRouteImport.update({
     id: '/curadoria',
@@ -219,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/pontos': typeof PontosRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/relatos': typeof RelatosRoute
   '/sobre': typeof SobreRoute
   '/voluntarios': typeof VoluntariosRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -229,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/admin/comunidade': typeof AuthenticatedAdminComunidadeRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/admin/necessidades': typeof AuthenticatedAdminNecessidadesRoute
   '/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
@@ -251,6 +266,7 @@ export interface FileRoutesByTo {
   '/pontos': typeof PontosRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/relatos': typeof RelatosRoute
   '/sobre': typeof SobreRoute
   '/voluntarios': typeof VoluntariosRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -260,6 +276,7 @@ export interface FileRoutesByTo {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/admin/comunidade': typeof AuthenticatedAdminComunidadeRoute
   '/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/admin/necessidades': typeof AuthenticatedAdminNecessidadesRoute
   '/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
@@ -284,6 +301,7 @@ export interface FileRoutesById {
   '/pontos': typeof PontosRouteWithChildren
   '/privacidade': typeof PrivacidadeRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
+  '/relatos': typeof RelatosRoute
   '/sobre': typeof SobreRoute
   '/voluntarios': typeof VoluntariosRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -294,6 +312,7 @@ export interface FileRoutesById {
   '/pontos/$pointId': typeof PontosPointIdRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/_authenticated/admin/comunidade': typeof AuthenticatedAdminComunidadeRoute
   '/_authenticated/admin/curadoria': typeof AuthenticatedAdminCuradoriaRoute
   '/_authenticated/admin/necessidades': typeof AuthenticatedAdminNecessidadesRoute
   '/_authenticated/admin/seguranca': typeof AuthenticatedAdminSegurancaRoute
@@ -318,6 +337,7 @@ export interface FileRouteTypes {
     | '/pontos'
     | '/privacidade'
     | '/redefinir-senha'
+    | '/relatos'
     | '/sobre'
     | '/voluntarios'
     | '/.well-known/oauth-protected-resource'
@@ -328,6 +348,7 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/.lovable/oauth/consent'
     | '/admin/categorias'
+    | '/admin/comunidade'
     | '/admin/curadoria'
     | '/admin/necessidades'
     | '/admin/seguranca'
@@ -350,6 +371,7 @@ export interface FileRouteTypes {
     | '/pontos'
     | '/privacidade'
     | '/redefinir-senha'
+    | '/relatos'
     | '/sobre'
     | '/voluntarios'
     | '/.well-known/oauth-protected-resource'
@@ -359,6 +381,7 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/.lovable/oauth/consent'
     | '/admin/categorias'
+    | '/admin/comunidade'
     | '/admin/curadoria'
     | '/admin/necessidades'
     | '/admin/seguranca'
@@ -382,6 +405,7 @@ export interface FileRouteTypes {
     | '/pontos'
     | '/privacidade'
     | '/redefinir-senha'
+    | '/relatos'
     | '/sobre'
     | '/voluntarios'
     | '/.well-known/oauth-protected-resource'
@@ -392,6 +416,7 @@ export interface FileRouteTypes {
     | '/pontos/$pointId'
     | '/.lovable/oauth/consent'
     | '/_authenticated/admin/categorias'
+    | '/_authenticated/admin/comunidade'
     | '/_authenticated/admin/curadoria'
     | '/_authenticated/admin/necessidades'
     | '/_authenticated/admin/seguranca'
@@ -416,6 +441,7 @@ export interface RootRouteChildren {
   PontosRoute: typeof PontosRouteWithChildren
   PrivacidadeRoute: typeof PrivacidadeRoute
   RedefinirSenhaRoute: typeof RedefinirSenhaRoute
+  RelatosRoute: typeof RelatosRoute
   SobreRoute: typeof SobreRoute
   VoluntariosRoute: typeof VoluntariosRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
@@ -515,6 +541,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RedefinirSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/relatos': {
+      id: '/relatos'
+      path: '/relatos'
+      fullPath: '/relatos'
+      preLoaderRoute: typeof RelatosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sobre': {
       id: '/sobre'
       path: '/sobre'
@@ -592,6 +625,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCategoriasRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/comunidade': {
+      id: '/_authenticated/admin/comunidade'
+      path: '/comunidade'
+      fullPath: '/admin/comunidade'
+      preLoaderRoute: typeof AuthenticatedAdminComunidadeRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/curadoria': {
       id: '/_authenticated/admin/curadoria'
       path: '/curadoria'
@@ -646,6 +686,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminCategoriasRoute: typeof AuthenticatedAdminCategoriasRoute
+  AuthenticatedAdminComunidadeRoute: typeof AuthenticatedAdminComunidadeRoute
   AuthenticatedAdminCuradoriaRoute: typeof AuthenticatedAdminCuradoriaRoute
   AuthenticatedAdminNecessidadesRoute: typeof AuthenticatedAdminNecessidadesRoute
   AuthenticatedAdminSegurancaRoute: typeof AuthenticatedAdminSegurancaRoute
@@ -658,6 +699,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminCategoriasRoute: AuthenticatedAdminCategoriasRoute,
+  AuthenticatedAdminComunidadeRoute: AuthenticatedAdminComunidadeRoute,
   AuthenticatedAdminCuradoriaRoute: AuthenticatedAdminCuradoriaRoute,
   AuthenticatedAdminNecessidadesRoute: AuthenticatedAdminNecessidadesRoute,
   AuthenticatedAdminSegurancaRoute: AuthenticatedAdminSegurancaRoute,
@@ -713,6 +755,7 @@ const rootRouteChildren: RootRouteChildren = {
   PontosRoute: PontosRouteWithChildren,
   PrivacidadeRoute: PrivacidadeRoute,
   RedefinirSenhaRoute: RedefinirSenhaRoute,
+  RelatosRoute: RelatosRoute,
   SobreRoute: SobreRoute,
   VoluntariosRoute: VoluntariosRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:

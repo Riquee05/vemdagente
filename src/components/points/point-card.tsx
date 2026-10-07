@@ -1,3 +1,4 @@
+import { whatsappLink } from "@/lib/contact-links";
 import { Link } from "@tanstack/react-router";
 
 import { PointPhoto } from "@/components/points/point-photo";
@@ -46,6 +47,14 @@ export function PointCard({
         {point.confirmation_status === "confirmed" ? (
           <Badge className="mt-2 text-xs">Recebimento de doações confirmado</Badge>
         ) : null}
+        {point.confirmed_at && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Última confirmação: {formatDate(point.confirmed_at)}
+            {Date.now() - Date.parse(point.confirmed_at) > 90 * 86400000
+              ? " · confirme antes de ir"
+              : ""}
+          </p>
+        )}
         {point.opening_hours ? (
           <p className="mt-1 text-xs text-muted-foreground">
             Horário de funcionamento: {point.opening_hours}
@@ -97,13 +106,9 @@ export function PointCard({
               <a href={`tel:${point.phone.replace(/\D/g, "")}`}>Ligar</a>
             </Button>
           ) : null}
-          {point.whatsapp ? (
+          {whatsappLink(point.whatsapp) ? (
             <Button asChild size="sm" variant="ghost">
-              <a
-                href={`https://wa.me/${point.whatsapp.replace(/\D/g, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={whatsappLink(point.whatsapp)} target="_blank" rel="noopener noreferrer">
                 WhatsApp
               </a>
             </Button>

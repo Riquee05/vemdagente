@@ -1,3 +1,5 @@
+import { whatsappLink } from "@/lib/contact-links";
+import { InstitutionAccessRequest } from "@/components/points/institution-access-request";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 import { PageShell } from "@/components/layout/page-shell";
@@ -168,6 +170,12 @@ function PointDetailPage() {
               {data.city}
               {data.state ? `/${data.state}` : ""}
             </p>
+            {data.confirmed_at && Date.now() - Date.parse(data.confirmed_at) > 90 * 86400000 ? (
+              <p className="mt-3 rounded-lg border border-border p-3 text-sm">
+                A última confirmação tem mais de 90 dias. Confirme contato, horários e recebimento
+                antes de ir.
+              </p>
+            ) : null}
             {data.description ? <p className="mt-4 text-base">{data.description}</p> : null}
 
             <dl className="mt-6 space-y-2 text-sm">
@@ -216,24 +224,25 @@ function PointDetailPage() {
             </dl>
 
             <div className="mt-6 flex flex-wrap gap-2">
-              {data.whatsapp ? (
+              {data.phone ? (
+                <Button asChild variant="outline">
+                  <a href={`tel:${data.phone.replace(/\D/g, "")}`}>Ligar</a>
+                </Button>
+              ) : null}
+              {whatsappLink(data.whatsapp) ? (
                 <Button asChild>
-                  <a
-                    href={`https://wa.me/${data.whatsapp.replace(/\D/g, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a href={whatsappLink(data.whatsapp)} target="_blank" rel="noopener noreferrer">
                     Falar no WhatsApp
                   </a>
                 </Button>
               ) : null}
               <Button asChild variant="outline">
                 <a
-                  href={`https://www.openstreetmap.org/?mlat=${data.lat}&mlon=${data.lng}#map=17/${data.lat}/${data.lng}`}
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${data.lat},${data.lng}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Abrir no mapa
+                  Traçar rota
                 </a>
               </Button>
               {data.website ? (
@@ -299,6 +308,9 @@ function PointDetailPage() {
                     {need.note ? <p className="mt-1 text-muted-foreground">{need.note}</p> : null}
                     <p className="mt-1 text-xs text-muted-foreground">
                       Atualizado em {formatDate(need.updated_at)}
+                      {need.expires_at
+                        ? ` · válido até ${need.expires_at.split("-").reverse().join("/")}`
+                        : ""}
                     </p>
                   </div>
                 ))
@@ -310,6 +322,7 @@ function PointDetailPage() {
               )}
             </div>
 
+            <InstitutionAccessRequest pointId={data.id} />
             <div className="mt-6">
               <SuggestCorrection pointId={data.id} />
             </div>

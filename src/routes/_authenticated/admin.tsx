@@ -40,6 +40,7 @@ const tabs = [
   { to: "/admin/time", label: "Time", exact: false, counter: "team" },
   { to: "/admin/usuarios", label: "Usuários", exact: false, counter: null },
   { to: "/admin/categorias", label: "Categorias", exact: false, counter: null },
+  { to: "/admin/comunidade", label: "Comunidade", exact: false, counter: null },
   { to: "/admin/seguranca", label: "Segurança", exact: false, counter: null },
 ] as const;
 

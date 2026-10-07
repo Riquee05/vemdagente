@@ -30,6 +30,7 @@ export type PointNeed = {
   urgency: string;
   note: string | null;
   is_active: boolean;
+  expires_at: string | null;
   category: ItemCategory;
 };
 
@@ -82,6 +83,7 @@ export function PointNeedsEditor({
         urgency: n.urgency,
         note: n.note,
         is_active: n.is_active,
+        expires_at: n.expires_at,
         category: (n.item_categories ?? {
           id: n.category_id,
           slug: "",
@@ -94,6 +96,7 @@ export function PointNeedsEditor({
 
   const [newCategory, setNewCategory] = useState("");
   const [newUrgency, setNewUrgency] = useState<string>("normal");
+  const [newExpiry, setNewExpiry] = useState("");
   const [newNote, setNewNote] = useState("");
 
   const save = useMutation({
@@ -117,6 +120,7 @@ export function PointNeedsEditor({
         await addNeed({
           data: {
             pointId,
+            expiresAt: newExpiry || null,
             categoryId: input.category_id,
             urgency: input.urgency as "low" | "normal" | "high" | "critical",
             note: input.note,
@@ -130,6 +134,7 @@ export function PointNeedsEditor({
       setNewCategory("");
       setNewUrgency("normal");
       setNewNote("");
+      setNewExpiry("");
       onChange?.();
     },
     onError: (error) => {
@@ -197,6 +202,11 @@ export function PointNeedsEditor({
               {need.note ? (
                 <p className="w-full text-xs text-muted-foreground">{need.note}</p>
               ) : null}
+              {need.expires_at && (
+                <p className="w-full text-xs text-muted-foreground">
+                  Válida até {need.expires_at.split("-").reverse().join("/")}
+                </p>
+              )}
               {!readOnly && (
                 <div className="flex flex-wrap gap-2">
                   <Button
@@ -259,6 +269,18 @@ export function PointNeedsEditor({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div>
+              <Label htmlFor={`need-expiry-${pointId}`}>Válida até (opcional)</Label>
+              <Input
+                id={`need-expiry-${pointId}`}
+                type="date"
+                value={newExpiry}
+                onChange={(event) => setNewExpiry(event.target.value)}
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Após esta data, a necessidade deixa de aparecer na busca pública.
+              </p>
             </div>
             <div className="sm:col-span-2">
               <Label htmlFor={`need-note-${pointId}`}>Observação (opcional)</Label>

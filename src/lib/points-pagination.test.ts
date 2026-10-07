@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { from, calls, result } = vi.hoisted(() => {
+const { from, calls, result, rpc } = vi.hoisted(() => {
   const calls: { method: string; args: unknown[] }[] = [];
   const result: { data: unknown[] | null; count: number; error: Error | null } = {
     data: [],
@@ -34,13 +34,21 @@ const { from, calls, result } = vi.hoisted(() => {
     },
     then: (resolve: (value: typeof result) => unknown) => Promise.resolve(result).then(resolve),
   };
-  return { calls, result, from: vi.fn(() => chain) };
+  return {
+    calls,
+    result,
+    from: vi.fn(() => chain),
+    rpc: vi.fn(() => ({
+      abortSignal: () => Promise.resolve({ data: { points: [], total: 0 }, error: null }),
+    })),
+  };
 });
-vi.mock("@/integrations/supabase/client", () => ({ supabase: { from } }));
+vi.mock("@/integrations/supabase/client", () => ({ supabase: { from, rpc } }));
 import { fetchVerifiedPointsPage } from "./points";
 
 beforeEach(() => {
   calls.length = 0;
+  rpc.mockClear();
   result.data = [];
   result.count = 0;
   result.error = null;
@@ -70,6 +78,31 @@ describe("busca pública paginada", () => {
     expect(String(calls.find((call) => call.method === "select")?.args[0])).toContain(
       "point_causes!inner",
     );
+  });
+  it("filtra bairro no banco e envia proximidade, causa e página juntos", async () => {
+    await fetchVerifiedPointsPage({
+      city: "São Paulo",
+      neighborhood: "Interlagos",
+      causeId: "all",
+      page: 1,
+    });
+    expect(calls).toContainEqual({ method: "ilike", args: ["address", "%Interlagos%"] });
+    await fetchVerifiedPointsPage({
+      city: "",
+      neighborhood: "Interlagos",
+      causeId: "cause-id",
+      page: 2,
+      location: { lat: -23.7, lng: -46.7, radiusKm: 15 },
+    });
+    expect(rpc).toHaveBeenCalledWith("search_public_points_page", {
+      p_lat: -23.7,
+      p_lng: -46.7,
+      p_radius: 15,
+      p_city: "",
+      p_neighborhood: "Interlagos",
+      p_cause: "cause-id",
+      p_page: 2,
+    });
   });
   it("propaga falha do banco para não mostrar um falso resultado vazio", async () => {
     result.error = new Error("indisponível");

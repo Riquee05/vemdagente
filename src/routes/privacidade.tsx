@@ -26,6 +26,14 @@ export const Route = createFileRoute("/privacidade")({
 
 const sections = [
   {
+    title: "Relatos da comunidade",
+    body: "Ao enviar um relato, você autoriza a publicação do texto, da avaliação, do nome público escolhido e da cidade, se informada. O conteúdo fica privado enquanto aguarda revisão e só é publicado após aprovação. Use um apelido se preferir e evite dados pessoais de terceiros. Para retirar o consentimento, corrigir ou solicitar exclusão, escreva para Vemdagente.contato@gmail.com. Relatos não são vinculados automaticamente à conta e não são excluídos ao apagar a conta.",
+  },
+  {
+    title: "Localização e acesso das instituições",
+    body: "A busca Perto de mim pede a permissão do navegador e utiliza as coordenadas durante a consulta, sem salvá-las no perfil. Solicitações de acesso a instituições incluem seu contato e vínculo informado; ficam acessíveis apenas ao solicitante e à administração para confirmação.",
+  },
+  {
     title: "Quais dados coletamos",
     body: "Nome, e-mail, cidade e, se você quiser, telefone. Em pedidos de ajuda, a categoria e a localização aproximada. Em candidaturas de voluntariado, os dados que você informa no formulário. Não pedimos documentos, dados bancários nem informações de saúde.",
   },
@@ -84,7 +92,7 @@ function PrivacidadePage() {
           <Link to="/sobre" className="marker-underline font-semibold">
             Sobre o projeto
           </Link>
-          . Se ainda não houver um canal publicado, essa pendência estará indicada lá.
+          . Nosso contato é Vemdagente.contato@gmail.com.
         </p>
       </section>
     </PageShell>

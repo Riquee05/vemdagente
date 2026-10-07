@@ -27,6 +27,7 @@ import { fetchActiveNeedsByPointIds, fetchCauses, fetchVerifiedPointsPage } from
 export const Route = createFileRoute("/pontos")({
   validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
     cidade: typeof search["cidade"] === "string" ? search["cidade"].trim().slice(0, 120) : "",
+    bairro: typeof search["bairro"] === "string" ? search["bairro"].trim().slice(0, 100) : "",
     causa:
       typeof search["causa"] === "string" &&
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(search["causa"])
@@ -68,19 +69,53 @@ function PontosLayout() {
 }
 
 function PontosPage() {
-  const { cidade: city, causa: causeId, pagina: page } = Route.useSearch();
+  const { cidade: city, causa: causeId, pagina: page, bairro: neighborhood } = Route.useSearch();
   const navigate = Route.useNavigate();
   const [cityInput, setCityInput] = useState(city);
+  const [neighborhoodInput, setNeighborhoodInput] = useState(neighborhood);
+  const [location, setLocation] = useState<
+    { lat: number; lng: number; radiusKm: number } | undefined
+  >();
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   useEffect(() => {
     setCityInput(city);
+    setNeighborhoodInput(neighborhood);
     setSelectedId(null);
-  }, [city, causeId, page]);
-  const updateFilters = (cidade: string, causa: string, pagina = 1) =>
-    void navigate({ search: { cidade, causa, pagina } });
+  }, [city, causeId, page, neighborhood]);
+  const updateFilters = (cidade: string, causa: string, pagina = 1, bairro = neighborhood) =>
+    void navigate({ search: { cidade, causa, pagina, bairro } });
+  const findNearby = () => {
+    if (!navigator.geolocation) {
+      setLocationError("Seu navegador não oferece localização. Use município e bairro.");
+      return;
+    }
+    setLocating(true);
+    setLocationError("");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          radiusKm: 15,
+        });
+        updateFilters("", causeId, 1, "");
+        setLocating(false);
+      },
+      () => {
+        setLocating(false);
+        setLocationError(
+          "Não foi possível obter sua localização. Permita o acesso no navegador ou busque por município e bairro.",
+        );
+      },
+      { timeout: 10000, maximumAge: 60000, enableHighAccuracy: false },
+    );
+  };
   const points = useQuery({
-    queryKey: ["verified-points", city, causeId, page],
-    queryFn: ({ signal }) => fetchVerifiedPointsPage({ city, causeId, page, signal }),
+    queryKey: ["verified-points", city, causeId, page, neighborhood, location],
+    queryFn: ({ signal }) =>
+      fetchVerifiedPointsPage({ city, causeId, page, signal, neighborhood, location }),
   });
   const causes = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
   const list = points.data?.points ?? [];
@@ -95,8 +130,11 @@ function PontosPage() {
     if (!points.isSuccess) return;
     const lastPage = Math.max(1, Math.ceil(total / 30));
     if (page > lastPage)
-      void navigate({ search: { cidade: city, causa: causeId, pagina: lastPage }, replace: true });
-  }, [points.isSuccess, total, page, city, causeId, navigate]);
+      void navigate({
+        search: { cidade: city, causa: causeId, pagina: lastPage, bairro: neighborhood },
+        replace: true,
+      });
+  }, [points.isSuccess, total, page, city, causeId, navigate, neighborhood]);
   const first = list[0];
   const center: [number, number] = first ? [first.lat, first.lng] : DEFAULT_CENTER;
 
@@ -115,13 +153,13 @@ function PontosPage() {
 
         <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
           <form
-            className="flex items-end gap-2"
+            className="flex flex-wrap items-end gap-2"
             onSubmit={(event) => {
               event.preventDefault();
-              updateFilters(cityInput, causeId);
+              updateFilters(cityInput, causeId, 1, neighborhoodInput);
             }}
           >
-            <div className="flex-1">
+            <div className="w-full min-w-0 space-y-2">
               <Label htmlFor="cidade">Município em São Paulo</Label>
               <Input
                 id="cidade"
@@ -130,15 +168,24 @@ function PontosPage() {
                 value={cityInput}
                 onChange={(event) => setCityInput(event.target.value)}
               />
+              <Label htmlFor="bairro">Bairro ou trecho do endereço</Label>
+              <Input
+                id="bairro"
+                placeholder="Ex.: Interlagos"
+                value={neighborhoodInput}
+                onChange={(event) => setNeighborhoodInput(event.target.value)}
+              />
             </div>
             <Button type="submit">Filtrar</Button>
-            {city || cityInput ? (
+            {city || cityInput || neighborhood || neighborhoodInput || location ? (
               <Button
                 type="button"
                 variant="ghost"
                 onClick={() => {
                   setCityInput("");
-                  updateFilters("", "all");
+                  setNeighborhoodInput("");
+                  setLocation(undefined);
+                  updateFilters("", "all", 1, "");
                 }}
               >
                 Limpar
@@ -163,6 +210,49 @@ function PontosPage() {
           </div>
         </div>
 
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <Button variant="outline" disabled={locating} onClick={findNearby}>
+            {locating ? "Obtendo localização…" : "Perto de mim"}
+          </Button>
+          {location && (
+            <>
+              <Label htmlFor="raio">Raio</Label>
+              <select
+                id="raio"
+                className="rounded-md border border-border bg-background p-2"
+                value={location.radiusKm}
+                onChange={(event) => {
+                  setLocation({ ...location, radiusKm: Number(event.target.value) });
+                  updateFilters(city, causeId);
+                }}
+              >
+                {[5, 15, 30, 50].map((radius) => (
+                  <option key={radius} value={radius}>
+                    {radius} km
+                  </option>
+                ))}
+              </select>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setLocation(undefined);
+                  updateFilters(city, causeId);
+                }}
+              >
+                Desativar proximidade
+              </Button>
+            </>
+          )}
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          A localização só é solicitada ao tocar no botão e é usada para esta busca. O filtro de
+          bairro busca no endereço cadastrado.
+        </p>
+        {locationError && (
+          <p role="alert" className="mt-2 text-sm">
+            {locationError}
+          </p>
+        )}
         {causes.isError && (
           <div role="alert" className="mt-4 text-sm">
             Não foi possível carregar as causas.{" "}
@@ -210,7 +300,13 @@ function PontosPage() {
                 cadastrar um ponto
               </Link>
               .{" "}
-              <Button variant="outline" onClick={() => updateFilters("", "all")}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setLocation(undefined);
+                  updateFilters("", "all", 1, "");
+                }}
+              >
                 Ver todos os locais
               </Button>
             </p>

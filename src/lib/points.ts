@@ -1,3 +1,4 @@
+import { isNeedCurrent } from "@/lib/need-validity";
 import { supabase } from "@/integrations/supabase/client";
 
 export type ItemCategory = {
@@ -37,6 +38,7 @@ export type NearbyPoint = {
   donation_method: string | null;
   distance_km: number | null;
   confirmation_status?: string | null;
+  confirmed_at?: string | null;
 };
 
 export const PHOTO_BUCKET = "point-photos";
@@ -74,7 +76,7 @@ export async function fetchVerifiedPoints(city?: string): Promise<NearbyPoint[]>
   let query = supabase
     .from("collection_points")
     .select(
-      "id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url, opening_hours, donation_method, confirmation_status",
+      "id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url, opening_hours, donation_method, confirmation_status, confirmed_at",
     )
     .eq("is_active", true)
     .eq("curation_status", "verified")
@@ -95,9 +97,26 @@ export async function fetchVerifiedPointsPage(params: {
   causeId: string;
   page: number;
   signal?: AbortSignal;
+  neighborhood?: string;
+  location?: { lat: number; lng: number; radiusKm: number } | undefined;
 }): Promise<{ points: NearbyPoint[]; total: number }> {
+  if (params.location) {
+    const { data, error } = await supabase
+      .rpc("search_public_points_page", {
+        p_lat: params.location.lat,
+        p_lng: params.location.lng,
+        p_radius: params.location.radiusKm,
+        p_city: params.city,
+        p_neighborhood: params.neighborhood ?? "",
+        p_cause: params.causeId === "all" ? null : params.causeId,
+        p_page: params.page,
+      })
+      .abortSignal(params.signal ?? new AbortController().signal);
+    if (error) throw error;
+    return data as { points: NearbyPoint[]; total: number };
+  }
   const fields =
-    "id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url, opening_hours, donation_method, confirmation_status";
+    "id, name, description, address, city, state, lat, lng, phone, whatsapp, website, photo_url, opening_hours, donation_method, confirmation_status, confirmed_at";
   let query = supabase
     .from("collection_points")
     .select(params.causeId === "all" ? fields : `${fields}, point_causes!inner(cause_id)`, {
@@ -108,6 +127,8 @@ export async function fetchVerifiedPointsPage(params: {
     .eq("state", "SP");
   const city = params.city.trim().replace(/[%_\\]/g, "");
   if (city) query = query.ilike("city", `%${city}%`);
+  const neighborhood = (params.neighborhood ?? "").trim().replace(/[%_\\]/g, "");
+  if (neighborhood) query = query.ilike("address", `%${neighborhood}%`);
   if (params.causeId !== "all") query = query.eq("point_causes.cause_id", params.causeId);
   query = query
     .order("name")
@@ -139,6 +160,7 @@ export type PointDetail = NearbyPoint & {
     urgency: string;
     note: string | null;
     updated_at: string;
+    expires_at: string | null;
     category: ItemCategory;
   }[];
 };
@@ -229,18 +251,30 @@ export async function fetchActiveNeedsByPointIds(pointIds: string[]): Promise<
   }[]
 > {
   if (pointIds.length === 0) return [];
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("point_needs")
-    .select("point_id, urgency, note, updated_at, item_categories ( label )")
+    .select("point_id, urgency, note, updated_at, expires_at, item_categories ( label )")
     .in("point_id", pointIds)
     .eq("is_active", true)
     .limit(500);
+  if (error?.code === "42703") {
+    const fallback = await supabase
+      .from("point_needs")
+      .select("point_id, urgency, note, updated_at, item_categories ( label )")
+      .in("point_id", pointIds)
+      .eq("is_active", true)
+      .limit(500);
+    data = fallback.data?.map((need) => ({ ...need, expires_at: null })) ?? null;
+    error = fallback.error;
+  }
   if (error) throw error;
-  return (data ?? []).map((row) => ({
-    point_id: row.point_id,
-    urgency: row.urgency,
-    category_label: row.item_categories?.label ?? "",
-    note: row.note,
-    updated_at: row.updated_at,
-  }));
+  return (data ?? [])
+    .filter((row) => isNeedCurrent(row.expires_at))
+    .map((row) => ({
+      point_id: row.point_id,
+      urgency: row.urgency,
+      category_label: row.item_categories?.label ?? "",
+      note: row.note,
+      updated_at: row.updated_at,
+    }));
 }

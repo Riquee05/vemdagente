@@ -10,6 +10,7 @@ const needSchema = z.object({
   categoryId: z.string().uuid(),
   urgency: z.enum(["low", "normal", "high", "critical"]),
   note: z.string().trim().max(500).nullable(),
+  expiresAt: z.iso.date().nullable().optional(),
 });
 
 const updateNeedSchema = z.object({
@@ -17,6 +18,7 @@ const updateNeedSchema = z.object({
   urgency: z.enum(["low", "normal", "high", "critical"]).optional(),
   note: z.string().trim().max(500).nullable().optional(),
   isActive: z.boolean().optional(),
+  expiresAt: z.iso.date().nullable().optional(),
 });
 
 const removeNeedSchema = z.object({
@@ -52,6 +54,7 @@ export const addPointNeed = createServerFn({ method: "POST" })
         urgency: data.urgency,
         note: data.note,
         is_active: true,
+        ...(data.expiresAt ? { expires_at: data.expiresAt } : {}),
       })
       .select("id")
       .single();
@@ -73,6 +76,7 @@ export const updatePointNeed = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => updateNeedSchema.parse(input))
   .handler(async ({ data, context }) => {
     const patch: Database["public"]["Tables"]["point_needs"]["Update"] = {};
+    if (data.expiresAt !== undefined) patch["expires_at"] = data.expiresAt;
     if (data.urgency !== undefined) patch["urgency"] = data.urgency;
     if (data.note !== undefined) patch["note"] = data.note;
     if (data.isActive !== undefined) patch["is_active"] = data.isActive;
@@ -84,6 +88,7 @@ export const updatePointNeed = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
 
     const auditDetails: Record<string, unknown> = {};
+    if (data.expiresAt !== undefined) auditDetails["expires_at"] = data.expiresAt;
     if (data.urgency !== undefined) auditDetails["urgency"] = data.urgency;
     if (data.note !== undefined) auditDetails["note"] = data.note;
     if (data.isActive !== undefined) auditDetails["is_active"] = data.isActive;
@@ -111,13 +116,24 @@ export const listPointNeeds = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ pointId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
-    const { data: rows, error } = await context.supabase
+    let { data: rows, error } = await context.supabase
       .from("point_needs")
       .select(
-        "id, point_id, category_id, urgency, note, is_active, item_categories ( id, slug, label, kind )",
+        "id, point_id, category_id, urgency, note, is_active, expires_at, item_categories ( id, slug, label, kind )",
       )
       .eq("point_id", data.pointId)
       .order("created_at", { ascending: false });
+    if (error?.code === "42703") {
+      const fallback = await context.supabase
+        .from("point_needs")
+        .select(
+          "id, point_id, category_id, urgency, note, is_active, item_categories ( id, slug, label, kind )",
+        )
+        .eq("point_id", data.pointId)
+        .order("created_at", { ascending: false });
+      rows = fallback.data?.map((need) => ({ ...need, expires_at: null })) ?? null;
+      error = fallback.error;
+    }
     if (error) throw new Error(error.message);
     return rows ?? [];
   });

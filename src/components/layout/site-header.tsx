@@ -15,6 +15,7 @@ const navItems = [
   { to: "/assistente", label: "Assistente" },
   { to: "/voluntarios", label: "Voluntários" },
   { to: "/apoiar", label: "Apoiar" },
+  { to: "/relatos", label: "Relatos" },
   { to: "/sobre", label: "Sobre o Projeto" },
 ] as const;
 
@@ -56,12 +57,12 @@ export function SiteHeader() {
           <span className="font-display text-lg tracking-tight">Vem da Gente</span>
         </Link>
 
-        <nav aria-label="Navegação principal" className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Navegação principal" className="hidden items-center gap-1 xl:flex">
           {navItems.map((item) => (
             <Link
               key={item.to}
               to={item.to}
-              className="px-3 py-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide transition-colors hover:text-primary data-[status=active]:text-foreground"
+              className="px-2 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide transition-colors hover:text-primary data-[status=active]:text-foreground"
             >
               {item.label}
             </Link>
@@ -70,12 +71,12 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2">
           {!loading && user && admin.data === true && (
-            <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
+            <Button asChild variant="ghost" size="sm" className="hidden xl:inline-flex">
               <Link to="/admin">Admin</Link>
             </Button>
           )}
           {!loading && user && admin.data !== true && collaborator.data === true && (
-            <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
+            <Button asChild variant="ghost" size="sm" className="hidden xl:inline-flex">
               <Link to="/colaborador">Colaborador</Link>
             </Button>
           )}
@@ -84,7 +85,7 @@ export function SiteHeader() {
               asChild
               variant={user ? "outline" : "default"}
               size="sm"
-              className="hidden md:inline-flex"
+              className="hidden xl:inline-flex"
             >
               <Link to={user ? "/minha-conta" : "/entrar"}>{user ? "Minha conta" : "Entrar"}</Link>
             </Button>
@@ -92,7 +93,7 @@ export function SiteHeader() {
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="md:hidden" aria-label="Abrir menu">
+              <Button variant="outline" size="icon" className="xl:hidden" aria-label="Abrir menu">
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
