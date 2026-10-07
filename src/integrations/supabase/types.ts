@@ -417,6 +417,50 @@ export type Database = {
           },
         ]
       }
+      institution_claims: {
+        Row: {
+          contact: string
+          created_at: string
+          id: string
+          message: string
+          point_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          contact: string
+          created_at?: string
+          id?: string
+          message: string
+          point_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          contact?: string
+          created_at?: string
+          id?: string
+          message?: string
+          point_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institution_claims_point_id_fkey"
+            columns: ["point_id"]
+            isOneToOne: false
+            referencedRelation: "collection_points"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       item_categories: {
         Row: {
           created_at: string
@@ -600,6 +644,7 @@ export type Database = {
         Row: {
           category_id: string
           created_at: string
+          expires_at: string | null
           id: string
           is_active: boolean
           note: string | null
@@ -610,6 +655,7 @@ export type Database = {
         Insert: {
           category_id: string
           created_at?: string
+          expires_at?: string | null
           id?: string
           is_active?: boolean
           note?: string | null
@@ -620,6 +666,7 @@ export type Database = {
         Update: {
           category_id?: string
           created_at?: string
+          expires_at?: string | null
           id?: string
           is_active?: boolean
           note?: string | null
@@ -846,6 +893,45 @@ export type Database = {
           },
         ]
       }
+      testimonials: {
+        Row: {
+          city: string | null
+          consent_at: string
+          created_at: string
+          display_name: string
+          id: string
+          rating: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          story: string
+        }
+        Insert: {
+          city?: string | null
+          consent_at?: string
+          created_at?: string
+          display_name: string
+          id?: string
+          rating: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          story: string
+        }
+        Update: {
+          city?: string | null
+          consent_at?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          rating?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          story?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1042,6 +1128,10 @@ export type Database = {
       }
       is_admin: { Args: never; Returns: boolean }
       is_owner: { Args: { _user_id?: string }; Returns: boolean }
+      review_institution_claim: {
+        Args: { p_id: string; p_status: string }
+        Returns: undefined
+      }
       search_nearby_points: {
         Args: {
           p_category_id?: string
@@ -1067,6 +1157,18 @@ export type Database = {
           website: string
           whatsapp: string
         }[]
+      }
+      search_public_points_page: {
+        Args: {
+          p_cause: string
+          p_city: string
+          p_lat: number
+          p_lng: number
+          p_neighborhood: string
+          p_page: number
+          p_radius: number
+        }
+        Returns: Json
       }
     }
     Enums: {
