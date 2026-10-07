@@ -1,12 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { ClientOnly } from "@tanstack/react-router";
-import { lazy, Suspense, useId, useState } from "react";
+import { Component, lazy, Suspense, useId, useState } from "react";
+import type { ReactNode, ErrorInfo } from "react";
 
 import type { MapPoint } from "./points-map-impl";
 
 const PointsMapImpl = lazy(() => import("./points-map-impl"));
 
 export type { MapPoint };
+
+class MapErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  override state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  override componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("Falha na visualização do mapa:", error, info.componentStack);
+  }
+  override render() {
+    if (this.state.failed)
+      return (
+        <div
+          role="alert"
+          className="flex h-full flex-col items-center justify-center gap-3 bg-surface p-5 text-center"
+        >
+          <p>O mapa não carregou. Você pode continuar pela lista de locais e pela busca acima.</p>
+          <Button variant="outline" onClick={() => window.location.reload()}>
+            Recarregar página
+          </Button>
+        </div>
+      );
+    return this.props.children;
+  }
+}
 
 function MapSkeleton() {
   return (
@@ -61,11 +87,13 @@ export function PointsMap(props: {
         }
       >
         {visible && (
-          <ClientOnly fallback={<MapSkeleton />}>
-            <Suspense fallback={<MapSkeleton />}>
-              <PointsMapImpl {...rest} />
-            </Suspense>
-          </ClientOnly>
+          <MapErrorBoundary>
+            <ClientOnly fallback={<MapSkeleton />}>
+              <Suspense fallback={<MapSkeleton />}>
+                <PointsMapImpl {...rest} />
+              </Suspense>
+            </ClientOnly>
+          </MapErrorBoundary>
         )}
       </div>
     </div>
