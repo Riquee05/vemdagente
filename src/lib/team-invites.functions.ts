@@ -42,15 +42,8 @@ async function generateTempPassword() {
 }
 
 async function hashPassword(password: string, salt: string) {
-  const { pbkdf2Sync } = await import("node:crypto");
-  return pbkdf2Sync(password, salt, 120_000, 32, "sha256").toString("hex");
-}
-
-async function safeEqual(a: string, b: string) {
-  const { timingSafeEqual } = await import("node:crypto");
-  const left = Buffer.from(a, "hex");
-  const right = Buffer.from(b, "hex");
-  return left.length === right.length && timingSafeEqual(left, right);
+  const { hashTeamInvitePassword } = await import("@/lib/team-invite-password");
+  return hashTeamInvitePassword(password, salt);
 }
 
 export const listTeamInvites = createServerFn({ method: "GET" })
@@ -171,8 +164,10 @@ export const redeemTeamInvite = createServerFn({ method: "POST" })
       await audit(null, "team_invite_failed", invite.id, { reason: "expired" });
       throw genericError;
     }
-    const valid = await safeEqual(
-      await hashPassword(data.temp_password.trim(), invite.password_salt),
+    const { verifyTeamInvitePassword } = await import("@/lib/team-invite-password");
+    const valid = verifyTeamInvitePassword(
+      data.temp_password.trim(),
+      invite.password_salt,
       invite.password_hash,
     );
     if (!valid) {
