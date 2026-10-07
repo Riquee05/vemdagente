@@ -530,6 +530,47 @@ export type Database = {
           },
         ]
       }
+      point_accessibility: {
+        Row: {
+          accessible_toilet: string
+          confirmed_at: string
+          confirmed_by: string | null
+          libras_service: string
+          message_arrangement: string
+          point_id: string
+          step_free_entrance: string
+          wheelchair_access: string
+        }
+        Insert: {
+          accessible_toilet?: string
+          confirmed_at?: string
+          confirmed_by?: string | null
+          libras_service?: string
+          message_arrangement?: string
+          point_id: string
+          step_free_entrance?: string
+          wheelchair_access?: string
+        }
+        Update: {
+          accessible_toilet?: string
+          confirmed_at?: string
+          confirmed_by?: string | null
+          libras_service?: string
+          message_arrangement?: string
+          point_id?: string
+          step_free_entrance?: string
+          wheelchair_access?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "point_accessibility_point_id_fkey"
+            columns: ["point_id"]
+            isOneToOne: true
+            referencedRelation: "collection_points"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       point_causes: {
         Row: {
           cause_id: string
