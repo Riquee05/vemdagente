@@ -26,7 +26,7 @@ export function SiteFooter() {
             </li>
             <li>
               <Link to="/assistente" className="hover:text-foreground">
-                Assistente inteligente
+                Busca guiada
               </Link>
             </li>
           </ul>

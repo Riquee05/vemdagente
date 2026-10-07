@@ -1,237 +1,344 @@
 import { AccessibleForm } from "@/components/accessibility/accessible-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation } from "@tanstack/react-query";
-import { useRef, useState } from "react";
-import { toast } from "sonner";
-
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { PageShell } from "@/components/layout/page-shell";
 import { PointsMap } from "@/components/map/points-map";
 import { PointCard } from "@/components/points/point-card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { askAssistant, type AssistantAnswer, type AssistantPoint } from "@/lib/assistant.functions";
+import { Input } from "@/components/ui/input";
+import { askAssistant, type AssistantAnswer } from "@/lib/assistant.functions";
 import { getBrowserLocation } from "@/lib/geocode";
+import { fetchCategories } from "@/lib/points";
+import { GUIDED_PAGE_SIZE, type GuidedSearch } from "@/lib/guided-search";
 
 export const Route = createFileRoute("/assistente")({
   head: () => ({
     meta: [
-      { title: "Assistente inteligente de doações | Vem da Gente" },
+      { title: "Busca guiada de instituições | Vem da Gente" },
       {
         name: "description",
         content:
-          "Pergunte em português sobre locais cadastrados no estado de São Paulo e confirme as informações diretamente antes de ir.",
+          "Encontre instituições publicadas em São Paulo por categoria, cidade, bairro ou proximidade.",
       },
-      { property: "og:title", content: "Assistente inteligente de doações | Vem da Gente" },
-      {
-        property: "og:description",
-        content:
-          "Pergunte em linguagem natural e consulte locais publicados no estado de São Paulo.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AssistentePage,
 });
 
-const SUGGESTIONS = [
-  "Onde posso doar roupas infantis em São Paulo?",
-  "Onde encontro apoio em Campinas?",
-  "Quero doar alimentos em Santos, quais locais posso contatar?",
-  "Há algum local cadastrado no centro de Ribeirão Preto?",
-];
-
-type Turn = { role: "user" | "assistant"; content: string };
-
 function AssistentePage() {
   const ask = useServerFn(askAssistant);
-  const [input, setInput] = useState("");
-  const [turns, setTurns] = useState<Turn[]>([]);
-  const [answer, setAnswer] = useState<AssistantAnswer | null>(null);
-  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const endRef = useRef<HTMLDivElement | null>(null);
-
-  const mutation = useMutation({
-    mutationFn: async (message: string) =>
-      ask({
-        data: {
-          message,
-          lat: coords?.lat ?? null,
-          lng: coords?.lng ?? null,
-          history: turns.slice(-6),
-        },
-      }),
-    onSuccess: (result) => {
-      setAnswer(result);
-      setTurns((prev) => [...prev, { role: "assistant", content: result.reply }]);
-      requestAnimationFrame(() => endRef.current?.scrollIntoView({ behavior: "smooth" }));
-    },
-    onError: (error: Error) => toast.error(error.message),
+  const categories = useQuery({
+    queryKey: ["item-categories"],
+    queryFn: fetchCategories,
+    staleTime: 300000,
   });
-
-  function send(message: string) {
-    const text = message.trim();
-    if (text.length < 3 || mutation.isPending) return;
-    setTurns((prev) => [...prev, { role: "user", content: text }]);
-    setInput("");
-    mutation.mutate(text);
+  const [categoryId, setCategoryId] = useState("");
+  const [city, setCity] = useState("");
+  const [neighborhood, setNeighborhood] = useState("");
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [radiusKm, setRadiusKm] = useState(15);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState("");
+  const [answer, setAnswer] = useState<AssistantAnswer | null>(null);
+  const [submitted, setSubmitted] = useState<GuidedSearch | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const mutation = useMutation({
+    mutationFn: (filters: GuidedSearch) => ask({ data: filters }),
+    onSuccess: (result, filters) => {
+      setAnswer(result);
+      setSubmitted(filters);
+      setSelectedId(null);
+    },
+  });
+  function search(page = 1) {
+    setAnswer(null);
+    mutation.mutate({
+      categoryId,
+      city: coords ? "" : city,
+      neighborhood: coords ? "" : neighborhood,
+      location: coords ? { ...coords, radiusKm } : null,
+      page,
+    });
   }
-
   async function useMyLocation() {
+    setLocating(true);
+    setLocationError("");
     try {
-      const position = await getBrowserLocation();
-      setCoords(position);
-      toast.success("Localização ativada — vou considerar o que está perto de você.");
+      setCoords(await getBrowserLocation());
+      setAnswer(null);
     } catch (error) {
-      toast.error((error as Error).message);
+      setLocationError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível obter sua localização. Use cidade e bairro.",
+      );
+    } finally {
+      setLocating(false);
     }
   }
-
-  const points: AssistantPoint[] = answer?.points ?? [];
+  function nextPage(page: number) {
+    if (!submitted) return;
+    setAnswer(null);
+    mutation.mutate({ ...submitted, page });
+  }
+  const points = answer?.points ?? [];
   const center: [number, number] = points[0]
     ? [points[0].lat, points[0].lng]
-    : answer?.location
-      ? [answer.location.lat, answer.location.lng]
-      : [-22.5, -48.6];
-
+    : submitted?.location
+      ? [submitted.location.lat, submitted.location.lng]
+      : [-23.55, -46.63];
+  const selectClass =
+    "min-h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-base";
   return (
     <PageShell>
       <section className="mx-auto w-full max-w-5xl px-4 py-12">
         <p className="text-xs font-semibold uppercase tracking-widest text-accent">
-          Assistente inteligente
+          Assistente de busca
         </p>
-        <h1 className="mt-3 max-w-3xl text-4xl">
-          Pergunte do seu jeito.{" "}
-          <span className="marker-underline">A gente encontra o ponto certo.</span>
-        </h1>
-        <p className="mt-4 max-w-2xl text-base text-muted-foreground">
-          Escreva em português como você falaria com alguém: o que quer doar ou precisa receber e
-          onde você está no estado de São Paulo. Respondemos apenas com dados publicados na
-          plataforma; confirme diretamente com o local antes de ir. Sem login.
+        <h1 className="mt-3 text-4xl">Vamos encontrar uma instituição.</h1>
+        <p className="mt-4 max-w-2xl text-muted-foreground">
+          Escolha a categoria e onde deseja buscar. Consultamos os locais publicados no estado de
+          São Paulo. Confirme diretamente com a instituição antes de ir. Sem login.
         </p>
-
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="card-ink bg-card p-5">
-            <div className="flex flex-wrap gap-2">
-              {SUGGESTIONS.map((suggestion) => (
-                <button
-                  key={suggestion}
-                  type="button"
-                  onClick={() => send(suggestion)}
-                  disabled={mutation.isPending}
-                  className="rounded border-2 border-border bg-surface px-3 py-1.5 text-left text-xs text-foreground transition-transform hover:-translate-y-0.5 disabled:opacity-60"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-5 space-y-3">
-              {turns.length === 0 ? (
-                <p className="rounded border-2 border-dashed border-border bg-surface p-4 text-sm text-muted-foreground">
-                  Exemplo: “tenho roupas de bebê para doar em Sorocaba”.
-                </p>
-              ) : null}
-
-              {turns.map((turn, index) => (
-                <div
-                  key={`${turn.role}-${index}`}
-                  className={
-                    turn.role === "user"
-                      ? "ml-auto max-w-[85%] rounded border-2 border-border bg-primary px-4 py-2 text-sm text-primary-foreground"
-                      : "max-w-[92%] rounded border-2 border-border bg-surface px-4 py-3 text-sm whitespace-pre-line"
-                  }
-                >
-                  {turn.content}
-                </div>
-              ))}
-
-              {mutation.isPending ? (
-                <div className="max-w-[92%] rounded border-2 border-dashed border-border bg-surface px-4 py-3 text-sm text-muted-foreground">
-                  Procurando pontos e instituições…
-                </div>
-              ) : null}
-              <div ref={endRef} />
-            </div>
-
+        <div className="mt-8 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="card-ink self-start bg-card p-5">
+            <h2 className="text-xl">Como podemos ajudar?</h2>
             <AccessibleForm
-              className="mt-5 space-y-3"
+              className="mt-5 space-y-5"
               onSubmit={(event) => {
                 event.preventDefault();
-                send(input);
+                search();
               }}
             >
-              <Textarea
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-                placeholder="Onde posso doar roupas de inverno em Jundiaí?"
-                rows={3}
-                maxLength={600}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" && !event.shiftKey) {
-                    event.preventDefault();
-                    send(input);
-                  }
-                }}
-              />
-              <div className="flex flex-wrap items-center gap-3">
-                <Button type="submit" disabled={mutation.isPending || input.trim().length < 3}>
-                  {mutation.isPending ? "Consultando…" : "Perguntar"}
-                </Button>
-                <Button type="button" variant="outline" onClick={useMyLocation}>
-                  {coords ? "Localização ativa" : "Usar minha localização"}
-                </Button>
+              <div>
+                <label htmlFor="guided-category" className="block font-semibold">
+                  1. Tipo de doação ou apoio
+                </label>
+                <select
+                  id="guided-category"
+                  className={selectClass}
+                  value={categoryId}
+                  onChange={(event) => setCategoryId(event.target.value)}
+                  disabled={categories.isPending || categories.isError}
+                >
+                  <option value="">Todas as categorias</option>
+                  {categories.data?.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.label}
+                    </option>
+                  ))}
+                </select>
+                {categories.isPending ? <p role="status">Carregando categorias…</p> : null}
+                {categories.isError ? (
+                  <div role="alert">
+                    <p>
+                      Não foi possível carregar as categorias. Você ainda pode buscar todos os
+                      locais.
+                    </p>
+                    <Button type="button" variant="outline" onClick={() => categories.refetch()}>
+                      Tentar carregar categorias
+                    </Button>
+                  </div>
+                ) : null}
               </div>
+              <fieldset className="space-y-3">
+                <legend className="font-semibold">2. Onde buscar?</legend>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={useMyLocation}
+                  disabled={locating || mutation.isPending}
+                >
+                  {locating ? "Obtendo localização…" : "Usar minha localização"}
+                </Button>
+                {locationError ? (
+                  <p role="alert" className="text-destructive">
+                    {locationError}
+                  </p>
+                ) : null}
+                {coords ? (
+                  <div className="space-y-3">
+                    <p role="status">Busca pela sua localização atual.</p>
+                    <label htmlFor="guided-radius" className="block">
+                      Distância máxima
+                    </label>
+                    <select
+                      id="guided-radius"
+                      className={selectClass}
+                      value={radiusKm}
+                      onChange={(event) => setRadiusKm(Number(event.target.value))}
+                    >
+                      {[5, 15, 30, 60].map((radius) => (
+                        <option key={radius} value={radius}>
+                          {radius} km
+                        </option>
+                      ))}
+                    </select>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setCoords(null);
+                        setAnswer(null);
+                      }}
+                    >
+                      Buscar por cidade e bairro
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <label htmlFor="guided-city" className="block">
+                        Cidade (opcional)
+                      </label>
+                      <Input
+                        id="guided-city"
+                        value={city}
+                        maxLength={100}
+                        onChange={(event) => setCity(event.target.value)}
+                        placeholder="Ex.: São Paulo"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="guided-neighborhood" className="block">
+                        Bairro (opcional)
+                      </label>
+                      <Input
+                        id="guided-neighborhood"
+                        value={neighborhood}
+                        maxLength={100}
+                        onChange={(event) => setNeighborhood(event.target.value)}
+                        placeholder="Ex.: Interlagos"
+                        aria-describedby="guided-neighborhood-help"
+                      />
+                      <p
+                        id="guided-neighborhood-help"
+                        className="mt-1 text-sm text-muted-foreground"
+                      >
+                        O bairro é procurado no endereço cadastrado.
+                      </p>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Sem cidade e bairro, buscamos em todo o estado de São Paulo.
+                    </p>
+                  </>
+                )}
+              </fieldset>
+              <Button type="submit" disabled={mutation.isPending || locating}>
+                {mutation.isPending ? "Buscando…" : "Encontrar instituições"}
+              </Button>
             </AccessibleForm>
           </div>
-
-          <div className="space-y-4">
-            {answer?.location ? (
-              <p className="text-sm text-muted-foreground">
-                Buscando perto de{" "}
-                <strong className="text-foreground">{answer.location.label}</strong>
-                {answer.categoryLabel ? ` — ${answer.categoryLabel}` : ""}
-              </p>
-            ) : null}
-
-            <PointsMap
-              center={center}
-              zoom={points.length ? 12 : 7}
-              points={points.map((point) => ({
-                id: point.id,
-                name: point.name,
-                lat: point.lat,
-                lng: point.lng,
-                subtitle: point.city,
-              }))}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              className="card-ink h-[320px] w-full overflow-hidden bg-surface"
-            />
-
-            {points.length ? (
-              <div className="space-y-3">
-                {points.map((point) => (
-                  <PointCard
-                    key={point.id}
-                    point={{ ...point, distance_km: point.distance_km ?? null }}
-                    active={selectedId === point.id}
-                    onHighlight={setSelectedId}
-                  />
-                ))}
+          <div className="space-y-4" aria-busy={mutation.isPending}>
+            {mutation.isPending ? <p role="status">Consultando instituições cadastradas…</p> : null}
+            {mutation.isError ? (
+              <div role="alert" className="card-ink bg-card p-5">
+                <p>{mutation.error.message}</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => mutation.mutate(mutation.variables!)}
+                >
+                  Tentar novamente
+                </Button>
               </div>
-            ) : (
-              <div className="card-ink bg-card p-5 text-sm text-muted-foreground">
-                Os pontos indicados na resposta aparecem aqui, com endereço, contato e distância.
-                Você também pode explorar tudo em{" "}
-                <Link to="/pontos" className="font-semibold text-foreground underline">
+            ) : null}
+            {answer ? (
+              <div role="status" className="card-ink bg-surface p-5">
+                <p>{answer.reply}</p>
+              </div>
+            ) : !mutation.isPending && !mutation.isError ? (
+              <p>
+                Preencha os filtros e toque em “Encontrar instituições”. Você também pode{" "}
+                <Link to="/pontos" className="underline">
                   ver todos os pontos
                 </Link>
                 .
-              </div>
-            )}
+              </p>
+            ) : null}
+            {answer && submitted ? (
+              <p className="text-sm text-muted-foreground">
+                Busca:{" "}
+                {submitted.location
+                  ? `até ${submitted.location.radiusKm} km da sua localização`
+                  : [submitted.city || "São Paulo (estado)", submitted.neighborhood]
+                      .filter(Boolean)
+                      .join(" · ")}{" "}
+                ·{" "}
+                {categories.data?.find((category) => category.id === submitted.categoryId)?.label ??
+                  "Todas as categorias"}
+              </p>
+            ) : null}
+            {points.length ? (
+              <>
+                <a href="#guided-results" className="inline-block underline">
+                  Ir para a lista de instituições
+                </a>
+                <PointsMap
+                  center={center}
+                  zoom={12}
+                  points={points.map((point) => ({
+                    id: point.id,
+                    name: point.name,
+                    lat: point.lat,
+                    lng: point.lng,
+                    subtitle: point.city,
+                  }))}
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                  className="card-ink h-[320px] w-full overflow-hidden bg-surface"
+                />
+                <section
+                  id="guided-results"
+                  tabIndex={-1}
+                  aria-label="Instituições encontradas"
+                  className="space-y-3"
+                >
+                  {points.map((point) => (
+                    <PointCard
+                      key={point.id}
+                      point={point}
+                      active={selectedId === point.id}
+                      onHighlight={setSelectedId}
+                    />
+                  ))}
+                </section>
+              </>
+            ) : null}
+            {answer && answer.total > GUIDED_PAGE_SIZE ? (
+              <nav
+                aria-label="Páginas das instituições"
+                className="flex flex-wrap items-center gap-3"
+              >
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={mutation.isPending || answer.page <= 1}
+                  onClick={() => nextPage(answer.page - 1)}
+                >
+                  Anterior
+                </Button>
+                <span>
+                  Página {answer.page} de {Math.ceil(answer.total / GUIDED_PAGE_SIZE)}
+                </span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={mutation.isPending || answer.page * GUIDED_PAGE_SIZE >= answer.total}
+                  onClick={() => nextPage(answer.page + 1)}
+                >
+                  Próxima
+                </Button>
+              </nav>
+            ) : null}
+            {answer?.limited ? (
+              <p className="text-sm text-muted-foreground">
+                A busca por proximidade mostra até 60 locais. Refine a categoria ou diminua o raio
+                para explorar melhor.
+              </p>
+            ) : null}
           </div>
         </div>
       </section>

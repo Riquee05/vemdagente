@@ -43,7 +43,7 @@ bun run build
 
 Configurações do navegador: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PROJECT_ID`, `VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY` e `VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID`.
 
-Configurações do servidor: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`, `GOOGLE_MAPS_API_KEY`, `GOOGLE_MAPS_BROWSER_KEY`, `LOVABLE_API_KEY` e `RATE_LIMIT_HASH_SECRET`. Os limites opcionais estão documentados em `.env.example`.
+Configurações do servidor: `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `GOOGLE_MAPS_API_KEY`, `GOOGLE_MAPS_BROWSER_KEY`, `LOVABLE_API_KEY` e `RATE_LIMIT_HASH_SECRET`. Os limites opcionais estão documentados em `.env.example`.
 
 ## Banco e migrations
 
@@ -87,3 +87,7 @@ O site inclui link para pular ao conteúdo, foco visível, anúncio de mudança 
 Aplique `supabase/migrations/20261007021000_point_accessibility.sql` no Lovable antes de usar o editor. Administração → Curadoria → “Confirmar acessibilidade da instituição” permite registrar entrada sem degraus/rampa, acesso para cadeira de rodas, banheiro, Libras e combinação por mensagem. Só administradores confirmam; cada item pode ser Sim, Não ou Não informado. A data e o responsável são definidos pelo servidor; o identificador do responsável não é público. A ficha mostra a data e alerta para informações antigas. Nenhum cadastro é automaticamente declarado acessível.
 
 As verificações automatizadas e de contraste não substituem testes com pessoas usando TalkBack, VoiceOver, teclado e tecnologias assistivas. Verifique especialmente encontrar uma instituição, consultar contatos, enviar um relato e revisar formulários com erros.
+
+### Busca guiada
+
+A rota `/assistente` consulta o banco público por categoria e cidade/bairro ou localização atual. Não usa Gemini, IA externa ou geocodificação. Mantém RLS, limite de requisições e paginação. A proximidade mostra até 60 locais; confirme informações com cada instituição. Não exige uma nova migração.
