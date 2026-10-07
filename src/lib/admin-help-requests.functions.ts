@@ -35,3 +35,11 @@ export const updateAdminHelpRequest = createServerFn({ method: "POST" })
     const { changeHelpRequest } = await import("./admin-help-requests.server");
     return changeHelpRequest(input);
   });
+
+export const locateAdminHelpRequest = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async (input) => {
+    const { readHelpRequestLocation } = await import("./admin-help-requests.server");
+    return readHelpRequestLocation(input);
+  });

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
+import { HelpRequestLocation } from "@/components/admin/help-request-location";
 import { Button } from "@/components/ui/button";
 import {
   helpStatusLabels,
@@ -95,11 +96,12 @@ function HelpRequests() {
                       ? "Enviado por usuário com conta."
                       : "Enviado sem conta; não há contato cadastrado neste pedido."}
                   </p>
-                  {item.lat !== null && item.lng !== null && (
-                    <p className="mt-2 text-sm">
-                      Localização selecionada: {item.lat}, {item.lng}
-                    </p>
-                  )}
+                  <HelpRequestLocation
+                    id={item.id}
+                    lat={item.lat}
+                    lng={item.lng}
+                    city={item.city}
+                  />
                   <p className="mt-2 break-all text-xs text-muted-foreground">
                     Identificador: {item.id}
                   </p>

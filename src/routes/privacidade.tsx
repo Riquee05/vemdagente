@@ -27,7 +27,7 @@ export const Route = createFileRoute("/privacidade")({
 const sections = [
   {
     title: "Mapas de terceiros",
-    body: "Ao mostrar o mapa, seu navegador solicita imagens à EOX (satélite) ou ao OpenStreetMap (ruas). Esses serviços recebem dados técnicos da conexão, como IP e a área do mapa visualizada. Não enviamos o texto dos pedidos de ajuda nem dados da sua conta para esses serviços.",
+    body: "Ao mostrar o mapa, seu navegador solicita imagens à EOX (satélite) ou ao OpenStreetMap (ruas). Esses serviços recebem dados técnicos da conexão, como IP e a área do mapa visualizada. Ao identificar a região de um pedido, a administração pode consultar o Nominatim/OpenStreetMap com as coordenadas aproximadas selecionadas. Não enviamos o texto dos pedidos de ajuda nem dados da sua conta para esses serviços.",
   },
   {
     title: "Relatos da comunidade",

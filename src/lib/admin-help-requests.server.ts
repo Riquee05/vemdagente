@@ -51,3 +51,31 @@ export async function changeHelpRequest({
   if (!row) throw new Error("O pedido mudou ou não está disponível. Atualize a lista.");
   return { ok: true as const };
 }
+
+export async function readHelpRequestLocation({
+  data,
+  context,
+}: {
+  data: { id: string };
+  context: Context;
+}) {
+  await requireAdminAuthorization(context.userId, context.supabase);
+  await assertStepUp(context.userId);
+  const { data: row, error } = await context.supabase
+    .from("help_requests")
+    .select("lat, lng")
+    .eq("id", data.id)
+    .maybeSingle();
+  if (error || !row) throw new Error("Pedido não disponível.");
+  if (
+    row.lat === null ||
+    row.lng === null ||
+    !Number.isFinite(row.lat) ||
+    !Number.isFinite(row.lng) ||
+    Math.abs(row.lat) > 90 ||
+    Math.abs(row.lng) > 180
+  )
+    return null;
+  const { reverseRequestLocation } = await import("./request-location.server");
+  return reverseRequestLocation(row.lat, row.lng);
+}
